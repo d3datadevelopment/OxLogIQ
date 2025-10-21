@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+
+  OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
+    class: D3\Shoplogger\MonologLoggerFactory
+
+  OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface:
+    class: D3\Shoplogger\MonologConfiguration
+    arguments:
+      $loggerName: 'OXID Logger'
+      $logFilePath: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
+      $logLevel: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'

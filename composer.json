@@ -1,0 +1,60 @@
+{
+  "name": "d3/oxid-logger",
+  "description": "",
+  "type": "library",
+  "keywords": [
+    "oxid",
+    "eShop",
+    "services",
+    "dependency injection",
+    "d3"
+  ],
+  "authors": [
+    {
+        "name": "D3 Data Development (Inh. Thomas Dartsch)",
+        "email": "info@shopmodule.com",
+        "homepage": "https://www.d3data.de",
+        "role": "Owner"
+    }
+  ],
+  "homepage": "https://www.oxidmodule.com/",
+  "license": [
+    "MIT"
+  ],
+  "require": {
+    "oxid-esales/oxideshop-ce": "^7"
+  },
+  "require-dev": {
+    "d3/testingtools": "^1.0",
+    "phpunit/phpunit": "^9.6",
+    "friendsofphp/php-cs-fixer": "~3.13.0",
+    "phpstan/phpstan": "^1.10",
+    "rector/rector": "^0.18.13",
+    "mikey179/vfsstream": "^1.6.8",
+    "infection/infection": "^0.29.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "D3\\ShopLogger\\": "./"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "D3\\ShopLogger\\Tests": "./Tests"
+    }
+  },
+  "scripts": {
+    "php-cs-fixer": "./vendor/bin/php-cs-fixer fix --config=vendor/d3/oxid-dic-handler/.php-cs-fixer.php",
+
+    "phpstan": "./vendor/bin/phpstan --configuration=vendor/d3/oxid-dic-handler/phpstan.neon analyse",
+    "phpstan-report": "./vendor/bin/phpstan --configuration=vendor/d3/ordermanager/phpstan.neon analyse --error-format=json > reports/phpstan/oxid-dic-handler/phpstan.report.json",
+
+    "phpunit": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxid-dic-handler/tests/ --no-coverage",
+    "phpunit-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxid-dic-handler/tests/ --coverage-html=reports/phpunit/oxid-dic-handler",
+    "phpunit-path-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxid-dic-handler/tests/ --coverage-html=reports/phpunit/oxid-dic-handler --path-coverage",
+
+    "infection": "./vendor/bin/infection --configuration=vendor/d3/oxid-dic-handler/infection.json5",
+
+    "rector": "./vendor/bin/rector process --dry-run --config ./vendor/d3/oxid-dic-handler/rector.php"
+  }
+}
