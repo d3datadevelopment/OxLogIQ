@@ -2,19 +2,18 @@ services:
   _defaults:
     autowire: true
 
-  D3\ShopLogger\MonologLoggerFactory:
-    class: D3\ShopLogger\MonologLoggerFactory
-    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface
-    decoration_inner_name: 'oxid.logger_factory.inner'
-    arguments:
-      - '@oxid.logger_factory.inner'
-
-#  OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
+#  D3\ShopLogger\MonologLoggerFactory:
 #    class: D3\ShopLogger\MonologLoggerFactory
+#    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface
+#    decoration_inner_name: 'oxid.logger_factory.inner'
+#    arguments:
+#      - '@oxid.logger_factory.inner'
+
+  OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
+    class: D3\ShopLogger\MonologLoggerFactory
 
   D3\ShopLogger\MonologConfiguration:
     class: D3\ShopLogger\MonologConfiguration
-#    class: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration
     decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
     decoration_inner_name: 'oxid.monolog_config.inner'
     arguments:
