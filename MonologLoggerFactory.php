@@ -1,41 +1,41 @@
 <?php
 
-namespace D3\Shoplogger;
+declare(strict_types=1);
+
+namespace D3\ShopLogger;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\MonologLoggerFactory as OxidLoggerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
+use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
+use Psr\Log\LoggerInterface;
 
-class MonologLoggerFactory extends OxidLoggerFactory
+class MonologLoggerFactory implements LoggerFactoryInterface
 {
-    /**
-     * @var MonologConfigurationInterface $configuration
-     */
-    private $configuration;
-
-    public function __construct(
-        MonologConfigurationInterface $configuration,
-        LoggerConfigurationValidatorInterface $configurationValidator
-    ) {
-        $configurationValidator->validate($configuration);
-
-        $this->configuration = $configuration;
+    public function __construct(private LoggerFactoryInterface $innerFactory)
+    {
     }
 
-    public function create()
+    public function create(): LoggerInterface
     {
-        $handler = $this->getHandler();
+        $logger = $this->innerFactory->create();
 
-        $logger = new Logger($this->configuration->getLoggerName());
-        $logger->pushHandler($handler);
+        // Hier kannst du den Logger verändern, z. B. zusätzlichen Handler oder Prozessor anhängen:
+        // $logger->pushHandler(...);
 
         return $logger;
     }
+
+//    public function create()
+//    {
+//        $handler = $this->getHandler();
+//
+//        $logger = new Logger($this->configuration->getLoggerName());
+//        $logger->pushHandler($handler);
+//
+//        return $logger;
+//    }
 
     /**
      * @return HandlerInterface

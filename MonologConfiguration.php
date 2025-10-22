@@ -1,22 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace D3\Shoplogger;
 
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration as OxidLoggerConfiguration;
+use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
-class MonologConfiguration extends OxidLoggerConfiguration
+class MonologConfiguration implements MonologConfigurationInterface
 {
-//    /**
-//     * @param string $loggerName
-//     * @param string $logFilePath
-//     * @param string $logLevel
-//     */
-//    public function __construct(
-//        private $loggerName,
-//        private $logFilePath,
-//        private $logLevel
-//    ) {
-//    }
+    public function __construct(
+        private MonologConfigurationInterface $innerConfig,
+        private string $logFilePath,
+        private string $logLevel
+    ) {}
+
+    public function getLoggerName(): string
+    {
+        return $this->innerConfig->getLoggerName();
+        return '[D3 Shoplogger] ' . $this->innerConfig->getLoggerName();
+    }
+
+    public function getLogFilePath(): string
+    {
+        // z. B. anderer Pfad
+        return $this->logFilePath ?: $this->innerConfig->getLogFilePath();
+    }
+
+    public function getLogLevel(): string
+    {
+        return $this->logLevel ?: $this->innerConfig->getLogLevel();
+        // z. B. fest auf DEBUG zwingen
+        return 'debug';
+    }
 
     public function getRemainingFiles(): int
     {

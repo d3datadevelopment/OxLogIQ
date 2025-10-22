@@ -2,12 +2,29 @@ services:
   _defaults:
     autowire: true
 
-  OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
-    class: D3\Shoplogger\MonologLoggerFactory
-
-  OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface:
-    class: D3\Shoplogger\MonologConfiguration
+  D3\ShopLogger\MonologLoggerFactory:
+    class: D3\ShopLogger\MonologLoggerFactory
+    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface
+    decoration_inner_name: 'oxid.logger_factory.inner'
     arguments:
-      $loggerName: 'OXID Logger'
-      $logFilePath: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
-      $logLevel: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
+      - '@oxid.logger_factory.inner'
+
+#  OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
+#    class: D3\ShopLogger\MonologLoggerFactory
+
+  D3\ShopLogger\MonologConfiguration:
+    class: D3\ShopLogger\MonologConfiguration
+#    class: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration
+    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
+    decoration_inner_name: 'oxid.monolog_config.inner'
+    arguments:
+      - '@oxid.monolog_config.inner'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
+
+#  OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface:
+#    class: D3\ShopLogger\MonologConfiguration
+#    arguments:
+#      $loggerName: 'OXID Logger'
+#      $logFilePath: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
+#      $logLevel: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
