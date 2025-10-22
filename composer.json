@@ -1,7 +1,7 @@
 {
   "name": "d3/oxid-logger",
   "description": "",
-  "type": "library",
+  "type": "oxideshop-component",
   "keywords": [
     "oxid",
     "eShop",
