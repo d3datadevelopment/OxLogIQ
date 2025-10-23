@@ -22,7 +22,8 @@
     "MIT"
   ],
   "require": {
-    "oxid-esales/oxideshop-ce": "^7"
+    "oxid-esales/oxideshop-ce": "^7",
+    "d3/logger-factory": "^2"
   },
   "require-dev": {
     "d3/testingtools": "^1.0",

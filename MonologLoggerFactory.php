@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace D3\ShopLogger;
 
+use D3\LoggerFactory\LoggerFactory;
+use D3\ShopLogger\Processors\SessionIdProcessor;
+use Exception;
 use Monolog\Formatter\FormatterInterface;
-use Monolog\Formatter\HtmlFormatter;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\NativeMailerHandler;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Monolog\Processor\IntrospectionProcessor;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
@@ -19,9 +18,6 @@ use Psr\Log\LoggerInterface;
 
 class MonologLoggerFactory implements LoggerFactoryInterface
 {
-    /**
-     * @var MonologConfigurationInterface $configuration
-     */
     /** @var MonologConfiguration */
     private $configuration;
 
@@ -34,77 +30,42 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $this->configuration = $configuration;
     }
 
-
     /**
-     * @return LoggerInterface
+     * @throws Exception
      */
-    public function create()
+    public function create(): LoggerInterface
     {
-        $handler = $this->getFileHandler();
+        $factory = LoggerFactory::create();
 
-        $logger = new Logger($this->configuration->getLoggerName());
-        $logger->pushHandler($handler);
-        $logger->pushHandler($this->getMailHandler());
-
-        return $logger;
-    }
-
-    /**
-     * @return HandlerInterface
-     */
-    private function getFileHandler()
-    {
-        $handler = new RotatingFileHandler(
+        $fileHandlerOption = $factory->addFileHandler(
             $this->configuration->getLogFilePath(),
-            $this->configuration->getRemainingFiles(),
-            $this->configuration->getLogLevel(),
+            Logger::toMonologLevel($this->configuration->getLogLevel()),
+            $this->configuration->getRemainingFiles()
         );
+        $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
+        $fileHandlerOption->setBuffering();
 
-//        $handler = new StreamHandler(
-//            $this->configuration->getLogFilePath(),
-//            $this->configuration->getLogLevel()
-//        );
-
-        $formatter = $this->getFormatter();
-        $handler->setFormatter($formatter);
-
-        return $handler;
-    }
-
-    /**
-     * @return HandlerInterface
-     */
-    private function getMailHandler()
-    {
-        $isHtml = true;
-        $to = 'ox73@ds.data-develop.de';
-        $subject = 'shop logger';
-        $from = 'ox73@ds.data-develop.de';
-        $logLevel = Logger::NOTICE;
-
-        $handler = new NativeMailerHandler($to, $subject, $from, $logLevel);
-
-        if ($isHtml) {
-            $handler
-                ->setContentType('text/html')
-                ->setEncoding('iso-8859-1')
-                ->setFormatter(new HtmlFormatter());
-        } else {
-            $handler->setFormatter(
-                new LineFormatter()
-            );
+        if ($this->configuration->hasNotificationMailAddress()) {
+            $to       = [ $this->configuration->getNotificationMailAddress() ];
+            $subject  = 'Shop Log Notification';
+            $from     = $this->configuration->getNotificationMailAddress();
+            $logLevel = Logger::ERROR;
+            $factory->addMailHandler( $to, $subject, $from, $logLevel )->setBuffering();
         }
 
-        return $handler;
+        $factory->addUidProcessor();
+        $factory->addOtherProcessor(
+            new IntrospectionProcessor(Logger::ERROR, ['Internal\\Framework\\Logger\\'])
+        );
+        $factory->addOtherProcessor(new SessionIdProcessor());
+
+        return $factory->build($this->configuration->getLoggerName());
     }
 
-    /**
-     * @return FormatterInterface
-     */
-    private function getFormatter()
+    private function getFormatter(): FormatterInterface
     {
         $formatter = new LineFormatter();
-        $formatter->includeStacktraces(true);
+        $formatter->includeStacktraces();
 
         return $formatter;
     }

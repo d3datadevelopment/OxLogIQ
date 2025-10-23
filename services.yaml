@@ -2,13 +2,6 @@ services:
   _defaults:
     autowire: true
 
-#  D3\ShopLogger\MonologLoggerFactory:
-#    class: D3\ShopLogger\MonologLoggerFactory
-#    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface
-#    decoration_inner_name: 'oxid.logger_factory.inner'
-#    arguments:
-#      - '@oxid.logger_factory.inner'
-
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
     class: D3\ShopLogger\MonologLoggerFactory
 
@@ -20,10 +13,9 @@ services:
       - '@oxid.monolog_config.inner'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRemainingLogFiles()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailAddress()'
 
-#  OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface:
-#    class: D3\ShopLogger\MonologConfiguration
-#    arguments:
-#      $loggerName: 'OXID Logger'
-#      $logFilePath: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
-#      $logLevel: '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
+  OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
+    class: D3\ShopLogger\Context
+    public: true
