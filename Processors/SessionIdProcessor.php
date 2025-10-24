@@ -30,6 +30,6 @@ class SessionIdProcessor implements ProcessorInterface
 
     public function getShopSid( int $length = 32 ): string
     {
-        return substr(Registry::getSession()->getId(), 0, $length);
+        return substr((Registry::getSession()->getId() ?? ''), 0, $length);
     }
 }
