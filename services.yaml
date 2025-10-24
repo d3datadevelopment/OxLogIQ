@@ -3,10 +3,10 @@ services:
     autowire: true
 
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
-    class: D3\ShopLogger\MonologLoggerFactory
+    class: D3\OxLogiQ\MonologLoggerFactory
 
-  D3\ShopLogger\MonologConfiguration:
-    class: D3\ShopLogger\MonologConfiguration
+  D3\OxLogiQ\MonologConfiguration:
+    class: D3\OxLogiQ\MonologConfiguration
     decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
     decoration_inner_name: 'oxid.monolog_config.inner'
     arguments:
@@ -17,5 +17,5 @@ services:
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailAddress()'
 
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
-    class: D3\ShopLogger\Context
+    class: D3\OxLogiQ\Context
     public: true

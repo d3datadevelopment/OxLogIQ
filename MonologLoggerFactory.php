@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace D3\ShopLogger;
+namespace D3\OxLogiQ;
 
 use D3\LoggerFactory\LoggerFactory;
-use D3\ShopLogger\Processors\SessionIdProcessor;
+use D3\OxLogiQ\Processors\SessionIdProcessor;
 use Exception;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;

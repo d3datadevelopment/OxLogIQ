@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace D3\ShopLogger\Processors;
+namespace D3\OxLogiQ\Processors;
 
 use InvalidArgumentException;
 use Monolog\Processor\ProcessorInterface;

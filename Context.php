@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace D3\ShopLogger;
+namespace D3\OxLogiQ;
 
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\Context as OxidContext;
 use OxidEsales\Facts\Config\ConfigFile as FactsConfigFile;

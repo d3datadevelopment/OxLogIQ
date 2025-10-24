@@ -1,5 +1,5 @@
 {
-  "name": "d3/oxid-logger",
+  "name": "d3/oxlogiq",
   "description": "",
   "type": "oxideshop-component",
   "keywords": [
@@ -37,12 +37,12 @@
   },
   "autoload": {
     "psr-4": {
-      "D3\\ShopLogger\\": "./"
+      "D3\\OxLogiQ\\": "./"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "D3\\ShopLogger\\Tests": "./Tests"
+      "D3\\OxLogiQ\\Tests": "./Tests"
     }
   },
   "scripts": {
