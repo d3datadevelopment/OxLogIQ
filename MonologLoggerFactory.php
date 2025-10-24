@@ -11,6 +11,7 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
+use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
@@ -48,7 +49,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         if ($this->configuration->hasNotificationMailAddress()) {
             $to       = [ $this->configuration->getNotificationMailAddress() ];
             $subject  = 'Shop Log Notification';
-            $from     = $this->configuration->getNotificationMailAddress();
+            $from     = Registry::getConfig()->getActiveShop()->getFieldData('oxinfoemail');
             $logLevel = Logger::ERROR;
             $factory->addMailHandler( $to, $subject, $from, $logLevel )->setBuffering();
         }

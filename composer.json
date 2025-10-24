@@ -5,8 +5,9 @@
   "keywords": [
     "oxid",
     "eShop",
-    "services",
-    "dependency injection",
+    "logger",
+    "monolog",
+    "notification",
     "d3"
   ],
   "authors": [
