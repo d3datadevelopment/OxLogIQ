@@ -1,45 +1,63 @@
 <?php
 
+/**
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ *
+ * https://www.d3data.de
+ *
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
+ */
+
 declare(strict_types=1);
 
 namespace D3\OxLogiQ;
 
-use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Config;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
 class MonologConfiguration implements MonologConfigurationInterface
 {
     /**
      * @param \OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration $innerConfig
+     * @param \OxidEsales\EshopCommunity\Core\Config $config
      */
     public function __construct(
-        private MonologConfigurationInterface $innerConfig,
-        private string $logFilePath,
-        private string $logLevel,
-        private ?int $remainingFiles,
-        private ?string $notificationMailAddress
+        protected MonologConfigurationInterface $innerConfig,
+        protected Config $config,
+        protected ?int $remainingFiles,
+        protected ?string $notificationMailAddress
     ) {}
-
-    public function __call(string $name, array $arguments)
-    {
-        return $this->innerConfig->$name(...$arguments);
-    }
 
     public function getLoggerName(): string
     {
-        return $this->innerConfig->getLoggerName().
-            '|shp-'.Registry::getConfig()->getActiveShop()->getId().
-            '|'.(isAdmin()?'backend':'frontend');
+        return implode(
+            '|',
+            [
+                $this->innerConfig->getLoggerName().
+                'shp-'.$this->config->getActiveShop()->getId().
+                $this->getContext()
+            ]
+        );
+    }
+
+    protected function getContext(): string
+    {
+        return isAdmin()?'backend':'frontend';
     }
 
     public function getLogFilePath(): string
     {
-        return $this->logFilePath ?: $this->innerConfig->getLogFilePath();
+        return $this->innerConfig->getLogFilePath();
     }
 
     public function getLogLevel(): string
     {
-        return $this->logLevel ?: $this->innerConfig->getLogLevel();
+        return $this->innerConfig->getLogLevel();
     }
 
     public function getRemainingFiles(): ?int

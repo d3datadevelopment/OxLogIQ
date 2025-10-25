@@ -2,6 +2,10 @@ services:
   _defaults:
     autowire: true
 
+  oxid.config:
+    class: OxidEsales\Eshop\Core\Config
+    factory: ['OxidEsales\Eshop\Core\Registry', 'getConfig']
+
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
     class: D3\OxLogiQ\MonologLoggerFactory
 
@@ -11,8 +15,7 @@ services:
     decoration_inner_name: 'oxid.monolog_config.inner'
     arguments:
       - '@oxid.monolog_config.inner'
-      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogFilePath()'
-      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getLogLevel()'
+      - '@oxid.config'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRemainingLogFiles()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailAddress()'
 
