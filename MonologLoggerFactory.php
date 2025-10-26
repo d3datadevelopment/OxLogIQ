@@ -58,7 +58,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $factory->addOtherProcessor(
             new IntrospectionProcessor(Logger::ERROR, ['Internal\\Framework\\Logger\\'])
         );
-        $factory->addOtherProcessor(new SessionIdProcessor());
+        $factory->addOtherProcessor(new SessionIdProcessor(Registry::getSession()));
 
         return $factory->build($this->configuration->getLoggerName());
     }

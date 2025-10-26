@@ -6,15 +6,19 @@ namespace D3\OxLogiQ\Processors;
 
 use InvalidArgumentException;
 use Monolog\Processor\ProcessorInterface;
-use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\Session;
 
 class SessionIdProcessor implements ProcessorInterface
 {
-    private string $sid;
+    protected string $sid;
 
-    public function __construct( $length = 7 )
+    /**
+     * @param \OxidEsales\EshopCommunity\Core\Session $session
+     * @param int $length
+     */
+    public function __construct(protected Session $session, int $length = 7 )
     {
-        if ( ! is_int( $length ) || $length > 32 || $length < 1 ) {
+        if ( $length > 32 || $length < 1 ) {
             throw new InvalidArgumentException( 'The session id length must be an integer between 1 and 32' );
         }
 
@@ -30,6 +34,6 @@ class SessionIdProcessor implements ProcessorInterface
 
     public function getShopSid( int $length = 32 ): string
     {
-        return substr((Registry::getSession()->getId() ?? ''), 0, $length);
+        return substr(($this->session->getId() ?? ''), 0, $length);
     }
 }
