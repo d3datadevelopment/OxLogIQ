@@ -6,6 +6,10 @@ services:
     class: OxidEsales\Eshop\Core\Config
     factory: ['OxidEsales\Eshop\Core\Registry', 'getConfig']
 
+  D3\LoggerFactory\LoggerFactory:
+    class: D3\LoggerFactory\LoggerFactory
+    factory: ['D3\LoggerFactory\LoggerFactory', 'create']
+
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
     class: D3\OxLogiQ\MonologLoggerFactory
 

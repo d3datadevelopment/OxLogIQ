@@ -20,11 +20,12 @@ use Psr\Log\LoggerInterface;
 class MonologLoggerFactory implements LoggerFactoryInterface
 {
     /** @var MonologConfiguration */
-    private $configuration;
+    protected $configuration;
 
     public function __construct(
         MonologConfigurationInterface $configuration,
-        LoggerConfigurationValidatorInterface $configurationValidator
+        LoggerConfigurationValidatorInterface $configurationValidator,
+        protected LoggerFactory $loggerFactory
     ) {
         $configurationValidator->validate($configuration);
 
@@ -36,38 +37,67 @@ class MonologLoggerFactory implements LoggerFactoryInterface
      */
     public function create(): LoggerInterface
     {
-        $factory = LoggerFactory::create();
+        $factory = $this->loggerFactory;
 
+        $this->addFileHandler($factory);
+        $this->addMailHandler($factory);
+        $this->addProcessors($factory);
+
+        return $factory->build($this->configuration->getLoggerName());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function addFileHandler(LoggerFactory $factory): void
+    {
         $fileHandlerOption = $factory->addFileHandler(
             $this->configuration->getLogFilePath(),
             Logger::toMonologLevel($this->configuration->getLogLevel()),
             $this->configuration->getRemainingFiles()
         );
+
         $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
         $fileHandlerOption->setBuffering();
-
-        if ($this->configuration->hasNotificationMailAddress()) {
-            $to       = [ $this->configuration->getNotificationMailAddress() ];
-            $subject  = 'Shop Log Notification';
-            $from     = Registry::getConfig()->getActiveShop()->getFieldData('oxinfoemail');
-            $logLevel = Logger::ERROR;
-            $factory->addMailHandler( $to, $subject, $from, $logLevel )->setBuffering();
-        }
-
-        $factory->addUidProcessor();
-        $factory->addOtherProcessor(
-            new IntrospectionProcessor(Logger::ERROR, ['Internal\\Framework\\Logger\\'])
-        );
-        $factory->addOtherProcessor(new SessionIdProcessor(Registry::getSession()));
-
-        return $factory->build($this->configuration->getLoggerName());
     }
 
-    private function getFormatter(): FormatterInterface
+    protected function getFormatter(): FormatterInterface
     {
         $formatter = new LineFormatter();
         $formatter->includeStacktraces();
 
         return $formatter;
+    }
+
+    /**
+     * @param LoggerFactory $factory
+     *
+     * @return void
+     */
+    protected function addMailHandler(LoggerFactory $factory): void
+    {
+        if ($this->configuration->hasNotificationMailAddress()) {
+            $to       = [$this->configuration->getNotificationMailAddress()];
+            $subject  = 'Shop Log Notification';
+            $from     = Registry::getConfig()->getActiveShop()->getFieldData( 'oxinfoemail' );
+            $logLevel = Logger::ERROR;
+            $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
+        }
+    }
+
+    /**
+     * @param LoggerFactory $factory
+     *
+     * @return void
+     */
+    protected function addProcessors(LoggerFactory $factory): void
+    {
+        $factory->addUidProcessor();
+        $factory->addOtherProcessor(
+            new IntrospectionProcessor(Logger::ERROR, ['Internal\\Framework\\Logger\\'])
+        );
+        $factory->addOtherProcessor(
+            new SessionIdProcessor( Registry::getSession())
+        );
     }
 }
