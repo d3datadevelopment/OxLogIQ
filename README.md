@@ -1,16 +1,17 @@
 # OxLogiQ
 
 ## Übersicht
-**OxLogiQ** ist ein intelligentes Logging-Plugin für den **OXID eShop**, das Standard-Logs mit zusätzlichen Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritische Meldungen per E-Mail verschickt.  
+**OxLogiQ** ist ein intelligentes Logging-Plugin für den **OXID eShop**, das Standard-Logs mit zusätzlichen 
+Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritische Meldungen per E-Mail verschickt.
 
 ## Features
 - datumgetrenntes Logging (einstellbar)
 - Dateirotation (einstellbar)
 - Benachrichtigung bei kritischen Ereignissen per Mail (einstellbar)
-- Prozess-ID (Filterkriterium)
+- Request-ID (Filterkriterium)
 - Session-ID (Filterkriterium)
 - Buffering (Optimierung der Schreibvorgänge)
-- Ergänzen der Einträge um Codeverweise
+- Ergänzen der Einträge um Codeverweise (Errors und höher)
 - Channel ergänzt um Frontend bzw. Backend
 - Channel ergänzt um den Subshop
 - Einfache Konfiguration über Variablen in der `config.inc.php`
@@ -43,6 +44,17 @@ $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = 'alerts@mydomain.com';
 $this->oxlogiq_mailLogLevel = 'ERROR';
 $this->oxlogiq_mailSubject = 'Ausnahmebenachrichtigung';
+```
+
+## Nutzung der Session- / Request-ID
+
+Jeder Logeintrag wird um die verkürzte Session- (sid) und Request-ID (uid) ergänzt. Diese können verwendet werden, um in 
+umfangreichen und durchmischten Aufzeichnungen nach zusammengehörigen Logeinträgen zu filtern. Die Session-ID bezieht 
+sich damit auf Einträge eines bestimmten Shopnutzers, die Request-ID auf einen bestimmten Seiten- oder Scriptaufruf.
+Verwenden Sie die jeweilige ID nach folgendem Schema zur Filterung:
+
+```
+cat source/log/oxideshop-2025-01-01.log | grep "[sid/uid]"
 ```
 
 ## Softwarelizenz (OxLogiQ) [MIT]
