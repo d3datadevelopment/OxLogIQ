@@ -55,7 +55,7 @@ class Context extends OxidContext
         return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
     }
 
-    public function getNotificationMailLogLevel(): string
+    public function getNotificationMailLevel(): string
     {
         return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILLEVEL) ?? 'ERROR';
     }

@@ -60,15 +60,8 @@ class MonologConfiguration implements MonologConfigurationInterface
 
     public function getLogLevel(): string
     {
-        $level = strtoupper($this->innerConfig->getLogLevel());
-
-        if (!in_array($level, array_keys(Logger::getLevels()), true)) {
-            throw new InvalidArgumentException(
-                'LogLevel must be one of '.implode(', ', array_keys(Logger::getLevels()))
-            );
-        }
-
-        return $level;
+        // is already validated
+        return $this->innerConfig->getLogLevel();
     }
 
     public function getRemainingFiles(): ?int

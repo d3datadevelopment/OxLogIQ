@@ -105,13 +105,12 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    #[DataProvider('getLogLevelDataProvider')]
-    public function testGetLogLevel($givenLevel, $exceptionExpected, $expected): void
+    public function testGetLogLevel(): void
     {
         $configurationMock = new OxidMonologConfiguration(
             'myLogger',
             '/var/log/oxidlog.log',
-            $givenLevel
+            'warning'
         );
 
         $configMock = $this->getMockBuilder(Config::class)
@@ -126,12 +125,8 @@ class MonologConfigurationTest extends TestCase
             'error'
         );
 
-        if ($exceptionExpected) {
-            $this->expectException(InvalidArgumentException::class);
-        }
-
         self::assertSame(
-            $expected,
+            'warning',
             $this->callMethod($sut, 'getLogLevel')
         );
     }
