@@ -42,8 +42,8 @@ class MonologConfiguration implements MonologConfigurationInterface
         return implode(
             '|',
             [
-                $this->innerConfig->getLoggerName().
-                'shp-'.$this->config->getActiveShop()->getId().
+                $this->innerConfig->getLoggerName(),
+                'shp-'.$this->config->getActiveShop()->getId(),
                 $this->getContext()
             ]
         );
