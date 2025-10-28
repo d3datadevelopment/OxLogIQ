@@ -33,7 +33,8 @@ class MonologConfiguration implements MonologConfigurationInterface
         protected Config $config,
         protected ?int $remainingFiles,
         protected null|array|string $notificationMailRecipients,
-        protected string $notificationMailLevel
+        protected string $notificationMailLevel,
+        protected string $notificationMailSubject
     ) {}
 
     public function getLoggerName(): string
@@ -93,5 +94,10 @@ class MonologConfiguration implements MonologConfigurationInterface
         }
 
         return $level;
+    }
+
+    public function getNotificationMailSubject(): string
+    {
+        return $this->notificationMailSubject;
     }
 }

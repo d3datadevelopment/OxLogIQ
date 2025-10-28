@@ -112,4 +112,30 @@ class ContextTest extends TestCase
             $this->callMethod($sut, 'getNotificationMailRecipients')
         );
     }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetNotificationMailSubject(): void
+    {
+        $fixture = 'subjectFixture';
+
+        $factsMock = $this->getMockBuilder(ConfigFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $factsMock->expects($this->once())->method('getVar')
+            ->with($this->identicalTo(Context::CONFIGVAR_MAILSUBJECT))
+            ->willReturn($fixture);
+
+        $sut = $this->getMockBuilder(Context::class)
+            ->onlyMethods(['getFactsConfigFile'])
+            ->getMock();
+        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+        $this->assertSame(
+            $fixture,
+            $this->callMethod($sut, 'getNotificationMailSubject')
+        );
+    }
 }

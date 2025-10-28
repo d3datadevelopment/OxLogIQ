@@ -23,6 +23,7 @@ services:
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRemainingLogFiles()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailRecipients()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailLevel()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailSubject()'
 
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
     class: D3\OxLogiQ\Context

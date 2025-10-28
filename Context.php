@@ -25,6 +25,7 @@ class Context extends OxidContext
     public const CONFIGVAR_REMAININGFILES   = 'oxlogiq_retentionDays';
     public const CONFIGVAR_MAILRECIPIENTS   = 'oxlogiq_mailRecipients';
     public const CONFIGVAR_MAILLEVEL        = 'oxlogiq_mailLogLevel';
+    public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
 
     /**
      * @var FactsConfigFile
@@ -58,5 +59,10 @@ class Context extends OxidContext
     public function getNotificationMailLevel(): string
     {
         return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILLEVEL) ?? 'ERROR';
+    }
+
+    public function getNotificationMailSubject(): string
+    {
+        return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILSUBJECT) ?? 'Shop Log Notification';
     }
 }

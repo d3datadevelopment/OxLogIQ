@@ -33,6 +33,7 @@ In der `config.inc.php` lassen sich folgende Parameter anpassen:
 | oxlogiq_retentionDays     | Anzahl der Tage, die Logfiles behalten werden, <br/>- `0` für unbegrenzt, <br/>-`null` für eine einzelne Datei (Standard) |
 | oxlogiq_mailRecipients    | Empfängeradresse(n) für Alerts, <br/>Array oder String, <br/>`null` für keinen Mailversand (Standard)                     |
 | oxlogiq_mailLogLevel      | kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                                    |
+| oxlogiq_mailSubject       | Betreff der Benachrichtigungsmail (Standard: `Shop Log Notification`)                                                     |
 
 ### Codebeispiel
 
@@ -41,6 +42,7 @@ $this->sLogLevel = 'WARNING';
 $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = 'alerts@mydomain.com';
 $this->oxlogiq_mailLogLevel = 'ERROR';
+$this->oxlogiq_mailSubject = 'Ausnahmebenachrichtigung';
 ```
 
 ## Softwarelizenz (OxLogiQ) [MIT]

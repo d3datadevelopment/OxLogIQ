@@ -69,7 +69,8 @@ class MonologConfigurationTest extends TestCase
                 $configMock,
                 5,
                 'test@example.dev',
-                'error'
+                'error',
+                'mySubject'
             ])
             ->onlyMethods(['getContext'])
             ->getMock();
@@ -122,7 +123,8 @@ class MonologConfigurationTest extends TestCase
             $configMock,
             5,
             'test@example.dev',
-            'error'
+            'error',
+            'mySubject'
         );
 
         self::assertSame(
@@ -194,7 +196,8 @@ class MonologConfigurationTest extends TestCase
             $configMock,
             5,
             'test@example.dev',
-            $givenLevel
+            $givenLevel,
+            'mySubject'
         );
 
         if ($exceptionExpected) {
@@ -204,6 +207,20 @@ class MonologConfigurationTest extends TestCase
         self::assertSame(
             $expected,
             $this->callMethod($sut, 'getNotificationMailLevel')
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetNotificationMailSubject()
+    {
+        $this->setValue( $this->sut, 'notificationMailSubject', 'subjectFixture');
+
+        self::assertSame(
+            'subjectFixture',
+            $this->callMethod($this->sut, 'getNotificationMailSubject')
         );
     }
 }
