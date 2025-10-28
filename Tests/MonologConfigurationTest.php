@@ -156,10 +156,10 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    #[DataProvider('getNotificationMailAddressDataProvider')]
-    public function testGetNotificationMailAddress($mailAddress, bool $isset, $expected)
+    #[DataProvider('getNotificationMailRecipientsDataProvider')]
+    public function testGetNotificationMailRecipients($recipients, bool $isset, $expected)
     {
-        $this->setValue($this->sut, 'notificationMailRecipients', $mailAddress);
+        $this->setValue($this->sut, 'notificationMailRecipients', $recipients);
 
         self::assertSame(
             $isset,
@@ -171,7 +171,7 @@ class MonologConfigurationTest extends TestCase
         );
     }
 
-    public static function getNotificationMailAddressDataProvider(): Generator
+    public static function getNotificationMailRecipientsDataProvider(): Generator
     {
         yield 'not set' => [null, false, null];
         yield 'set' => ['test@example.dev', true, 'test@example.dev'];

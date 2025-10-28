@@ -91,7 +91,7 @@ class ContextTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailAddress(): void
+    public function testGetNotificationMailRecipients(): void
     {
         $fixture = 'returnFixture';
 

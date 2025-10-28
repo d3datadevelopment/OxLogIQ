@@ -21,7 +21,7 @@ services:
       - '@oxid.monolog_config.inner'
       - '@oxid.config'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRemainingLogFiles()'
-      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailAddresses()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailRecipients()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailLevel()'
 
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
