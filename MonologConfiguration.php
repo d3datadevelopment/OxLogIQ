@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace D3\OxLogiQ;
 
+use InvalidArgumentException;
+use Monolog\Logger;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
@@ -30,7 +32,8 @@ class MonologConfiguration implements MonologConfigurationInterface
         protected MonologConfigurationInterface $innerConfig,
         protected Config $config,
         protected ?int $remainingFiles,
-        protected ?string $notificationMailAddress
+        protected null|array|string $notificationMailRecipients,
+        protected string $notificationMailLevel
     ) {}
 
     public function getLoggerName(): string
@@ -57,7 +60,15 @@ class MonologConfiguration implements MonologConfigurationInterface
 
     public function getLogLevel(): string
     {
-        return $this->innerConfig->getLogLevel();
+        $level = strtoupper($this->innerConfig->getLogLevel());
+
+        if (!in_array($level, array_keys(Logger::getLevels()), true)) {
+            throw new InvalidArgumentException(
+                'LogLevel must be one of '.implode(', ', array_keys(Logger::getLevels()))
+            );
+        }
+
+        return $level;
     }
 
     public function getRemainingFiles(): ?int
@@ -65,13 +76,29 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->remainingFiles;
     }
 
-    public function hasNotificationMailAddress(): bool
+    public function hasNotificationMailRecipient(): bool
     {
-        return isset($this->notificationMailAddress) && strlen($this->notificationMailAddress);
+        return isset($this->notificationMailRecipients) && (
+                ( is_string($this->notificationMailRecipients) && strlen( $this->notificationMailRecipients)) ||
+                ( is_array($this->notificationMailRecipients) && count( $this->notificationMailRecipients))
+        );
     }
 
-    public function getNotificationMailAddress(): ?string
+    public function getNotificationMailRecipients(): null|string|array
     {
-        return $this->notificationMailAddress;
+        return $this->notificationMailRecipients;
+    }
+
+    public function getNotificationMailLevel(): string
+    {
+        $level = strtoupper($this->notificationMailLevel);
+
+        if (!in_array($level, array_keys(Logger::getLevels()), true)) {
+            throw new InvalidArgumentException(
+                'MailNotificationLevel must be one of '.implode(', ', array_keys(Logger::getLevels()))
+            );
+        }
+
+        return $level;
     }
 }

@@ -181,14 +181,15 @@ class MonologLoggerFactoryTest extends TestCase
      */
     #[Test]
     #[DataProvider('addMailHandlerDataProvider')]
-    public function testAddMailHandler(bool $addressGiven, int $invocation): void
+    public function testAddMailHandler(bool $addressGiven, $address, int $invocation): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['hasNotificationMailAddress', 'getNotificationMailAddress'])
+            ->onlyMethods([ 'hasNotificationMailRecipient', 'getNotificationMailRecipients', 'getNotificationMailLevel'])
             ->getMock();
-        $configurationMock->method('hasNotificationMailAddress')->willReturn($addressGiven);
-        $configurationMock->method('getNotificationMailAddress')->willReturn('mailFixture');
+        $configurationMock->method( 'hasNotificationMailRecipient' )->willReturn( $addressGiven);
+        $configurationMock->expects($this->exactly($invocation))->method( 'getNotificationMailRecipients' )->willReturn( $address);
+        $configurationMock->expects($this->exactly($invocation))->method('getNotificationMailLevel')->willReturn( 'error');
 
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()
@@ -211,8 +212,9 @@ class MonologLoggerFactoryTest extends TestCase
 
     public static function addMailHandlerDataProvider(): Generator
     {
-        yield 'no mail address' => [false, 0];
-        yield 'given mail address' => [true, 1];
+        yield 'no mail address' => [false, '', 0];
+        yield 'given mail address' => [true, 'mailFixture', 1];
+        yield 'given mail addresses' => [true, ['mailFixture1', 'mailFixture2'], 1];
     }
 
     /**

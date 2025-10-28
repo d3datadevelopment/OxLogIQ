@@ -29,7 +29,7 @@ use ReflectionException;
 
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
 #[CoversMethod(Context::class, 'getRemainingLogFiles')]
-#[CoversMethod(Context::class, 'getNotificationMailAddress')]
+#[CoversMethod(Context::class, 'getNotificationMailRecipients' )]
 class ContextTest extends TestCase
 {
     use CanAccessRestricted;
@@ -65,7 +65,7 @@ class ContextTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $factsMock->expects($this->atLeastOnce())->method('getVar')
-            ->with($this->identicalTo('logRemainingFiles'))
+            ->with($this->identicalTo(Context::CONFIGVAR_REMAININGFILES))
             ->willReturn($configuration);
 
         $sut = $this->getMockBuilder(Context::class)
@@ -99,7 +99,7 @@ class ContextTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $factsMock->expects($this->once())->method('getVar')
-            ->with($this->identicalTo('logNotificationAddress'))
+            ->with($this->identicalTo(Context::CONFIGVAR_MAILRECIPIENTS))
             ->willReturn($fixture);
 
         $sut = $this->getMockBuilder(Context::class)
@@ -109,7 +109,7 @@ class ContextTest extends TestCase
 
         $this->assertSame(
             $fixture,
-            $this->callMethod($sut, 'getNotificationMailAddress')
+            $this->callMethod($sut, 'getNotificationMailRecipients')
         );
     }
 }

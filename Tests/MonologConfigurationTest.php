@@ -20,6 +20,7 @@ namespace D3\OxLogiQ\Tests;
 use D3\OxLogiQ\MonologConfiguration;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
+use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration as OxidMonologConfiguration;
@@ -33,8 +34,9 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getRemainingFiles')]
-#[CoversMethod(MonologConfiguration::class, 'hasNotificationMailAddress')]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailAddress')]
+#[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient' )]
+#[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients' )]
+#[CoversMethod(MonologConfiguration::class, 'getNotificationMailLevel')]
 class MonologConfigurationTest extends TestCase
 {
     use CanAccessRestricted;
@@ -66,7 +68,8 @@ class MonologConfigurationTest extends TestCase
                 $configurationMock,
                 $configMock,
                 5,
-                'test@example.dev'
+                'test@example.dev',
+                'error'
             ])
             ->onlyMethods(['getContext'])
             ->getMock();
@@ -102,12 +105,42 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetLogLevel(): void
+    #[DataProvider('getLogLevelDataProvider')]
+    public function testGetLogLevel($givenLevel, $exceptionExpected, $expected): void
     {
-        self::assertSame(
-            'WARNING',
-            $this->callMethod($this->sut, 'getLogLevel')
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            $givenLevel
         );
+
+        $configMock = $this->getMockBuilder(Config::class)
+           ->disableOriginalConstructor()
+           ->getMock();
+
+        $sut = new MonologConfiguration(
+            $configurationMock,
+            $configMock,
+            5,
+            'test@example.dev',
+            'error'
+        );
+
+        if ($exceptionExpected) {
+            $this->expectException(InvalidArgumentException::class);
+        }
+
+        self::assertSame(
+            $expected,
+            $this->callMethod($sut, 'getLogLevel')
+        );
+    }
+
+    public static function getLogLevelDataProvider(): Generator
+    {
+        yield 'lowercase known'   => ['alert', false, 'ALERT'];
+        yield 'uppercase known'   => ['CRITICAL', false, 'CRITICAL'];
+        yield 'unknown'   => ['unknown', true, 'CRITICAL'];
     }
 
     #[Test]
@@ -126,15 +159,15 @@ class MonologConfigurationTest extends TestCase
     #[DataProvider('getNotificationMailAddressDataProvider')]
     public function testGetNotificationMailAddress($mailAddress, bool $isset, $expected)
     {
-        $this->setValue($this->sut, 'notificationMailAddress', $mailAddress);
+        $this->setValue($this->sut, 'notificationMailRecipients', $mailAddress);
 
         self::assertSame(
             $isset,
-            $this->callMethod($this->sut, 'hasNotificationMailAddress')
+            $this->callMethod($this->sut, 'hasNotificationMailRecipient')
         );
         self::assertSame(
             $expected,
-            $this->callMethod($this->sut, 'getNotificationMailAddress')
+            $this->callMethod($this->sut, 'getNotificationMailRecipients')
         );
     }
 
@@ -142,5 +175,40 @@ class MonologConfigurationTest extends TestCase
     {
         yield 'not set' => [null, false, null];
         yield 'set' => ['test@example.dev', true, 'test@example.dev'];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('getLogLevelDataProvider')]
+    public function testGetNotificationMailLevel($givenLevel, $exceptionExpected, $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $sut = new MonologConfiguration(
+            $configurationMock,
+            $configMock,
+            5,
+            'test@example.dev',
+            $givenLevel
+        );
+
+        if ($exceptionExpected) {
+            $this->expectException( InvalidArgumentException::class);
+        }
+
+        self::assertSame(
+            $expected,
+            $this->callMethod($sut, 'getNotificationMailLevel')
+        );
     }
 }
