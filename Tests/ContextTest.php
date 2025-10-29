@@ -23,10 +23,12 @@ use Generator;
 use OxidEsales\Facts\Config\ConfigFile;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
+#[Small]
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
 #[CoversMethod(Context::class, 'getRetentionDays')]
 #[CoversMethod(Context::class, 'getNotificationMailRecipients' )]

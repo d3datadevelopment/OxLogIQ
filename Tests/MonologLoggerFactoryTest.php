@@ -29,10 +29,12 @@ use Monolog\Logger;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
+#[Small]
 #[CoversMethod(MonologLoggerFactory::class, '__construct')]
 #[CoversMethod(MonologLoggerFactory::class, 'create')]
 #[CoversMethod(MonologLoggerFactory::class, 'addFileHandler')]

@@ -27,10 +27,12 @@ use OxidEsales\Eshop\Core\Config;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration as OxidMonologConfiguration;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
+#[Small]
 #[CoversMethod(MonologConfiguration::class, '__construct')]
 #[CoversMethod(MonologConfiguration::class, 'getLoggerName')]
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]

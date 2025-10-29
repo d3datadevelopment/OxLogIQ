@@ -25,10 +25,12 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Session;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
+#[Small]
 #[CoversMethod(SessionIdProcessor::class, '__construct')]
 #[CoversMethod(SessionIdProcessor::class, '__invoke')]
 #[CoversMethod(SessionIdProcessor::class, 'getShopSid')]
