@@ -54,7 +54,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $fileHandlerOption = $factory->addFileHandler(
             $this->configuration->getLogFilePath(),
             Logger::toMonologLevel($this->configuration->getLogLevel()),
-            $this->configuration->getRemainingFiles()
+            $this->configuration->getRetentionDays()
         );
 
         $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());

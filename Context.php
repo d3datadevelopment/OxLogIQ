@@ -22,7 +22,7 @@ use OxidEsales\Facts\Config\ConfigFile as FactsConfigFile;
 
 class Context extends OxidContext
 {
-    public const CONFIGVAR_REMAININGFILES   = 'oxlogiq_retentionDays';
+    public const CONFIGVAR_RETENTIONDAYS    = 'oxlogiq_retentionDays';
     public const CONFIGVAR_MAILRECIPIENTS   = 'oxlogiq_mailRecipients';
     public const CONFIGVAR_MAILLEVEL        = 'oxlogiq_mailLogLevel';
     public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
@@ -44,10 +44,10 @@ class Context extends OxidContext
         return $this->factsConfigFile;
     }
 
-    public function getRemainingLogFiles(): ?int
+    public function getRetentionDays(): ?int
     {
-        $retention = $_ENV[self::CONFIGVAR_REMAININGFILES] ??
-                     $this->getFactsConfigFile()->getVar(self::CONFIGVAR_REMAININGFILES);
+        $retention = $_ENV[self::CONFIGVAR_RETENTIONDAYS] ??
+                     $this->getFactsConfigFile()->getVar(self::CONFIGVAR_RETENTIONDAYS);
 
         return !is_int($retention) ? null : $retention;
     }

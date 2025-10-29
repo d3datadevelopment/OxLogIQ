@@ -118,11 +118,11 @@ class MonologLoggerFactoryTest extends TestCase
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getLogLevel', 'getLogFilePath', 'getRemainingFiles'])
+            ->onlyMethods(['getLogLevel', 'getLogFilePath', 'getRetentionDays'])
             ->getMock();
         $configurationMock->method('getLogLevel')->willReturn('error');
         $configurationMock->method('getLogFilePath')->willReturn('/var/log/error.log');
-        $configurationMock->method('getRemainingFiles')->willReturn(5);
+        $configurationMock->method('getRetentionDays')->willReturn( 5);
 
         $sut = $this->getMockBuilder(MonologLoggerFactory::class)
             ->disableOriginalConstructor()

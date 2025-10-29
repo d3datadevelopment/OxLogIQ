@@ -33,7 +33,7 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getLoggerName')]
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
-#[CoversMethod(MonologConfiguration::class, 'getRemainingFiles')]
+#[CoversMethod(MonologConfiguration::class, 'getRetentionDays' )]
 #[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient' )]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients' )]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailLevel')]
@@ -145,7 +145,7 @@ class MonologConfigurationTest extends TestCase
     {
         self::assertSame(
             5,
-            $this->sut->getRemainingFiles()
+            $this->sut->getRetentionDays()
         );
     }
 

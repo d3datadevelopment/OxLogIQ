@@ -31,7 +31,7 @@ class MonologConfiguration implements MonologConfigurationInterface
     public function __construct(
         protected MonologConfigurationInterface $innerConfig,
         protected Config $config,
-        protected ?int $remainingFiles,
+        protected ?int $retentionDays,
         protected null|array|string $notificationMailRecipients,
         protected string $notificationMailLevel,
         protected string $notificationMailSubject
@@ -65,9 +65,9 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->innerConfig->getLogLevel();
     }
 
-    public function getRemainingFiles(): ?int
+    public function getRetentionDays(): ?int
     {
-        return $this->remainingFiles;
+        return $this->retentionDays;
     }
 
     public function hasNotificationMailRecipient(): bool

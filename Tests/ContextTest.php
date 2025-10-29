@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
-#[CoversMethod(Context::class, 'getRemainingLogFiles')]
+#[CoversMethod(Context::class, 'getRetentionDays')]
 #[CoversMethod(Context::class, 'getNotificationMailRecipients' )]
 class ContextTest extends TestCase
 {
@@ -65,7 +65,7 @@ class ContextTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $factsMock->expects($this->atLeastOnce())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_REMAININGFILES))
+            ->with($this->identicalTo(Context::CONFIGVAR_RETENTIONDAYS))
             ->willReturn($configuration);
 
         $sut = $this->getMockBuilder(Context::class)
@@ -75,7 +75,7 @@ class ContextTest extends TestCase
 
         $this->assertSame(
             $expected,
-            $this->callMethod($sut, 'getRemainingLogFiles')
+            $this->callMethod($sut, 'getRetentionDays')
         );
     }
 

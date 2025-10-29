@@ -20,7 +20,7 @@ services:
     arguments:
       - '@oxid.monolog_config.inner'
       - '@oxid.config'
-      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRemainingLogFiles()'
+      - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getRetentionDays()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailRecipients()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailLevel()'
       - '@=service("OxidEsales\\EshopCommunity\\Internal\\Transition\\Utility\\ContextInterface").getNotificationMailSubject()'
