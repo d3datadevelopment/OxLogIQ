@@ -31,10 +31,10 @@ use ReflectionException;
 #[Small]
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
 #[CoversMethod(Context::class, 'getRetentionDays')]
-#[CoversMethod(Context::class, 'getNotificationMailRecipients' )]
-#[CoversMethod(Context::class, 'getNotificationMailLevel' )]
-#[CoversMethod(Context::class, 'getNotificationMailSubject' )]
-#[CoversMethod(Context::class, 'getNotificationMailFrom' )]
+#[CoversMethod(Context::class, 'getNotificationMailRecipients')]
+#[CoversMethod(Context::class, 'getNotificationMailLevel')]
+#[CoversMethod(Context::class, 'getNotificationMailSubject')]
+#[CoversMethod(Context::class, 'getNotificationMailFrom')]
 class ContextTest extends TestCase
 {
     use CanAccessRestricted;

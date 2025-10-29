@@ -34,7 +34,8 @@ class MonologConfiguration implements MonologConfigurationInterface
         protected MonologConfigurationInterface $innerConfig,
         protected Config $config,
         protected ContextInterface $context
-    ) {}
+    ) {
+    }
 
     public function getLoggerName(): string
     {
@@ -43,7 +44,7 @@ class MonologConfiguration implements MonologConfigurationInterface
             [
                 $this->innerConfig->getLoggerName(),
                 'shp-'.$this->config->getActiveShop()->getId(),
-                $this->getContext()
+                $this->getContext(),
             ]
         );
     }

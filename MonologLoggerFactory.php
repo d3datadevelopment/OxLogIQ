@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ *
+ * https://www.d3data.de
+ *
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
+ */
+
 declare(strict_types=1);
 
 namespace D3\OxLogiQ;
@@ -81,7 +94,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
             $to       = $this->configuration->getNotificationMailRecipients();
             $subject  = sprintf(
                 '%1$s - %2$s',
-                $shop->getFieldData( 'oxname' ),
+                $shop->getFieldData('oxname'),
                 $this->configuration->getNotificationMailSubject()
             );
             $from     = $this->configuration->getNotificationMailFrom() ?? $shop->getFieldData('oxinfoemail');
@@ -102,7 +115,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
             new IntrospectionProcessor(Logger::ERROR, ['Internal\\Framework\\Logger\\'])
         );
         $factory->addOtherProcessor(
-            new SessionIdProcessor( Registry::getSession())
+            new SessionIdProcessor(Registry::getSession())
         );
     }
 }

@@ -37,9 +37,9 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getLoggerName')]
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
-#[CoversMethod(MonologConfiguration::class, 'getRetentionDays' )]
-#[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient' )]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients' )]
+#[CoversMethod(MonologConfiguration::class, 'getRetentionDays')]
+#[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient')]
+#[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients')]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailSubject')]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailFrom')]
@@ -82,7 +82,7 @@ class MonologConfigurationTest extends TestCase
             ->setConstructorArgs([
                 $configurationMock,
                 $configMock,
-                $contextMock
+                $contextMock,
             ])
             ->onlyMethods(['getContext'])
             ->getMock();
@@ -211,7 +211,7 @@ class MonologConfigurationTest extends TestCase
         );
 
         if ($exceptionExpected) {
-            $this->expectException( InvalidArgumentException::class);
+            $this->expectException(InvalidArgumentException::class);
         }
 
         self::assertSame(

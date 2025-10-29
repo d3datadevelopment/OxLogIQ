@@ -75,7 +75,7 @@ class SessionIdProcessorTest extends TestCase
 
         $records = [
             'foo' => 'bar',
-            'extra' => ['context' => 'abc']
+            'extra' => ['context' => 'abc'],
         ];
 
         self::assertSame(
