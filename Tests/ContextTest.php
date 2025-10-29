@@ -61,8 +61,8 @@ class ContextTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    #[DataProvider('getRemainingLogFilesDataProvider')]
-    public function testGetRemainingLogFiles($configuration, $expected): void
+    #[DataProvider('getRetentionDaysDataProvider')]
+    public function testGetRetentionDays($configuration, $expected): void
     {
         $factsMock = $this->getMockBuilder(ConfigFile::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ class ContextTest extends TestCase
         );
     }
 
-    public static function getRemainingLogFilesDataProvider(): Generator
+    public static function getRetentionDaysDataProvider(): Generator
     {
         yield 'null' => [null, null];
         yield 'integer' => [10, 10];
