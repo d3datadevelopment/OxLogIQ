@@ -14,7 +14,7 @@ Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritisch
 - Ergänzen der Einträge um Codeverweise (Errors und höher)
 - Channel ergänzt um Frontend bzw. Backend
 - Channel ergänzt um den Subshop
-- Einfache Konfiguration über Variablen in der `config.inc.php`
+- Einfache Konfiguration über `config.inc.php`- oder Environment-Variablen
 
 ## Installation
 1. über Composer installieren
@@ -26,7 +26,7 @@ Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritisch
 
 ## Konfiguration
 
-In der `config.inc.php` lassen sich folgende Parameter anpassen:
+Über diese Variablen lassen sich folgende Parameter anpassen:
 
 | Einstellung               | Beschreibung                                                                                                              |
 |---------------------------|---------------------------------------------------------------------------------------------------------------------------|

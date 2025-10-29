@@ -46,23 +46,29 @@ class Context extends OxidContext
 
     public function getRemainingLogFiles(): ?int
     {
-        return is_int($this->getFactsConfigFile()->getVar(self::CONFIGVAR_REMAININGFILES)) ?
-            (int) $this->getFactsConfigFile()->getVar(self::CONFIGVAR_REMAININGFILES) :
-            null;
+        $retention = $_ENV[self::CONFIGVAR_REMAININGFILES] ??
+                     $this->getFactsConfigFile()->getVar(self::CONFIGVAR_REMAININGFILES);
+
+        return !is_int($retention) ? null : $retention;
     }
 
     public function getNotificationMailRecipients(): null|string|array
     {
-        return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
+        return $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
     }
 
     public function getNotificationMailLevel(): string
     {
-        return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILLEVEL) ?? 'ERROR';
+        return $_ENV[self::CONFIGVAR_MAILLEVEL] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILLEVEL) ??
+               'ERROR';
     }
 
     public function getNotificationMailSubject(): string
     {
-        return $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILSUBJECT) ?? 'Shop Log Notification';
+        return $_ENV[self::CONFIGVAR_MAILSUBJECT] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILSUBJECT) ??
+               'Shop Log Notification';
     }
 }
