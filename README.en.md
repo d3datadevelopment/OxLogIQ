@@ -1,0 +1,92 @@
+[![deutsche Version](https://logos.oxidmodule.com/de2_xs.svg)](README.md)
+[![english version](https://logos.oxidmodule.com/en2_xs.svg)](README.en.md)
+
+# OxLogiQ
+
+## Overview
+**OxLogiQ** is an intelligent logging plugin for **OXID eShop** that enriches standard logs with additional
+context information, automatically rotates old files and sends critical messages by email.
+
+## Features
+- Date-separated logging (adjustable)
+- File rotation (adjustable)
+- Notification of critical events by email (adjustable)
+- Request ID (filter criterion)
+- Session ID (filter criterion)
+- Buffering (optimisation of write operations)
+- Add code references to entries (errors and higher)
+- Channel complemented by front end or back end
+- Channel complemented by subshop
+- Simple configuration via `config.inc.php` or environment variables
+
+## Installation
+1. Install via Composer
+    ```bash
+   composer require d3/oxlogiq
+   ```
+2. Set configuration
+3. Clear the shop's TMP folder
+
+## Configuration
+
+The following parameters can be adjusted using these variables:
+
+| Setting                   | Description                                                                                                    |
+|---------------------------|----------------------------------------------------------------------------------------------------------------|
+| sLogLevel (OXID standard) | Lowest level written to the log files                                                                          |
+| oxlogiq_retentionDays     | Number of days that log files are retained, <br/>- `0` for unlimited, <br/>-`null` for a single file (default) |
+| oxlogiq_mailRecipients    | Recipient address(es) for alerts, <br/>array or string, <br/>`null` for no mail delivery (default)             |
+| oxlogiq_mailLogLevel      | *optional:* lowest level that will be notified by email (default: `ERROR`)                                     |
+| oxlogiq_mailSubject       | *optional:* subject of the notification email (default: `Shop Log Notification`)                               |
+| oxlogiq_mailFrom          | *optional:* sender address (default: shop's info mail address)                                                 |
+
+### Code example
+
+```PHP
+$this->sLogLevel = "WARNING";
+$this->oxlogiq_retentionDays = 7;
+$this->oxlogiq_mailRecipients = "alerts@mydomain.com";
+// optional
+$this->oxlogiq_mailLogLevel = "ERROR";
+$this->oxlogiq_mailSubject = "Exception notification";
+$this->oxlogiq_mailFrom = "sender@mydomain.com";
+```
+
+## Use of the session/request ID
+
+Each log entry is extended by the abbreviated session ID (sid) and request ID (uid). These can be used to filter for related log entries in
+extensive and mixed records. The session ID therefore refers
+to entries made by a specific shop user, while the request ID refers to a specific page or script call.
+Use the respective ID for filtering according to the following scheme:
+
+```
+cat source/log/oxideshop-2025-01-01.log | grep "[sid/uid]"
+```
+
+## Changelog
+
+See [CHANGELOG](CHANGELOG.md) for further information.
+
+## Contributing
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue. Don't forget to give the project a star! Thanks again!
+
+- Fork the Project
+- Create your Feature Branch (git checkout -b feature/AmazingFeature)
+- Commit your Changes (git commit -m 'Add some AmazingFeature')
+- Push to the Branch (git push origin feature/AmazingFeature)
+- Open a Pull Request
+
+## Licence of this software (OxLogiQ) [MIT]
+(2025-10-27)
+
+```
+Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```

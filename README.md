@@ -1,3 +1,6 @@
+[![deutsche Version](https://logos.oxidmodule.com/de2_xs.svg)](README.md)
+[![english version](https://logos.oxidmodule.com/en2_xs.svg)](README.en.md)
+
 # OxLogiQ
 
 ## Übersicht
@@ -60,8 +63,21 @@ Verwenden Sie die jeweilige ID nach folgendem Schema zur Filterung:
 cat source/log/oxideshop-2025-01-01.log | grep "[sid/uid]"
 ```
 
-## Softwarelizenz (OxLogiQ) [MIT]
+## Changelog
 
+Siehe [CHANGELOG](CHANGELOG.md) für weitere Informationen.
+
+## Beitragen
+
+Wenn Sie eine Verbesserungsvorschlag haben, legen Sie einen Fork des Repositories an und erstellen Sie einen Pull Request. Alternativ können Sie einfach ein Issue erstellen. Fügen Sie das Projekt zu Ihren Favoriten hinzu. Vielen Dank.
+
+- Erstellen Sie einen Fork des Projekts
+- Erstellen Sie einen Feature Branch (git checkout -b feature/AmazingFeature)
+- Fügen Sie Ihre Änderungen hinzu (git commit -m 'Add some AmazingFeature')
+- Übertragen Sie den Branch (git push origin feature/AmazingFeature)
+- Öffnen Sie einen Pull Request
+
+## Softwarelizenz (OxLogiQ) [MIT]
 (27.10.2025)
 
 ```
