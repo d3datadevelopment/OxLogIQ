@@ -19,6 +19,7 @@ namespace D3\OxLogiQ;
 
 use InvalidArgumentException;
 use Monolog\Logger;
+use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
@@ -39,11 +40,14 @@ class MonologConfiguration implements MonologConfigurationInterface
 
     public function getLoggerName(): string
     {
+        /** @var Shop $shop */
+        $shop = $this->config->getActiveShop();
+
         return implode(
             '|',
             [
                 $this->innerConfig->getLoggerName(),
-                'shp-'.$this->config->getActiveShop()->getId(),
+                'shp-'.$shop->getId(),
                 $this->getContext(),
             ]
         );
@@ -54,7 +58,7 @@ class MonologConfiguration implements MonologConfigurationInterface
      */
     protected function getContext(): string
     {
-        return isAdmin() ? 'backend' : 'frontend';
+        return isAdmin() ? 'backend' : 'frontend';  // @phpstan-ignore function.notFound
     }
 
     public function getLogFilePath(): string
@@ -80,6 +84,9 @@ class MonologConfiguration implements MonologConfigurationInterface
         return is_array($recipients) && count($recipients) > 0;
     }
 
+    /**
+     * @return string[]|null
+     */
     public function getNotificationMailRecipients(): ?array
     {
         return $this->context->getNotificationMailRecipients();

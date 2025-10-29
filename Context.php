@@ -53,6 +53,9 @@ class Context extends OxidContext
         return !is_int($retention) ? null : $retention;
     }
 
+    /**
+     * @return string[]|null
+     */
     public function getNotificationMailRecipients(): ?array
     {
         $recipients = $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??

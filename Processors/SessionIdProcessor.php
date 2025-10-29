@@ -47,6 +47,6 @@ class SessionIdProcessor implements ProcessorInterface
 
     public function getShopSid(int $length = 32): string
     {
-        return substr(($this->session->getId() ?? ''), 0, $length);
+        return substr((string) $this->session->getId(), 0, $length);
     }
 }

@@ -24,6 +24,7 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
+use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
@@ -32,17 +33,15 @@ use Psr\Log\LoggerInterface;
 
 class MonologLoggerFactory implements LoggerFactoryInterface
 {
-    /** @var MonologConfiguration */
-    protected $configuration;
-
+    /**
+     * @param MonologConfiguration         $configuration
+     */
     public function __construct(
-        MonologConfigurationInterface $configuration,
+        protected MonologConfigurationInterface $configuration,
         LoggerConfigurationValidatorInterface $configurationValidator,
         protected LoggerFactory $loggerFactory
     ) {
         $configurationValidator->validate($configuration);
-
-        $this->configuration = $configuration;
     }
 
     /**
@@ -90,15 +89,18 @@ class MonologLoggerFactory implements LoggerFactoryInterface
     protected function addMailHandler(LoggerFactory $factory): void
     {
         if ($this->configuration->hasNotificationMailRecipient()) {
+            /** @var Shop $shop */
             $shop = Registry::getConfig()->getActiveShop();
-            $to       = $this->configuration->getNotificationMailRecipients();
+            $to       = (array) $this->configuration->getNotificationMailRecipients();
             $subject  = sprintf(
                 '%1$s - %2$s',
                 $shop->getFieldData('oxname'),
                 $this->configuration->getNotificationMailSubject()
             );
-            $from     = $this->configuration->getNotificationMailFrom() ?? $shop->getFieldData('oxinfoemail');
-            $logLevel = Logger::toMonologLevel($this->configuration->getNotificationMailLevel());
+            $from     = (string) (
+                $this->configuration->getNotificationMailFrom() ?? $shop->getFieldData('oxinfoemail')
+            );
+            $logLevel = (int) Logger::toMonologLevel($this->configuration->getNotificationMailLevel());
             $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
         }
     }

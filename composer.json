@@ -45,8 +45,8 @@
   "scripts": {
     "php-cs-fixer": "./vendor/bin/php-cs-fixer fix --config=vendor/d3/oxlogiq/.php-cs-fixer.php",
 
-    "phpstan": "./vendor/bin/phpstan --configuration=vendor/d3/oxid-dic-handler/phpstan.neon analyse",
-    "phpstan-report": "./vendor/bin/phpstan --configuration=vendor/d3/ordermanager/phpstan.neon analyse --error-format=json > reports/phpstan/oxid-dic-handler/phpstan.report.json",
+    "phpstan": "./vendor/bin/phpstan --configuration=vendor/d3/oxlogiq/phpstan.neon analyse",
+    "phpstan-report": "./vendor/bin/phpstan --configuration=vendor/d3/oxlogiq/phpstan.neon analyse --error-format=json > reports/phpstan/oxlogiq/phpstan.report.json",
 
     "phpunit": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --no-coverage",
     "phpunit-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --coverage-html=reports/phpunit/oxlogiq",
