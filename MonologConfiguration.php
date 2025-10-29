@@ -32,7 +32,7 @@ class MonologConfiguration implements MonologConfigurationInterface
         protected MonologConfigurationInterface $innerConfig,
         protected Config $config,
         protected ?int $retentionDays,
-        protected null|array|string $notificationMailRecipients,
+        protected ?array $notificationMailRecipients,
         protected string $notificationMailLevel,
         protected string $notificationMailSubject
     ) {}
@@ -78,7 +78,7 @@ class MonologConfiguration implements MonologConfigurationInterface
         );
     }
 
-    public function getNotificationMailRecipients(): null|string|array
+    public function getNotificationMailRecipients(): ?array
     {
         return $this->notificationMailRecipients;
     }

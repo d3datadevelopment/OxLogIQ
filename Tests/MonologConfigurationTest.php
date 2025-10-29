@@ -68,7 +68,7 @@ class MonologConfigurationTest extends TestCase
                 $configurationMock,
                 $configMock,
                 5,
-                'test@example.dev',
+                ['test@example.dev'],
                 'error',
                 'mySubject'
             ])
@@ -122,7 +122,7 @@ class MonologConfigurationTest extends TestCase
             $configurationMock,
             $configMock,
             5,
-            'test@example.dev',
+            ['test@example.dev'],
             'error',
             'mySubject'
         );
@@ -171,7 +171,7 @@ class MonologConfigurationTest extends TestCase
     public static function getNotificationMailRecipientsDataProvider(): Generator
     {
         yield 'not set' => [null, false, null];
-        yield 'set' => ['test@example.dev', true, 'test@example.dev'];
+        yield 'set' => [['test@example.dev'], true, ['test@example.dev']];
     }
 
     /**
@@ -195,7 +195,7 @@ class MonologConfigurationTest extends TestCase
             $configurationMock,
             $configMock,
             5,
-            'test@example.dev',
+            ['test@example.dev'],
             $givenLevel,
             'mySubject'
         );

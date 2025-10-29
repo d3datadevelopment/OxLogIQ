@@ -52,10 +52,12 @@ class Context extends OxidContext
         return !is_int($retention) ? null : $retention;
     }
 
-    public function getNotificationMailRecipients(): null|string|array
+    public function getNotificationMailRecipients(): ?array
     {
-        return $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??
+        $recipients = $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
+
+        return is_string($recipients) ? [$recipients] : $recipients;
     }
 
     public function getNotificationMailLevel(): string

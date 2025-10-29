@@ -221,8 +221,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     public static function addMailHandlerDataProvider(): Generator
     {
-        yield 'no mail address' => [false, '', 0];
-        yield 'given mail address' => [true, 'mailFixture', 1];
+        yield 'no mail address' => [false, null, 0];
         yield 'given mail addresses' => [true, ['mailFixture1', 'mailFixture2'], 1];
     }
 

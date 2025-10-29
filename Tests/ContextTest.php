@@ -91,16 +91,15 @@ class ContextTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailRecipients(): void
+    #[DataProvider('getNotificationMailRecipientsDataProvider')]
+    public function testGetNotificationMailRecipients($givenValue, $expected): void
     {
-        $fixture = 'returnFixture';
-
         $factsMock = $this->getMockBuilder(ConfigFile::class)
             ->disableOriginalConstructor()
             ->getMock();
         $factsMock->expects($this->once())->method('getVar')
             ->with($this->identicalTo(Context::CONFIGVAR_MAILRECIPIENTS))
-            ->willReturn($fixture);
+            ->willReturn($givenValue);
 
         $sut = $this->getMockBuilder(Context::class)
             ->onlyMethods(['getFactsConfigFile'])
@@ -108,9 +107,16 @@ class ContextTest extends TestCase
         $sut->method('getFactsConfigFile')->willReturn($factsMock);
 
         $this->assertSame(
-            $fixture,
+            $expected,
             $this->callMethod($sut, 'getNotificationMailRecipients')
         );
+    }
+
+    public static function getNotificationMailRecipientsDataProvider(): Generator
+    {
+        yield 'null' => [null, null];
+        yield 'string' => ['recipientFixture', ['recipientFixture']];
+        yield 'array' => [['recipientFixture1', 'recipientFixture2'], ['recipientFixture1', 'recipientFixture2']];
     }
 
     /**
