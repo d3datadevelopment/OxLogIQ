@@ -50,9 +50,12 @@ class MonologConfiguration implements MonologConfigurationInterface
         );
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getContext(): string
     {
-        return isAdmin()?'backend':'frontend';
+        return isAdmin() ? 'backend' : 'frontend';
     }
 
     public function getLogFilePath(): string

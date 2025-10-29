@@ -23,6 +23,7 @@ use Generator;
 use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
+use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration as OxidMonologConfiguration;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -30,6 +31,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
+#[CoversMethod(MonologConfiguration::class, '__construct')]
 #[CoversMethod(MonologConfiguration::class, 'getLoggerName')]
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
@@ -37,6 +39,8 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient' )]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients' )]
 #[CoversMethod(MonologConfiguration::class, 'getNotificationMailLevel')]
+#[CoversMethod(MonologConfiguration::class, 'getNotificationMailSubject')]
+#[CoversMethod(MonologConfiguration::class, 'getNotificationMailFrom')]
 class MonologConfigurationTest extends TestCase
 {
     use CanAccessRestricted;
@@ -224,6 +228,20 @@ class MonologConfigurationTest extends TestCase
         self::assertSame(
             'subjectFixture',
             $this->callMethod($this->sut, 'getNotificationMailSubject')
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetNotificationMailFrom()
+    {
+        $this->setValue( $this->sut, 'notificationMailFrom', 'fromFixture');
+
+        self::assertSame(
+            'fromFixture',
+            $this->callMethod($this->sut, 'getNotificationMailFrom')
         );
     }
 }

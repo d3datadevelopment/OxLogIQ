@@ -30,6 +30,9 @@ use ReflectionException;
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
 #[CoversMethod(Context::class, 'getRetentionDays')]
 #[CoversMethod(Context::class, 'getNotificationMailRecipients' )]
+#[CoversMethod(Context::class, 'getNotificationMailLevel' )]
+#[CoversMethod(Context::class, 'getNotificationMailSubject' )]
+#[CoversMethod(Context::class, 'getNotificationMailFrom' )]
 class ContextTest extends TestCase
 {
     use CanAccessRestricted;
@@ -123,6 +126,32 @@ class ContextTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
+    public function testGetNotificationMailLevel(): void
+    {
+        $fixture = 'levelFixture';
+
+        $factsMock = $this->getMockBuilder(ConfigFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $factsMock->expects($this->once())->method('getVar')
+            ->with($this->identicalTo(Context::CONFIGVAR_MAILLEVEL))
+            ->willReturn($fixture);
+
+        $sut = $this->getMockBuilder(Context::class)
+            ->onlyMethods(['getFactsConfigFile'])
+            ->getMock();
+        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+        $this->assertSame(
+            $fixture,
+            $this->callMethod($sut, 'getNotificationMailLevel')
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
     public function testGetNotificationMailSubject(): void
     {
         $fixture = 'subjectFixture';
@@ -142,6 +171,32 @@ class ContextTest extends TestCase
         $this->assertSame(
             $fixture,
             $this->callMethod($sut, 'getNotificationMailSubject')
+        );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetNotificationMailFromAddress(): void
+    {
+        $fixture = 'fromFixture';
+
+        $factsMock = $this->getMockBuilder(ConfigFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $factsMock->expects($this->once())->method('getVar')
+            ->with($this->identicalTo(Context::CONFIGVAR_MAILFROM))
+            ->willReturn($fixture);
+
+        $sut = $this->getMockBuilder(Context::class)
+            ->onlyMethods(['getFactsConfigFile'])
+            ->getMock();
+        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+        $this->assertSame(
+            $fixture,
+            $this->callMethod($sut, 'getNotificationMailFrom')
         );
     }
 }

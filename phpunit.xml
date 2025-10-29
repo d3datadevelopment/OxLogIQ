@@ -13,7 +13,7 @@
       <html outputDirectory="coverage" lowUpperBound="50" highLowerBound="90"/>
     </report>
   </coverage>
-  <testsuite name="OxLogiQ">
+  <testsuite name="unit">
     <directory>./Tests</directory>
   </testsuite>
   <logging/>
@@ -21,5 +21,8 @@
     <include>
       <directory suffix=".php">.</directory>
     </include>
+    <exclude>
+      <directory suffix=".php">Tests/</directory>
+    </exclude>
   </source>
 </phpunit>
