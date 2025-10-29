@@ -17,13 +17,13 @@ declare(strict_types=1);
 
 namespace D3\OxLogiQ\Tests;
 
+use D3\OxLogiQ\Context;
 use D3\OxLogiQ\MonologConfiguration;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
 use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
-use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration as OxidMonologConfiguration;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -67,15 +67,20 @@ class MonologConfigurationTest extends TestCase
             ->getMock();
         $configMock->method('getActiveShop')->willReturn($shopMock);
 
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getRetentionDays')->willReturn(5);
+        $contextMock->method('getNotificationMailRecipients')->willReturn(['test@example.dev']);
+        $contextMock->method('getNotificationMailLevel')->willReturn('warning');
+        $contextMock->method('getNotificationMailSubject')->willReturn('mySubject');
+        $contextMock->method('getNotificationMailFrom')->willReturn('fromAddress');
+
         $this->sut = $this->getMockBuilder(MonologConfiguration::class)
             ->setConstructorArgs([
                 $configurationMock,
                 $configMock,
-                5,
-                ['test@example.dev'],
-                'error',
-                'mySubject',
-                'fromAddress'
+                $contextMock
             ])
             ->onlyMethods(['getContext'])
             ->getMock();
@@ -113,29 +118,9 @@ class MonologConfigurationTest extends TestCase
     #[Test]
     public function testGetLogLevel(): void
     {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'warning'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-           ->disableOriginalConstructor()
-           ->getMock();
-
-        $sut = new MonologConfiguration(
-            $configurationMock,
-            $configMock,
-            5,
-            ['test@example.dev'],
-            'error',
-            'mySubject',
-            'fromAddress'
-        );
-
         self::assertSame(
-            'warning',
-            $this->callMethod($sut, 'getLogLevel')
+            'WARNING',
+            $this->callMethod($this->sut, 'getLogLevel')
         );
     }
 
@@ -147,7 +132,7 @@ class MonologConfigurationTest extends TestCase
     }
 
     #[Test]
-    public function testGetRemainingFiles(): void
+    public function testGetRetentionDays(): void
     {
         self::assertSame(
             5,
@@ -162,15 +147,30 @@ class MonologConfigurationTest extends TestCase
     #[DataProvider('getNotificationMailRecipientsDataProvider')]
     public function testGetNotificationMailRecipients($recipients, bool $isset, $expected)
     {
-        $this->setValue($this->sut, 'notificationMailRecipients', $recipients);
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'WARNING'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getNotificationMailRecipients')->willReturn($recipients);
+
+        $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
 
         self::assertSame(
             $isset,
-            $this->callMethod($this->sut, 'hasNotificationMailRecipient')
+            $this->callMethod($sut, 'hasNotificationMailRecipient')
         );
         self::assertSame(
             $expected,
-            $this->callMethod($this->sut, 'getNotificationMailRecipients')
+            $this->callMethod($sut, 'getNotificationMailRecipients')
         );
     }
 
@@ -197,14 +197,15 @@ class MonologConfigurationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getNotificationMailLevel')->willReturn($givenLevel);
+
         $sut = new MonologConfiguration(
             $configurationMock,
             $configMock,
-            5,
-            ['test@example.dev'],
-            $givenLevel,
-            'mySubject',
-            'fromAddress'
+            $contextMock
         );
 
         if ($exceptionExpected) {
@@ -223,10 +224,8 @@ class MonologConfigurationTest extends TestCase
     #[Test]
     public function testGetNotificationMailSubject()
     {
-        $this->setValue( $this->sut, 'notificationMailSubject', 'subjectFixture');
-
         self::assertSame(
-            'subjectFixture',
+            'mySubject',
             $this->callMethod($this->sut, 'getNotificationMailSubject')
         );
     }
@@ -237,10 +236,8 @@ class MonologConfigurationTest extends TestCase
     #[Test]
     public function testGetNotificationMailFrom()
     {
-        $this->setValue( $this->sut, 'notificationMailFrom', 'fromFixture');
-
         self::assertSame(
-            'fromFixture',
+            'fromAddress',
             $this->callMethod($this->sut, 'getNotificationMailFrom')
         );
     }

@@ -50,6 +50,6 @@
 
     "phpunit": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --no-coverage",
     "phpunit-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --coverage-html=reports/phpunit/oxlogiq",
-    "phpunit-path-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --coverage-html=reports/phpunit/oxlogiq --path-coverage",
+    "phpunit-path-coverage": "XDEBUG_MODE=coverage ./vendor/bin/phpunit --config=vendor/d3/oxlogiq --coverage-html=reports/phpunit/oxlogiq --path-coverage"
   }
 }
