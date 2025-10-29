@@ -34,7 +34,8 @@ class MonologConfiguration implements MonologConfigurationInterface
         protected ?int $retentionDays,
         protected ?array $notificationMailRecipients,
         protected string $notificationMailLevel,
-        protected string $notificationMailSubject
+        protected string $notificationMailSubject,
+        protected ?string $notificationMailFrom
     ) {}
 
     public function getLoggerName(): string
@@ -99,5 +100,10 @@ class MonologConfiguration implements MonologConfigurationInterface
     public function getNotificationMailSubject(): string
     {
         return $this->notificationMailSubject;
+    }
+
+    public function getNotificationMailFrom(): ?string
+    {
+        return $this->notificationMailFrom;
     }
 }

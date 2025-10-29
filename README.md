@@ -33,8 +33,9 @@ Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritisch
 | sLogLevel (OXID-Standard) | kleinste Level, die in die Log-Dateien geschrieben werden                                                                 |
 | oxlogiq_retentionDays     | Anzahl der Tage, die Logfiles behalten werden, <br/>- `0` für unbegrenzt, <br/>-`null` für eine einzelne Datei (Standard) |
 | oxlogiq_mailRecipients    | Empfängeradresse(n) für Alerts, <br/>Array oder String, <br/>`null` für keinen Mailversand (Standard)                     |
-| oxlogiq_mailLogLevel      | kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                                    |
-| oxlogiq_mailSubject       | Betreff der Benachrichtigungsmail (Standard: `Shop Log Notification`)                                                     |
+| oxlogiq_mailLogLevel      | *optional:* kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                        |
+| oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Notification`)                                         |
+| oxlogiq_mailFrom          | *optional:* Absenderadresse (Standard: Infomailadresse des Shops)                                                         |
 
 ### Codebeispiel
 
@@ -42,8 +43,10 @@ Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritisch
 $this->sLogLevel = 'WARNING';
 $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = 'alerts@mydomain.com';
+// optional
 $this->oxlogiq_mailLogLevel = 'ERROR';
 $this->oxlogiq_mailSubject = 'Ausnahmebenachrichtigung';
+$this->oxlogiq_mailFrom = 'sender@mydomain.com';
 ```
 
 ## Nutzung der Session- / Request-ID

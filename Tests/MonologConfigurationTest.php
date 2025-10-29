@@ -70,7 +70,8 @@ class MonologConfigurationTest extends TestCase
                 5,
                 ['test@example.dev'],
                 'error',
-                'mySubject'
+                'mySubject',
+                'fromAddress'
             ])
             ->onlyMethods(['getContext'])
             ->getMock();
@@ -124,7 +125,8 @@ class MonologConfigurationTest extends TestCase
             5,
             ['test@example.dev'],
             'error',
-            'mySubject'
+            'mySubject',
+            'fromAddress'
         );
 
         self::assertSame(
@@ -197,7 +199,8 @@ class MonologConfigurationTest extends TestCase
             5,
             ['test@example.dev'],
             $givenLevel,
-            'mySubject'
+            'mySubject',
+            'fromAddress'
         );
 
         if ($exceptionExpected) {

@@ -190,6 +190,7 @@ class MonologLoggerFactoryTest extends TestCase
                 'getNotificationMailRecipients',
                 'getNotificationMailLevel',
                 'getNotificationMailSubject',
+                'getNotificationMailFrom',
             ])
             ->getMock();
         $configurationMock->method( 'hasNotificationMailRecipient' )->willReturn( $addressGiven);
@@ -199,6 +200,8 @@ class MonologLoggerFactoryTest extends TestCase
                           ->method('getNotificationMailLevel')->willReturn( 'error');
         $configurationMock->expects($this->exactly($invocation))
                           ->method('getNotificationMailSubject')->willReturn( 'mySubject');
+        $configurationMock->expects($this->exactly($invocation))
+                          ->method('getNotificationMailFrom')->willReturn( 'fromAddress');
 
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()

@@ -26,6 +26,7 @@ class Context extends OxidContext
     public const CONFIGVAR_MAILRECIPIENTS   = 'oxlogiq_mailRecipients';
     public const CONFIGVAR_MAILLEVEL        = 'oxlogiq_mailLogLevel';
     public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
+    public const CONFIGVAR_MAILFROM         = 'oxlogiq_mailFrom';
 
     /**
      * @var FactsConfigFile
@@ -72,5 +73,11 @@ class Context extends OxidContext
         return $_ENV[self::CONFIGVAR_MAILSUBJECT] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILSUBJECT) ??
                'Shop Log Notification';
+    }
+
+    public function getNotificationMailFrom(): ?string
+    {
+        return $_ENV[self::CONFIGVAR_MAILFROM] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILFROM);
     }
 }
