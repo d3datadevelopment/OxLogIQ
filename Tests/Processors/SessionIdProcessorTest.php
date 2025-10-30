@@ -15,9 +15,9 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ\Tests\Processors;
+namespace D3\OxLogIQ\Tests\Processors;
 
-use D3\OxLogiQ\Processors\SessionIdProcessor;
+use D3\OxLogIQ\Processors\SessionIdProcessor;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
 use InvalidArgumentException;

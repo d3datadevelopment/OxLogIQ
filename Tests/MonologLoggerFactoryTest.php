@@ -15,12 +15,12 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ\Tests;
+namespace D3\OxLogIQ\Tests;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\LoggerFactory\Options\FileLoggerHandlerOption;
-use D3\OxLogiQ\MonologConfiguration;
-use D3\OxLogiQ\MonologLoggerFactory;
+use D3\OxLogIQ\MonologConfiguration;
+use D3\OxLogIQ\MonologLoggerFactory;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
 use Monolog\Formatter\LineFormatter;

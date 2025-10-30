@@ -15,10 +15,10 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ;
+namespace D3\OxLogIQ;
 
 use D3\LoggerFactory\LoggerFactory;
-use D3\OxLogiQ\Processors\SessionIdProcessor;
+use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;

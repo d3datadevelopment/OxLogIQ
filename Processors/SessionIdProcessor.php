@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ\Processors;
+namespace D3\OxLogIQ\Processors;
 
 use InvalidArgumentException;
 use Monolog\Processor\ProcessorInterface;

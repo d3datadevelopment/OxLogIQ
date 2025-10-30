@@ -34,12 +34,12 @@
   },
   "autoload": {
     "psr-4": {
-      "D3\\OxLogiQ\\": "./"
+      "D3\\OxLogIQ\\": "./"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "D3\\OxLogiQ\\Tests": "./Tests"
+      "D3\\OxLogIQ\\Tests": "./Tests"
     }
   },
   "scripts": {

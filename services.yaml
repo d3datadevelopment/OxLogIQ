@@ -11,10 +11,10 @@ services:
     factory: ['D3\LoggerFactory\LoggerFactory', 'create']
 
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
-    class: D3\OxLogiQ\MonologLoggerFactory
+    class: D3\OxLogIQ\MonologLoggerFactory
 
-  D3\OxLogiQ\MonologConfiguration:
-    class: D3\OxLogiQ\MonologConfiguration
+  D3\OxLogIQ\MonologConfiguration:
+    class: D3\OxLogIQ\MonologConfiguration
     decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
     decoration_inner_name: 'oxid.monolog_config.inner'
     arguments:
@@ -22,5 +22,5 @@ services:
       - '@oxid.config'
 
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
-    class: D3\OxLogiQ\Context
+    class: D3\OxLogIQ\Context
     public: true

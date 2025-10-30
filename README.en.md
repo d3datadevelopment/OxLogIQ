@@ -1,10 +1,10 @@
 [![deutsche Version](https://logos.oxidmodule.com/de2_xs.svg)](README.md)
 [![english version](https://logos.oxidmodule.com/en2_xs.svg)](README.en.md)
 
-# OxLogiQ
+# OxLogIQ
 
 ## Overview
-**OxLogiQ** is an intelligent logging plugin for **OXID eShop** that enriches standard logs with additional
+**OxLogIQ** is an intelligent logging plugin for **OXID eShop** that enriches standard logs with additional
 context information, automatically rotates old files and sends critical messages by email.
 
 ## Features
@@ -77,7 +77,7 @@ If you have a suggestion that would make this better, please fork the repo and c
 - Push to the Branch (git push origin feature/AmazingFeature)
 - Open a Pull Request
 
-## Licence of this software (OxLogiQ) [MIT]
+## Licence of this software (OxLogIQ) [MIT]
 (2025-10-27)
 
 ```

@@ -15,10 +15,10 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ\Tests;
+namespace D3\OxLogIQ\Tests;
 
-use D3\OxLogiQ\Context;
-use D3\OxLogiQ\MonologConfiguration;
+use D3\OxLogIQ\Context;
+use D3\OxLogIQ\MonologConfiguration;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
 use InvalidArgumentException;

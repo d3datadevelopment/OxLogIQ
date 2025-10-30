@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogiQ;
+namespace D3\OxLogIQ;
 
 use InvalidArgumentException;
 use Monolog\Logger;
