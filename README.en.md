@@ -4,8 +4,10 @@
 # OxLogIQ
 
 ## Overview
-**OxLogIQ** is an intelligent logging plugin for **OXID eShop** that enriches standard logs with additional
+**OxLogIQ** is an improved logging plugin for **OXID eShop** that enriches log items with additional
 context information, automatically rotates old files and sends critical messages by email.
+
+It replaces the OXID default logger and is used every time `Registry::getLogger()` is called.
 
 ## Features
 - Date-separated logging (adjustable)
@@ -31,14 +33,14 @@ context information, automatically rotates old files and sends critical messages
 
 The following parameters can be adjusted using these variables:
 
-| Setting                   | Description                                                                                                    |
-|---------------------------|----------------------------------------------------------------------------------------------------------------|
-| sLogLevel (OXID standard) | Lowest level written to the log files                                                                          |
-| oxlogiq_retentionDays     | Number of days that log files are retained, <br/>- `0` for unlimited, <br/>-`null` for a single file (default) |
-| oxlogiq_mailRecipients    | Recipient address(es) for alerts, <br/>array or string, <br/>`null` for no mail delivery (default)             |
-| oxlogiq_mailLogLevel      | *optional:* lowest level that will be notified by email (default: `ERROR`)                                     |
-| oxlogiq_mailSubject       | *optional:* subject of the notification email (default: `Shop Log Notification`)                               |
-| oxlogiq_mailFrom          | *optional:* sender address (default: shop's info mail address)                                                 |
+| Setting                  | Description                                                                                                    |
+|--------------------------|----------------------------------------------------------------------------------------------------------------|
+| sLogLevel (OXID default) | Lowest level written to the log files                                                                          |
+| oxlogiq_retentionDays    | Number of days that log files are retained, <br/>- `0` for unlimited, <br/>-`null` for a single file (default) |
+| oxlogiq_mailRecipients   | Recipient address(es) for alerts, <br/>array or string, <br/>`null` for no mail delivery (default)             |
+| oxlogiq_mailLogLevel     | *optional:* lowest level that will be notified by email (default: `ERROR`)                                     |
+| oxlogiq_mailSubject      | *optional:* subject of the notification email (default: `Shop Log Notification`)                               |
+| oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
 
 ### Code example
 

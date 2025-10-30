@@ -4,8 +4,10 @@
 # OxLogIQ
 
 ## Übersicht
-**OxLogIQ** ist ein intelligentes Logging-Plugin für den **OXID eShop**, das Standard-Logs mit zusätzlichen 
-Kontextinformationen anreichert, automatisch alte Einträge rotiert und kritische Meldungen per E-Mail verschickt.
+**OxLogIQ** ist ein verbessertes Logging-Plugin für den **OXID eShop**, das Logeinträge mit zusätzlichen 
+Kontextinformationen anreichert, automatisch alte Dateien rotiert und kritische Meldungen per E-Mail verschickt.
+
+Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getLogger()` verwendet.
 
 ## Features
 - datumgetrenntes Logging (einstellbar)
