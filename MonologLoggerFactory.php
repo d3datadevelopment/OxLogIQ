@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace D3\OxLogIQ;
 
 use D3\LoggerFactory\LoggerFactory;
+use D3\OxLogIQ\Processors\SentryExceptionProcessor;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
 use Monolog\Formatter\FormatterInterface;
@@ -114,10 +115,13 @@ class MonologLoggerFactory implements LoggerFactoryInterface
     {
         if ($this->configuration->hasSentryDsn()) {
             init($this->configuration->getSentryOptions());
-            $factory->addOtherHandler(new BreadcrumbHandler(SentrySdk::getCurrentHub(), Logger::INFO))
-                ->setLogOnErrorOnly();
-            $factory->addOtherHandler(new Handler(SentrySdk::getCurrentHub(), Logger::ERROR))
-                ->setBuffering();
+            $factory->addOtherHandler(
+                (new BreadcrumbHandler(SentrySdk::getCurrentHub(), Logger::INFO))
+            )->setLogOnErrorOnly();
+            $factory->addOtherHandler(
+                (new Handler(SentrySdk::getCurrentHub(), Logger::ERROR))
+                    ->pushProcessor(new SentryExceptionProcessor())
+            )->setBuffering();
         }
     }
 

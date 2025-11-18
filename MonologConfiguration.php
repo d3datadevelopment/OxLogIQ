@@ -144,7 +144,12 @@ class MonologConfiguration implements MonologConfigurationInterface
                 'production' :
                 'development',
             'release' => $this->getRelease(),
-            'before_send' => $this->beforeSendToSentry()
+            'before_send' => $this->beforeSendToSentry(),
+            'prefixes' => [
+                realpath(
+                    rtrim(Registry::getConfig()->getConfigParam('sShopDir'), DIRECTORY_SEPARATOR).
+                    DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR,
+            ]
         ];
     }
 

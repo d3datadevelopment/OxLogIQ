@@ -12,8 +12,8 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 ## Features
 - datumgetrennte Logdateien (einstellbar)
 - Dateirotation (einstellbar)
-- Benachrichtigung bei kritischen Ereignissen per Mail (einstellbar)
-- Übergabe der Logeinträge nach [Sentry](https://sentry.io) (einstellbar)
+- Benachrichtigung bei kritischen Ereignissen per Mail (optional + einstellbar)
+- Übergabe der Logeinträge nach [Sentry](https://sentry.io) (optional + einstellbar)
 - Request-ID (Filterkriterium)
 - Session-ID (Filterkriterium)
 - Buffering (Optimierung der Schreibvorgänge)

@@ -13,7 +13,7 @@ It replaces the OXID default logger and is used every time `Registry::getLogger(
 - Date-separated log files (adjustable)
 - File rotation (adjustable)
 - Alerting of critical events by email (optional + adjustable)
-- Transfer log entries to [Sentry](https://sentry.io) (adjustable)
+- Transfer log entries to [Sentry](https://sentry.io) (optional + adjustable)
 - Request ID (filter criterion)
 - Session ID (filter criterion)
 - Buffering (optimisation of write operations)
