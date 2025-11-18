@@ -156,13 +156,14 @@ class MonologConfiguration implements MonologConfigurationInterface
     protected function getRelease(): string
     {
         try {
-            $composerPath = realpath(Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock');
+            $path = Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock';
+            $realPath = realpath($path);
 
-            if (!file_exists($composerPath)) {
-                throw new FileException(sprintf('composer.lock file not found in path %s', $composerPath));
+            if (!$realPath) {
+                throw new FileException(sprintf('composer.lock file not found in path %s', $path));
             }
 
-            return (new DateTimeImmutable())->setTimestamp(filemtime($composerPath))->format('Y-m-d_H:i:s');
+            return (new DateTimeImmutable())->setTimestamp(filemtime($realPath))->format('Y-m-d_H:i:s');
         } catch (StandardException) {
             return '';
         }
