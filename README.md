@@ -10,9 +10,10 @@ Kontextinformationen anreichert, automatisch alte Dateien rotiert und kritische 
 Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getLogger()` verwendet.
 
 ## Features
-- datumgetrenntes Logging (einstellbar)
+- datumgetrennte Logdateien (einstellbar)
 - Dateirotation (einstellbar)
 - Benachrichtigung bei kritischen Ereignissen per Mail (einstellbar)
+- Übergabe der Logeinträge nach [Sentry](https://sentry.io) (einstellbar)
 - Request-ID (Filterkriterium)
 - Session-ID (Filterkriterium)
 - Buffering (Optimierung der Schreibvorgänge)
@@ -41,6 +42,7 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 | oxlogiq_mailLogLevel      | *optional:* kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                        |
 | oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Alert`)                                                |
 | oxlogiq_mailFrom          | *optional:* Absenderadresse (Standard: Infomailadresse des Shops)                                                         |
+| oxlogiq_sentryDsn         | *optional:* Sentry Data Source Name                                                                                       |                                                                                                                           |
 
 ### Codebeispiel
 
@@ -52,6 +54,7 @@ $this->oxlogiq_mailRecipients = 'alerts@mydomain.com';
 $this->oxlogiq_mailLogLevel = 'ERROR';
 $this->oxlogiq_mailSubject = 'Ausnahmebenachrichtigung';
 $this->oxlogiq_mailFrom = 'sender@mydomain.com';
+$this->oxlogiq_sentryDsn = 'https://yourkey.ingest.us.sentry.io/yourproject';
 ```
 
 ## Nutzung der Session- / Request-ID

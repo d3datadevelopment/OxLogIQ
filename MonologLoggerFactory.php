@@ -30,6 +30,10 @@ use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologCon
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
 use Psr\Log\LoggerInterface;
+use Sentry\Monolog\BreadcrumbHandler;
+use Sentry\Monolog\Handler;
+use Sentry\SentrySdk;
+use function Sentry\init;
 
 class MonologLoggerFactory implements LoggerFactoryInterface
 {
@@ -53,6 +57,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
 
         $this->addFileHandler($factory);
         $this->addMailHandler($factory);
+        $this->addSentryHandler($factory);
         $this->addProcessors($factory);
 
         return $factory->build($this->configuration->getLoggerName());
@@ -102,6 +107,17 @@ class MonologLoggerFactory implements LoggerFactoryInterface
             );
             $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
             $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
+        }
+    }
+
+    protected function addSentryHandler(LoggerFactory $factory): void
+    {
+        if ($this->configuration->hasSentryDsn()) {
+            init($this->configuration->getSentryOptions());
+            $factory->addOtherHandler(new BreadcrumbHandler(SentrySdk::getCurrentHub(), Logger::INFO))
+                ->setLogOnErrorOnly();
+            $factory->addOtherHandler(new Handler(SentrySdk::getCurrentHub(), Logger::ERROR))
+                ->setBuffering();
         }
     }
 

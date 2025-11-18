@@ -10,9 +10,10 @@ context information, automatically rotates old files and sends critical messages
 It replaces the OXID default logger and is used every time `Registry::getLogger()` is called.
 
 ## Features
-- Date-separated logging (adjustable)
+- Date-separated log files (adjustable)
 - File rotation (adjustable)
 - Alerting of critical events by email (optional + adjustable)
+- Transfer log entries to [Sentry](https://sentry.io) (adjustable)
 - Request ID (filter criterion)
 - Session ID (filter criterion)
 - Buffering (optimisation of write operations)
@@ -41,6 +42,7 @@ The following parameters can be adjusted using these variables:
 | oxlogiq_mailLogLevel     | *optional:* lowest level that will be alerted by email (default: `ERROR`)                                      |
 | oxlogiq_mailSubject      | *optional:* subject of the alert email (default: `Shop Log Alert`)                                             |
 | oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
+| oxlogiq_sentryDsn        | *optional:* Sentry Data Source Name                                                                            | 
 
 ### Code example
 
@@ -52,6 +54,7 @@ $this->oxlogiq_mailRecipients = "alerts@mydomain.com";
 $this->oxlogiq_mailLogLevel = "ERROR";
 $this->oxlogiq_mailSubject = "Exception Alert";
 $this->oxlogiq_mailFrom = "sender@mydomain.com";
+$this->oxlogiq_sentryDsn = 'https://yourkey.ingest.us.sentry.io/yourproject';
 ```
 
 ## Use of the session/request ID

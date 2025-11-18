@@ -27,6 +27,7 @@ class Context extends OxidContext
     public const CONFIGVAR_MAILLEVEL        = 'oxlogiq_mailLogLevel';
     public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
     public const CONFIGVAR_MAILFROM         = 'oxlogiq_mailFrom';
+    public const CONFIGVAR_SENTRY_DSN       = 'oxlogiq_sentryDsn';
 
     /**
      * @var FactsConfigFile
@@ -83,5 +84,11 @@ class Context extends OxidContext
     {
         return $_ENV[self::CONFIGVAR_MAILFROM] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILFROM);
+    }
+
+    public function getSentryDsn(): ?string
+    {
+        return $_ENV[self::CONFIGVAR_SENTRY_DSN] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_SENTRY_DSN);
     }
 }

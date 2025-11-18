@@ -17,12 +17,18 @@ declare(strict_types=1);
 
 namespace D3\OxLogIQ;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
+use OxidEsales\Eshop\Core\Exception\FileException;
+use OxidEsales\Eshop\Core\Exception\StandardException;
+use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
+use Sentry\Event as SentryEvent;
+use Sentry\Tracing\SamplingContext;
 
 class MonologConfiguration implements MonologConfigurationInterface
 {
@@ -113,5 +119,64 @@ class MonologConfiguration implements MonologConfigurationInterface
     public function getAlertMailFrom(): ?string
     {
         return $this->context->getAlertMailFrom();
+    }
+
+    public function hasSentryDsn(): bool
+    {
+        $dsn = $this->context->getSentryDsn();
+
+        return isset($dsn) &&
+            is_string($dsn) && strlen(trim($dsn));
+    }
+
+    public function getSentryDsn(): ?string
+    {
+        return $this->context->getSentryDsn();
+    }
+
+    public function getSentryOptions(): iterable
+    {
+        return [
+            'dsn' => $this->getSentryDsn(),
+            'enable_logs' => true,
+            'traces_sampler' => $this->getSentryTracesSampleRate(),
+            'environment' => Registry::getConfig()->getActiveShop()->isProductiveMode() ?
+                'production' :
+                'development',
+            'release' => $this->getRelease(),
+            'before_send' => $this->beforeSendToSentry()
+        ];
+    }
+
+    protected function getRelease(): string
+    {
+        try {
+            $composerPath = realpath(Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock');
+
+            if (!file_exists($composerPath)) {
+                throw new FileException(sprintf('composer.lock file not found in path %s', $composerPath));
+            }
+
+            return (new DateTimeImmutable())->setTimestamp(filemtime($composerPath))->format('Y-m-d_H:i:s');
+        } catch (StandardException) {
+            return '';
+        }
+    }
+
+    protected function getSentryTracesSampleRate(): callable
+    {
+        return function (SamplingContext $context): float {
+            if ($context->getParentSampled()) {
+                return 1.0;
+            }
+            return 0.25;
+        };
+    }
+
+    protected function beforeSendToSentry(): callable
+    {
+        return function (SentryEvent $event): ?SentryEvent {
+            return $event;
+        };
     }
 }
