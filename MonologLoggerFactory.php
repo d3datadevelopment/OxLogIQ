@@ -88,19 +88,19 @@ class MonologLoggerFactory implements LoggerFactoryInterface
      */
     protected function addMailHandler(LoggerFactory $factory): void
     {
-        if ($this->configuration->hasNotificationMailRecipient()) {
+        if ($this->configuration->hasAlertMailRecipient()) {
             /** @var Shop $shop */
             $shop = Registry::getConfig()->getActiveShop();
-            $to       = (array) $this->configuration->getNotificationMailRecipients();
+            $to       = (array) $this->configuration->getAlertMailRecipients();
             $subject  = sprintf(
                 '%1$s - %2$s',
                 $shop->getFieldData('oxname'),
-                $this->configuration->getNotificationMailSubject()
+                $this->configuration->getAlertMailSubject()
             );
             $from     = (string) (
-                $this->configuration->getNotificationMailFrom() ?? $shop->getFieldData('oxinfoemail')
+                $this->configuration->getAlertMailFrom() ?? $shop->getFieldData('oxinfoemail')
             );
-            $logLevel = (int) Logger::toMonologLevel($this->configuration->getNotificationMailLevel());
+            $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
             $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
         }
     }

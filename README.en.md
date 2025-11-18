@@ -12,7 +12,7 @@ It replaces the OXID default logger and is used every time `Registry::getLogger(
 ## Features
 - Date-separated logging (adjustable)
 - File rotation (adjustable)
-- Notification of critical events by email (adjustable)
+- Alerting of critical events by email (optional + adjustable)
 - Request ID (filter criterion)
 - Session ID (filter criterion)
 - Buffering (optimisation of write operations)
@@ -38,8 +38,8 @@ The following parameters can be adjusted using these variables:
 | sLogLevel (OXID default) | Lowest level written to the log files                                                                          |
 | oxlogiq_retentionDays    | Number of days that log files are retained, <br/>- `0` for unlimited, <br/>-`null` for a single file (default) |
 | oxlogiq_mailRecipients   | Recipient address(es) for alerts, <br/>array or string, <br/>`null` for no mail delivery (default)             |
-| oxlogiq_mailLogLevel     | *optional:* lowest level that will be notified by email (default: `ERROR`)                                     |
-| oxlogiq_mailSubject      | *optional:* subject of the notification email (default: `Shop Log Notification`)                               |
+| oxlogiq_mailLogLevel     | *optional:* lowest level that will be alerted by email (default: `ERROR`)                                      |
+| oxlogiq_mailSubject      | *optional:* subject of the alert email (default: `Shop Log Alert`)                                             |
 | oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
 
 ### Code example
@@ -50,7 +50,7 @@ $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = "alerts@mydomain.com";
 // optional
 $this->oxlogiq_mailLogLevel = "ERROR";
-$this->oxlogiq_mailSubject = "Exception notification";
+$this->oxlogiq_mailSubject = "Exception Alert";
 $this->oxlogiq_mailFrom = "sender@mydomain.com";
 ```
 

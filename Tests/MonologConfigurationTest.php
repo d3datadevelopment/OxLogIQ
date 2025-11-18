@@ -38,11 +38,11 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getRetentionDays')]
-#[CoversMethod(MonologConfiguration::class, 'hasNotificationMailRecipient')]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailRecipients')]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailLevel')]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailSubject')]
-#[CoversMethod(MonologConfiguration::class, 'getNotificationMailFrom')]
+#[CoversMethod(MonologConfiguration::class, 'hasAlertMailRecipient')]
+#[CoversMethod(MonologConfiguration::class, 'getAlertMailRecipients')]
+#[CoversMethod(MonologConfiguration::class, 'getAlertMailLevel')]
+#[CoversMethod(MonologConfiguration::class, 'getAlertMailSubject')]
+#[CoversMethod(MonologConfiguration::class, 'getAlertMailFrom')]
 class MonologConfigurationTest extends TestCase
 {
     use CanAccessRestricted;
@@ -73,10 +73,10 @@ class MonologConfigurationTest extends TestCase
             ->onlyMethods(get_class_methods(Context::class))
             ->getMock();
         $contextMock->method('getRetentionDays')->willReturn(5);
-        $contextMock->method('getNotificationMailRecipients')->willReturn(['test@example.dev']);
-        $contextMock->method('getNotificationMailLevel')->willReturn('warning');
-        $contextMock->method('getNotificationMailSubject')->willReturn('mySubject');
-        $contextMock->method('getNotificationMailFrom')->willReturn('fromAddress');
+        $contextMock->method('getAlertMailRecipients')->willReturn(['test@example.dev']);
+        $contextMock->method('getAlertMailLevel')->willReturn('warning');
+        $contextMock->method('getAlertMailSubject')->willReturn('mySubject');
+        $contextMock->method('getAlertMailFrom')->willReturn('fromAddress');
 
         $this->sut = $this->getMockBuilder(MonologConfiguration::class)
             ->setConstructorArgs([
@@ -162,7 +162,7 @@ class MonologConfigurationTest extends TestCase
         $contextMock = $this->getMockBuilder(Context::class)
             ->onlyMethods(get_class_methods(Context::class))
             ->getMock();
-        $contextMock->method('getNotificationMailRecipients')->willReturn($recipients);
+        $contextMock->method('getAlertMailRecipients')->willReturn($recipients);
 
         $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
 
@@ -202,7 +202,7 @@ class MonologConfigurationTest extends TestCase
         $contextMock = $this->getMockBuilder(Context::class)
             ->onlyMethods(get_class_methods(Context::class))
             ->getMock();
-        $contextMock->method('getNotificationMailLevel')->willReturn($givenLevel);
+        $contextMock->method('getAlertMailLevel')->willReturn($givenLevel);
 
         $sut = new MonologConfiguration(
             $configurationMock,

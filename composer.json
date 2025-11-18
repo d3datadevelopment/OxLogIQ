@@ -7,7 +7,7 @@
     "eShop",
     "logger",
     "monolog",
-    "notification",
+    "alerting",
     "d3"
   ],
   "authors": [

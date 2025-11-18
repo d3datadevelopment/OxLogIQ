@@ -188,22 +188,22 @@ class MonologLoggerFactoryTest extends TestCase
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
             ->onlyMethods([
-                'hasNotificationMailRecipient',
-                'getNotificationMailRecipients',
-                'getNotificationMailLevel',
-                'getNotificationMailSubject',
-                'getNotificationMailFrom',
+                'hasAlertMailRecipient',
+                'getAlertMailRecipients',
+                'getAlertMailLevel',
+                'getAlertMailSubject',
+                'getAlertMailFrom',
             ])
             ->getMock();
-        $configurationMock->method('hasNotificationMailRecipient')->willReturn($addressGiven);
+        $configurationMock->method('hasAlertMailRecipient')->willReturn($addressGiven);
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getNotificationMailRecipients')->willReturn($address);
+                          ->method('getAlertMailRecipients')->willReturn($address);
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getNotificationMailLevel')->willReturn('error');
+                          ->method('getAlertMailLevel')->willReturn('error');
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getNotificationMailSubject')->willReturn('mySubject');
+                          ->method('getAlertMailSubject')->willReturn('mySubject');
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getNotificationMailFrom')->willReturn('fromAddress');
+                          ->method('getAlertMailFrom')->willReturn('fromAddress');
 
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()

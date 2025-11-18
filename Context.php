@@ -56,7 +56,7 @@ class Context extends OxidContext
     /**
      * @return string[]|null
      */
-    public function getNotificationMailRecipients(): ?array
+    public function getAlertMailRecipients(): ?array
     {
         $recipients = $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
@@ -64,21 +64,21 @@ class Context extends OxidContext
         return is_string($recipients) ? [$recipients] : $recipients;
     }
 
-    public function getNotificationMailLevel(): string
+    public function getAlertMailLevel(): string
     {
         return $_ENV[self::CONFIGVAR_MAILLEVEL] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILLEVEL) ??
                'ERROR';
     }
 
-    public function getNotificationMailSubject(): string
+    public function getAlertMailSubject(): string
     {
         return $_ENV[self::CONFIGVAR_MAILSUBJECT] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILSUBJECT) ??
-               'Shop Log Notification';
+               'Shop Log Alert';
     }
 
-    public function getNotificationMailFrom(): ?string
+    public function getAlertMailFrom(): ?string
     {
         return $_ENV[self::CONFIGVAR_MAILFROM] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILFROM);

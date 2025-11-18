@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Date-separated logging (adjustable)
 - File rotation (adjustable)
-- Notification of critical events by email (adjustable)
+- Alerting of critical events by email (adjustable)
 - Request ID (filter criterion)
 - Session ID (filter criterion)
 - Buffering (optimisation of write operations)

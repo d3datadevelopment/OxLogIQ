@@ -77,9 +77,9 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->context->getRetentionDays();
     }
 
-    public function hasNotificationMailRecipient(): bool
+    public function hasAlertMailRecipient(): bool
     {
-        $recipients = $this->getNotificationMailRecipients();
+        $recipients = $this->getAlertMailRecipients();
 
         return is_array($recipients) && count($recipients) > 0;
     }
@@ -87,31 +87,31 @@ class MonologConfiguration implements MonologConfigurationInterface
     /**
      * @return string[]|null
      */
-    public function getNotificationMailRecipients(): ?array
+    public function getAlertMailRecipients(): ?array
     {
-        return $this->context->getNotificationMailRecipients();
+        return $this->context->getAlertMailRecipients();
     }
 
-    public function getNotificationMailLevel(): string
+    public function getAlertMailLevel(): string
     {
-        $level = strtoupper($this->context->getNotificationMailLevel());
+        $level = strtoupper($this->context->getAlertMailLevel());
 
         if (!in_array($level, array_keys(Logger::getLevels()), true)) {
             throw new InvalidArgumentException(
-                'MailNotificationLevel must be one of '.implode(', ', array_keys(Logger::getLevels()))
+                'Mail alerting level must be one of '.implode(', ', array_keys(Logger::getLevels()))
             );
         }
 
         return $level;
     }
 
-    public function getNotificationMailSubject(): string
+    public function getAlertMailSubject(): string
     {
-        return $this->context->getNotificationMailSubject();
+        return $this->context->getAlertMailSubject();
     }
 
-    public function getNotificationMailFrom(): ?string
+    public function getAlertMailFrom(): ?string
     {
-        return $this->context->getNotificationMailFrom();
+        return $this->context->getAlertMailFrom();
     }
 }

@@ -39,7 +39,7 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 | oxlogiq_retentionDays     | Anzahl der Tage, die Logfiles behalten werden, <br/>- `0` für unbegrenzt, <br/>-`null` für eine einzelne Datei (Standard) |
 | oxlogiq_mailRecipients    | Empfängeradresse(n) für Alerts, <br/>Array oder String, <br/>`null` für keinen Mailversand (Standard)                     |
 | oxlogiq_mailLogLevel      | *optional:* kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                        |
-| oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Notification`)                                         |
+| oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Alert`)                                                |
 | oxlogiq_mailFrom          | *optional:* Absenderadresse (Standard: Infomailadresse des Shops)                                                         |
 
 ### Codebeispiel
