@@ -115,12 +115,22 @@ class MonologLoggerFactory implements LoggerFactoryInterface
     {
         if ($this->configuration->hasSentryDsn()) {
             init($this->configuration->getSentryOptions());
+
             $factory->addOtherHandler(
-                (new BreadcrumbHandler(SentrySdk::getCurrentHub(), Logger::INFO))
-            )->setLogOnErrorOnly();
+                (new BreadcrumbHandler(
+                    SentrySdk::getCurrentHub(),
+                    Logger::INFO
+                ))
+            )->setLogOnErrorOnly(
+                $this->configuration->getLogLevel()
+            );
+
             $factory->addOtherHandler(
-                (new Handler(SentrySdk::getCurrentHub(), Logger::ERROR))
-                    ->pushProcessor(new SentryExceptionProcessor())
+                (new Handler(
+                    SentrySdk::getCurrentHub(),
+                    Logger::toMonologLevel($this->configuration->getLogLevel())
+                ))
+                ->pushProcessor(new SentryExceptionProcessor())
             )->setBuffering();
         }
     }
