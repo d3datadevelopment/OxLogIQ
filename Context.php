@@ -59,7 +59,8 @@ class Context extends OxidContext
     public function getAlertMailRecipients(): ?array
     {
         $recipients = $_ENV[self::CONFIGVAR_MAILRECIPIENTS] ??
-               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS);
+            $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS) ??
+            $this->getFactsConfigFile()->getVar('sAdminEmail');
 
         return is_string($recipients) ? [$recipients] : $recipients;
     }
