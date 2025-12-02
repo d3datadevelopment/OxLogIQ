@@ -14,6 +14,7 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 - Dateirotation (einstellbar)
 - Benachrichtigung bei kritischen Ereignissen per Mail (optional + einstellbar)
 - Übergabe der Logeinträge nach [Sentry](https://sentry.io) (optional + einstellbar)
+- Übergabe der Logeinträge an eine HTTP API (e.g. ElasticSearch) (optional + adjustable)
 - Request-ID (Filterkriterium)
 - Session-ID (Filterkriterium)
 - Buffering (Optimierung der Schreibvorgänge)
@@ -40,9 +41,11 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 | oxlogiq_retentionDays     | Anzahl der Tage, die Logfiles behalten werden, <br/>- `0` für unbegrenzt, <br/>-`null` für eine einzelne Datei (Standard) |
 | oxlogiq_mailRecipients    | Empfängeradresse(n) für Alerts, <br/>Array oder String, <br/>`null` für keinen Mailversand (Standard)                     |
 | oxlogiq_mailLogLevel      | *optional:* kleinste Level, die per Mail benachrichtigt werden (Standard: `ERROR`)                                        |
-| oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Alert`)                                                |
+| oxlogiq_mailSubject       | *optional:* Betreff der Benachrichtigungsmail (Standard: `Shop Log Notification`)                                         |
 | oxlogiq_mailFrom          | *optional:* Absenderadresse (Standard: Infomailadresse des Shops)                                                         |
 | oxlogiq_sentryDsn         | *optional:* Sentry Data Source Name                                                                                       |                                                                                                                           |
+| oxlogiq_httpApiEndpoint   | *optional:* Http API endpoint (z.B. für ElasticSearch / ELK Stack)                                                        |
+| oxlogiq_httpApiKey        | *optional:* Http API key (z.B. für ElasticSearch / ELK Stack)                                                             |
 
 ### Codebeispiel
 
@@ -55,6 +58,8 @@ $this->oxlogiq_mailLogLevel = 'ERROR';
 $this->oxlogiq_mailSubject = 'Ausnahmebenachrichtigung';
 $this->oxlogiq_mailFrom = 'sender@mydomain.com';
 $this->oxlogiq_sentryDsn = 'https://yourkey.ingest.us.sentry.io/yourproject';
+$this->oxlogiq_httpApiEndpoint = 'https://my-observability-project.es.eu-central-1.aws.elastic.cloud/logs/_doc';
+$this->oxlogiq_httpApiKey = 'ApiKey myApiKey';
 ```
 
 ## Nutzung der Session- / Request-ID

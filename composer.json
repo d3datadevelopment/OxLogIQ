@@ -25,7 +25,8 @@
   "require": {
     "oxid-esales/oxideshop-ce": "^7",
     "d3/logger-factory": "^2",
-    "sentry/sentry": "^4"
+    "sentry/sentry": "^4",
+    "guzzlehttp/guzzle": "^7.9"
   },
   "require-dev": {
     "d3/testingtools": "^1.2",

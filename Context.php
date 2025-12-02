@@ -28,6 +28,8 @@ class Context extends OxidContext
     public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
     public const CONFIGVAR_MAILFROM         = 'oxlogiq_mailFrom';
     public const CONFIGVAR_SENTRY_DSN       = 'oxlogiq_sentryDsn';
+    public const CONFIGVAR_HTTPAPI_ENDPOINT = 'oxlogiq_httpApiEndpoint';
+    public const CONFIGVAR_HTTPAPI_KEY      = 'oxlogiq_httpApiKey';
 
     /**
      * @var FactsConfigFile
@@ -90,5 +92,17 @@ class Context extends OxidContext
     {
         return $_ENV[self::CONFIGVAR_SENTRY_DSN] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_SENTRY_DSN);
+    }
+
+    public function getHttpApiEndpoint(): ?string
+    {
+        return $_ENV[self::CONFIGVAR_HTTPAPI_ENDPOINT] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_HTTPAPI_ENDPOINT);
+    }
+
+    public function getHttpApiKey(): ?string
+    {
+        return $_ENV[self::CONFIGVAR_HTTPAPI_KEY] ??
+               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_HTTPAPI_KEY);
     }
 }

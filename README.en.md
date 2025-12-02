@@ -14,6 +14,7 @@ It replaces the OXID default logger and is used every time `Registry::getLogger(
 - File rotation (adjustable)
 - Alerting of critical events by email (optional + adjustable)
 - Transfer log entries to [Sentry](https://sentry.io) (optional + adjustable)
+- Transfer log entries to HTTP API (e.g. ElasticSearch) (optional + adjustable)
 - Request ID (filter criterion)
 - Session ID (filter criterion)
 - Buffering (optimisation of write operations)
@@ -42,7 +43,12 @@ The following parameters can be adjusted using these variables:
 | oxlogiq_mailLogLevel     | *optional:* lowest level that will be alerted by email (default: `ERROR`)                                      |
 | oxlogiq_mailSubject      | *optional:* subject of the alert email (default: `Shop Log Alert`)                                             |
 | oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
-| oxlogiq_sentryDsn        | *optional:* Sentry Data Source Name                                                                            | 
+| oxlogiq_sentryDsn        | *optional:* Sentry Data Source Name                                                                            |
+| oxlogiq_httpApiEndpoint  | *optional:* Http API endpoint (e.g. for ElasticSearch / ELK Stack)                                             |
+| oxlogiq_httpApiKey       | *optional:* Http API key (e.g. for ElasticSearch / ELK Stack)                                                  |
+
+
+Define these settings either as an environment variable or as a variable in the shop's `config.inc.php` file.
 
 ### Code example
 
@@ -55,6 +61,8 @@ $this->oxlogiq_mailLogLevel = "ERROR";
 $this->oxlogiq_mailSubject = "Exception Alert";
 $this->oxlogiq_mailFrom = "sender@mydomain.com";
 $this->oxlogiq_sentryDsn = 'https://yourkey.ingest.us.sentry.io/yourproject';
+$this->oxlogiq_httpApiEndpoint = 'https://my-observability-project.es.eu-central-1.aws.elastic.cloud/logs/_doc';
+$this->oxlogiq_httpApiKey = 'ApiKey myApiKey';
 ```
 
 ## Use of the session/request ID

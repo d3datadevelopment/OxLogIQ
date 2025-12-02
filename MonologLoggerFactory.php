@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace D3\OxLogIQ;
 
 use D3\LoggerFactory\LoggerFactory;
+use D3\OxLogIQ\Handlers\HttpApiHandler;
 use D3\OxLogIQ\Processors\SentryExceptionProcessor;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
@@ -59,6 +60,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $this->addFileHandler($factory);
         $this->addMailHandler($factory);
         $this->addSentryHandler($factory);
+        $this->addHttpApiHandler($factory);
         $this->addProcessors($factory);
 
         return $factory->build($this->configuration->getLoggerName());
@@ -131,6 +133,19 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                     Logger::toMonologLevel($this->configuration->getLogLevel())
                 ))
                 ->pushProcessor(new SentryExceptionProcessor())
+            )->setBuffering();
+        }
+    }
+
+    protected function addHttpApiHandler(LoggerFactory $factory): void
+    {
+        if ($this->configuration->hasHttpApiEndpoint()) {
+            $factory->addOtherHandler(
+                (new HttpApiHandler(
+                    $this->configuration->getHttpApiEndpoint(),
+                    $this->configuration->getHttpApiKey(),
+                    Logger::toMonologLevel( $this->configuration->getLogLevel())
+                ))
             )->setBuffering();
         }
     }

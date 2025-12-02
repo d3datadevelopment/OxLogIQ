@@ -186,67 +186,27 @@ class MonologConfiguration implements MonologConfigurationInterface
         };
     }
 
-    public function hasSentryDsn(): bool
+    public function hasHttpApiEndpoint(): bool
     {
-        $dsn = $this->context->getSentryDsn();
+        $endpoint = $this->context->getHttpApiEndpoint();
 
-        return isset($dsn) &&
-            is_string($dsn) && strlen(trim($dsn));
+        return isset($endpoint) &&
+               is_string($endpoint) && strlen(trim($endpoint));
     }
 
-    public function getSentryDsn(): ?string
+    public function getHttpApiEndpoint(): string
     {
-        return $this->context->getSentryDsn();
+        return $this->context->getHttpApiEndpoint();
     }
 
-    public function getSentryOptions(): iterable
+    public function getHttpApiKey(): string
     {
-        return [
-            'dsn' => $this->getSentryDsn(),
-            'enable_logs' => true,
-            'traces_sampler' => $this->getSentryTracesSampleRate(),
-            'environment' => Registry::getConfig()->getActiveShop()->isProductiveMode() ?
-                'production' :
-                'development',
-            'release' => $this->getRelease(),
-            'before_send' => $this->beforeSendToSentry(),
-            'prefixes' => [
-                realpath(
-                    rtrim(Registry::getConfig()->getConfigParam('sShopDir'), DIRECTORY_SEPARATOR).
-                    DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR,
-            ]
-        ];
-    }
+        $apiKey = $this->context->getHttpApiKey();
 
-    protected function getRelease(): string
-    {
-        try {
-            $composerPath = realpath(Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock');
-
-            if (!file_exists($composerPath)) {
-                throw new FileException(sprintf('composer.lock file not found in path %s', $composerPath));
-            }
-
-            return (new DateTimeImmutable())->setTimestamp(filemtime($composerPath))->format('Y-m-d_H:i:s');
-        } catch (StandardException) {
-            return '';
+        if (!is_string($apiKey) || !strlen(trim($apiKey))) {
+            throw new InvalidArgumentException('Http API Key required.');
         }
-    }
 
-    protected function getSentryTracesSampleRate(): callable
-    {
-        return function (SamplingContext $context): float {
-            if ($context->getParentSampled()) {
-                return 1.0;
-            }
-            return 0.25;
-        };
-    }
-
-    protected function beforeSendToSentry(): callable
-    {
-        return function (SentryEvent $event): ?SentryEvent {
-            return $event;
-        };
+        return trim($apiKey);
     }
 }
