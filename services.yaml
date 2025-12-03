@@ -24,3 +24,10 @@ services:
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
     class: D3\OxLogIQ\Context
     public: true
+
+  D3\OxLogIQ\ShutdownActiveModulesDataProviderBridge:
+    class: D3\OxLogIQ\ShutdownActiveModulesDataProviderBridge
+    decorates: OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderBridgeInterface
+    decoration_inner_name: 'oxid.active_modules_data_provider_bridge.inner'
+    arguments:
+      - '@oxid.active_modules_data_provider_bridge.inner'

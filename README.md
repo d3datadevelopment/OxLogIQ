@@ -73,6 +73,13 @@ Verwenden Sie die jeweilige ID nach folgendem Schema zur Filterung:
 cat source/log/oxideshop-2025-01-01.log | grep "[sid/uid]"
 ```
 
+## Anmerkung
+
+Im Shop ist fest einprogrammiert, dass im Fall eine Scriptabbruchs die Fehlermeldung in die originale `oxideshop.log` 
+geschrieben wird. Dies können wir leider mit einfachen Möglichkeiten nicht ändern, wir übernehmen diese Meldungen jedoch 
+in die Log-Dateien dieser Erweiterung. Sofern Sie die rotierenden Logdateien verwenden, kann die `oxideshop.log` einfach 
+gelöscht werden, wenn Sie existiert.
+
 ## Changelog
 
 Siehe [CHANGELOG](CHANGELOG.md) für weitere Informationen.

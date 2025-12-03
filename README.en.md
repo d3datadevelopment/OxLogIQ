@@ -67,14 +67,20 @@ $this->oxlogiq_httpApiKey = 'ApiKey myApiKey';
 
 ## Use of the session/request ID
 
-Each log entry is extended by the abbreviated session ID (sid) and request ID (uid). These can be used to filter for related log entries in
-extensive and mixed records. The session ID therefore refers
-to entries made by a specific shop user, while the request ID refers to a specific page or script call.
-Use the respective ID for filtering according to the following scheme:
+Each log entry is extended by the abbreviated session ID (sid) and request ID (uid). These can be used to filter for 
+related log entries in extensive and mixed records. The session ID therefore refers to entries made by a specific shop 
+user, while the request ID refers to a specific page or script call. Use the respective ID for filtering according to 
+the following scheme:
 
 ```
 cat source/log/oxideshop-2025-01-01.log | grep "[sid/uid]"
 ```
+
+## Note
+
+The shop is programmed to write the error message to the original `oxideshop.log` file in the event of a script 
+termination. Unfortunately, we cannot change this with simple ways, but we do add these messages to the log files of 
+this extension. If you use rotating log files, the `oxideshop.log` file can simply be deleted if it exists.
 
 ## Changelog
 
