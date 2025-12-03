@@ -50,7 +50,7 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 ### Codebeispiel
 
 ```PHP
-$this->sLogLevel = 'WARNING';
+$this->sLogLevel = 'ERROR';
 $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = 'alerts@mydomain.com';
 // optional
@@ -80,13 +80,20 @@ geschrieben wird. Dies können wir leider mit einfachen Möglichkeiten nicht än
 in die Log-Dateien dieser Erweiterung. Sofern Sie die rotierenden Logdateien verwenden, kann die `oxideshop.log` einfach 
 gelöscht werden, wenn Sie existiert.
 
+## Erweitern des Loggers
+
+OxLogIQ ist so angelegt, dass es möglichst einfach erweitert werden kann. Fehlt für Ihren Einsatzfall z.B. ein Handler
+oder ein Prozessor, können Sie diesen einfach hinzufügen. Auch ein komplett neu zusammengesetzter Stack ist möglich. 
+Implementierungsbeispiele finden Sie im Ordner `examples`.   
+
 ## Changelog
 
 Siehe [CHANGELOG](CHANGELOG.md) für weitere Informationen.
 
 ## Beitragen
 
-Wenn Sie eine Verbesserungsvorschlag haben, legen Sie einen Fork des Repositories an und erstellen Sie einen Pull Request. Alternativ können Sie einfach ein Issue erstellen. Fügen Sie das Projekt zu Ihren Favoriten hinzu. Vielen Dank.
+Wenn Sie eine Verbesserungsvorschlag haben, legen Sie einen Fork des Repositories an und erstellen Sie einen Pull 
+Request. Alternativ können Sie einfach ein Issue erstellen. Fügen Sie das Projekt zu Ihren Favoriten hinzu. Vielen Dank.
 
 - Erstellen Sie einen Fork des Projekts
 - Erstellen Sie einen Feature Branch (git checkout -b feature/AmazingFeature)

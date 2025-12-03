@@ -50,10 +50,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $configurationValidator->validate($configuration);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function create(): LoggerInterface
+    public function getFactory(): LoggerFactory
     {
         $factory = $this->loggerFactory;
 
@@ -63,7 +60,15 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $this->addHttpApiHandler($factory);
         $this->addProcessors($factory);
 
-        return $factory->build($this->configuration->getLoggerName());
+        return $factory;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function create(): LoggerInterface
+    {
+        return $this->getFactory()->build($this->configuration->getLoggerName());
     }
 
     /**
@@ -132,7 +137,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                     SentrySdk::getCurrentHub(),
                     Logger::toMonologLevel($this->configuration->getLogLevel())
                 ))
-                ->pushProcessor(new SentryExceptionProcessor())
+                    ->pushProcessor(new SentryExceptionProcessor())
             )->setBuffering();
         }
     }

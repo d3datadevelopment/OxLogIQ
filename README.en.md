@@ -53,7 +53,7 @@ Define these settings either as an environment variable or as a variable in the 
 ### Code example
 
 ```PHP
-$this->sLogLevel = "WARNING";
+$this->sLogLevel = "ERROR";
 $this->oxlogiq_retentionDays = 7;
 $this->oxlogiq_mailRecipients = "alerts@mydomain.com";
 // optional
@@ -82,13 +82,20 @@ The shop is programmed to write the error message to the original `oxideshop.log
 termination. Unfortunately, we cannot change this with simple ways, but we do add these messages to the log files of 
 this extension. If you use rotating log files, the `oxideshop.log` file can simply be deleted if it exists.
 
+## Extending the logger
+
+OxLogIQ is designed to be as easy to extend as possible. If, for example, a handler or processor is missing for your 
+application, you can simply add it. It is also possible to create a completely new stack.
+You can find implementation examples in the `examples` folder.
+
 ## Changelog
 
 See [CHANGELOG](CHANGELOG.md) for further information.
 
 ## Contributing
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue. Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also 
+simply open an issue. Don't forget to give the project a star! Thanks again!
 
 - Fork the Project
 - Create your Feature Branch (git checkout -b feature/AmazingFeature)
