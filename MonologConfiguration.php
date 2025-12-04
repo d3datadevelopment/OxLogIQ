@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace D3\OxLogIQ;
 
+use D3\OxLogIQ\Release\ReleaseServiceInterface;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Monolog\Logger;
@@ -25,8 +26,11 @@ use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Exception\FileException;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Sentry\Event as SentryEvent;
 use Sentry\Tracing\SamplingContext;
 
@@ -153,18 +157,13 @@ class MonologConfiguration implements MonologConfigurationInterface
         ];
     }
 
-    protected function getRelease(): string
+    public function getRelease(): string
     {
+        /** @var ReleaseServiceInterface $service */
         try {
-            $path = Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock';
-            $realPath = realpath($path);
-
-            if (!$realPath) {
-                throw new FileException(sprintf('composer.lock file not found in path %s', $path));
-            }
-
-            return (new DateTimeImmutable())->setTimestamp(filemtime($realPath))->format('Y-m-d_H:i:s');
-        } catch (StandardException) {
+            $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
+            return $service->getRelease();
+        } catch ( NotFoundExceptionInterface|ContainerExceptionInterface) {
             return '';
         }
     }
