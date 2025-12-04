@@ -22,6 +22,7 @@ use D3\OxLogIQ\Handlers\HttpApiHandler;
 use D3\OxLogIQ\Processors\SentryExceptionProcessor;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
+use InvalidArgumentException;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
@@ -31,6 +32,8 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Sentry\Monolog\BreadcrumbHandler;
 use Sentry\Monolog\Handler;
@@ -71,19 +74,20 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         return $this->getFactory()->build($this->configuration->getLoggerName());
     }
 
-    /**
-     * @throws Exception
-     */
     protected function addFileHandler(LoggerFactory $factory): void
     {
-        $fileHandlerOption = $factory->addFileHandler(
-            $this->configuration->getLogFilePath(),
-            Logger::toMonologLevel($this->configuration->getLogLevel()),
-            $this->configuration->getRetentionDays()
-        );
+        try {
+            $fileHandlerOption = $factory->addFileHandler(
+                $this->configuration->getLogFilePath(),
+                Logger::toMonologLevel($this->configuration->getLogLevel()),
+                $this->configuration->getRetentionDays()
+            );
 
-        $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
-        $fileHandlerOption->setBuffering();
+            $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
+            $fileHandlerOption->setBuffering();
+        } catch (Exception $exception) {
+           error_log('OxLogIQ: '.$exception->getMessage());
+        }
     }
 
     protected function getFormatter(): FormatterInterface
@@ -94,64 +98,71 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         return $formatter;
     }
 
-    /**
-     * @param LoggerFactory $factory
-     *
-     * @return void
-     */
     protected function addMailHandler(LoggerFactory $factory): void
     {
         if ($this->configuration->hasAlertMailRecipient()) {
-            /** @var Shop $shop */
-            $shop = Registry::getConfig()->getActiveShop();
-            $to       = (array) $this->configuration->getAlertMailRecipients();
-            $subject  = sprintf(
-                '%1$s - %2$s',
-                $shop->getFieldData('oxname'),
-                $this->configuration->getAlertMailSubject()
-            );
-            $from     = (string) (
-                $this->configuration->getAlertMailFrom() ?? $shop->getFieldData('oxinfoemail')
-            );
-            $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
-            $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
+            try {
+                /** @var Shop $shop */
+                $shop = Registry::getConfig()->getActiveShop();
+                $to       = (array) $this->configuration->getAlertMailRecipients();
+                $subject  = sprintf(
+                    '%1$s - %2$s',
+                    $shop->getFieldData('oxname'),
+                    $this->configuration->getAlertMailSubject()
+                );
+                $from     = (string) (
+                    $this->configuration->getAlertMailFrom() ?? $shop->getFieldData('oxinfoemail')
+                );
+                $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
+                $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
+            } catch (Exception $exception) {
+                error_log('OxLogIQ: '.$exception->getMessage());
+            }
         }
     }
 
     protected function addSentryHandler(LoggerFactory $factory): void
     {
         if ($this->configuration->hasSentryDsn()) {
-            init($this->configuration->getSentryOptions());
+            try {
+                init($this->configuration->getSentryOptions());
 
-            $factory->addOtherHandler(
-                (new BreadcrumbHandler(
-                    SentrySdk::getCurrentHub(),
-                    Logger::INFO
-                ))
-            )->setLogOnErrorOnly(
-                $this->configuration->getLogLevel()
-            );
+                $factory->addOtherHandler(
+                    (new BreadcrumbHandler(
+                        SentrySdk::getCurrentHub(),
+                        Logger::INFO
+                    ))
+                )->setLogOnErrorOnly(
+                    $this->configuration->getLogLevel()
+                );
 
-            $factory->addOtherHandler(
-                (new Handler(
-                    SentrySdk::getCurrentHub(),
-                    Logger::toMonologLevel($this->configuration->getLogLevel())
-                ))
-                    ->pushProcessor(new SentryExceptionProcessor())
-            )->setBuffering();
+                $factory->addOtherHandler(
+                    (new Handler(
+                        SentrySdk::getCurrentHub(),
+                        Logger::toMonologLevel($this->configuration->getLogLevel())
+                    ))
+                        ->pushProcessor(new SentryExceptionProcessor())
+                )->setBuffering();
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $exception) {
+                error_log('OxLogIQ: '.$exception->getMessage());
+            }
         }
     }
 
     protected function addHttpApiHandler(LoggerFactory $factory): void
     {
         if ($this->configuration->hasHttpApiEndpoint()) {
-            $factory->addOtherHandler(
-                (new HttpApiHandler(
-                    $this->configuration->getHttpApiEndpoint(),
-                    $this->configuration->getHttpApiKey(),
-                    Logger::toMonologLevel( $this->configuration->getLogLevel())
-                ))
-            )->setBuffering();
+            try {
+                $factory->addOtherHandler(
+                    (new HttpApiHandler(
+                        $this->configuration->getHttpApiEndpoint(),
+                        $this->configuration->getHttpApiKey(),
+                        Logger::toMonologLevel( $this->configuration->getLogLevel())
+                    ))
+                )->setBuffering();
+            } catch (InvalidArgumentException $exception) {
+                error_log('OxLogIQ: '.$exception->getMessage());
+            }
         }
     }
 
@@ -168,8 +179,12 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                 'Internal\\Framework\\Logger\\'
             ])
         );
-        $factory->addOtherProcessor(
-            new SessionIdProcessor(Registry::getSession())
-        );
+        try {
+            $factory->addOtherProcessor(
+                new SessionIdProcessor(Registry::getSession())
+            );
+        } catch (InvalidArgumentException $exception) {
+            error_log('OxLogIQ: '.$exception->getMessage());
+        }
     }
 }

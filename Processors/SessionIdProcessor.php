@@ -28,6 +28,7 @@ class SessionIdProcessor implements ProcessorInterface
     /**
      * @param \OxidEsales\EshopCommunity\Core\Session $session
      * @param int $length
+     * @throws InvalidArgumentException
      */
     public function __construct(protected Session $session, int $length = 7)
     {

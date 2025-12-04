@@ -102,6 +102,9 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->context->getAlertMailRecipients();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getAlertMailLevel(): string
     {
         $level = strtoupper($this->context->getAlertMailLevel());
@@ -138,6 +141,10 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->context->getSentryDsn();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getSentryOptions(): iterable
     {
         return [
@@ -157,15 +164,15 @@ class MonologConfiguration implements MonologConfigurationInterface
         ];
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getRelease(): string
     {
         /** @var ReleaseServiceInterface $service */
-        try {
-            $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
-            return $service->getRelease();
-        } catch ( NotFoundExceptionInterface|ContainerExceptionInterface) {
-            return '';
-        }
+        $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
+        return $service->getRelease();
     }
 
     protected function getSentryTracesSampleRate(): callable
@@ -198,6 +205,10 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->context->getHttpApiEndpoint();
     }
 
+    /**
+     * @return string
+     * @throws InvalidArgumentException
+     */
     public function getHttpApiKey(): string
     {
         $apiKey = $this->context->getHttpApiKey();
