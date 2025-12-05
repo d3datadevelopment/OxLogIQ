@@ -25,9 +25,9 @@ class SentryExceptionProcessor implements ProcessorInterface
 {
     public function __invoke(array $records): array
     {
-        if ( $this->checkForException( $records )) {
+        if ($this->checkForException($records)) {
             // find exception in context and define it as Sentry exception
-            foreach ( $records['context'] as $key => $value ) {
+            foreach ($records['context'] as $key => $value) {
                 if ($key != 'exception' && $value instanceof Exception) {
                     $records['context']['exception'] = $value;
                     unset($records['context'][$key]);

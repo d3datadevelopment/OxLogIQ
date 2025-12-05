@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Copyright (c) D3 Data Development (Inh. Thomas Dartsch)
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE file that was distributed with this source code.
+ *
+ * https://www.d3data.de
+ *
+ * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+ * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @link      https://www.oxidmodule.com
+ */
+
 namespace D3\LoggerExtension;
 
 use D3\LoggerFactory\LoggerFactory;
@@ -18,7 +31,8 @@ class LoggerFactoryExtension implements LoggerFactoryInterface
     public function __construct(
         protected LoggerFactoryInterface $innerConfig,
         protected MonologConfigurationInterface $configuration
-    ) {}
+    ) {
+    }
 
     public function getFactory(): LoggerFactory
     {
@@ -47,8 +61,8 @@ class LoggerFactoryExtension implements LoggerFactoryInterface
               'transport' => 'Https',
               'headers'   => [
                   'Authorization' => 'ApiKey <your-API-key>',
-                  'Content-Type'  => 'application/json'
-              ]
+                  'Content-Type'  => 'application/json',
+              ],
           ]);
     }
 }

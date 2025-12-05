@@ -46,7 +46,10 @@ class ShutdownActiveModulesDataProviderBridge implements ActiveModulesDataProvid
         if ($error !== null && in_array($error['type'], $handledErrorTypes)) {
             $errorType = array_flip(
                 array_slice(
-                    get_defined_constants(true)['Core'], 0, 16, true
+                    get_defined_constants(true)['Core'],
+                    0,
+                    16,
+                    true
                 )
             )[$error['type']];
 
@@ -74,8 +77,8 @@ class ShutdownActiveModulesDataProviderBridge implements ActiveModulesDataProvid
             $micro = sprintf("%06d", ($time - floor($time)) * 1000000);
 
             try {
-                $date = new DateTimeImmutable( date( 'Y-m-d H:i:s.' . $micro, (int) $time ) );
-            } catch ( Exception) {
+                $date = new DateTimeImmutable(date('Y-m-d H:i:s.' . $micro, (int) $time));
+            } catch (Exception) {
                 $date = new DateTimeImmutable();
             }
             $timestamp = $date->format('d M H:i:s.u Y');

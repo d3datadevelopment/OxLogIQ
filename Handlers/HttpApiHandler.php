@@ -41,14 +41,14 @@ class HttpApiHandler extends AbstractProcessingHandler
         $level = Logger::DEBUG,
         $bubble = true,
         Client $client = null
-    ){
+    ) {
         parent::__construct($level, $bubble);
 
         $this->httpClient = $client ?? new Client([
             'headers' => [
                 'Authorization' => $apiKey,
                 'Content-Type'  => 'application/json',
-            ]
+            ],
         ]);
     }
 
@@ -65,7 +65,7 @@ class HttpApiHandler extends AbstractProcessingHandler
                         'log.logger'    => $record['channel'],
                         '@timestamp'    => $record['datetime'] instanceof DateTime ?
                             $record['datetime']->format('c') :
-                            date( 'c' ),
+                            date('c'),
                         'event.dataset' => 'OXID eShop ' . ShopVersion::getVersion(),
                         'host.name'     => Registry::getConfig()->getShopUrl(),
                         'release'       => $this->getRelease(),
@@ -74,12 +74,13 @@ class HttpApiHandler extends AbstractProcessingHandler
                             'uid'      => $record['extra']['uid'],
                             'class'    => $record['extra']['class'] ?? '',
                             'function' => $record['extra']['function'] ?? '',
-                            'line'     => $record['extra']['line'] ?? ''
-                        ]
-                    ]
+                            'line'     => $record['extra']['line'] ?? '',
+                        ],
+                    ],
                 ]
             );
-        } catch ( GuzzleException) {}
+        } catch (GuzzleException) {
+        }
     }
 
     protected function getRelease(): string
@@ -88,7 +89,7 @@ class HttpApiHandler extends AbstractProcessingHandler
         try {
             $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
             return $service->getRelease();
-        } catch ( NotFoundExceptionInterface|ContainerExceptionInterface) {
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface) {
             return '';
         }
     }

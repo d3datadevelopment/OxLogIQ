@@ -38,6 +38,7 @@ use Psr\Log\LoggerInterface;
 use Sentry\Monolog\BreadcrumbHandler;
 use Sentry\Monolog\Handler;
 use Sentry\SentrySdk;
+
 use function Sentry\init;
 
 class MonologLoggerFactory implements LoggerFactoryInterface
@@ -86,7 +87,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
             $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
             $fileHandlerOption->setBuffering();
         } catch (Exception $exception) {
-           error_log('OxLogIQ: '.$exception->getMessage());
+            error_log('OxLogIQ: '.$exception->getMessage());
         }
     }
 
@@ -157,7 +158,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                     (new HttpApiHandler(
                         $this->configuration->getHttpApiEndpoint(),
                         $this->configuration->getHttpApiKey(),
-                        Logger::toMonologLevel( $this->configuration->getLogLevel())
+                        Logger::toMonologLevel($this->configuration->getLogLevel())
                     ))
                 )->setBuffering();
             } catch (InvalidArgumentException $exception) {
@@ -176,7 +177,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
         $factory->addUidProcessor();
         $factory->addOtherProcessor(
             new IntrospectionProcessor(Logger::ERROR, [
-                'Internal\\Framework\\Logger\\'
+                'Internal\\Framework\\Logger\\',
             ])
         );
         try {

@@ -159,8 +159,9 @@ class MonologConfiguration implements MonologConfigurationInterface
             'prefixes' => [
                 realpath(
                     rtrim(Registry::getConfig()->getConfigParam('sShopDir'), DIRECTORY_SEPARATOR).
-                    DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR,
-            ]
+                    DIRECTORY_SEPARATOR.'..'
+                ).DIRECTORY_SEPARATOR,
+            ],
         ];
     }
 
