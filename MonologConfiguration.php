@@ -18,13 +18,10 @@ declare(strict_types=1);
 namespace D3\OxLogIQ;
 
 use D3\OxLogIQ\Release\ReleaseServiceInterface;
-use DateTimeImmutable;
 use InvalidArgumentException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
-use OxidEsales\Eshop\Core\Exception\FileException;
-use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
@@ -132,8 +129,7 @@ class MonologConfiguration implements MonologConfigurationInterface
     {
         $dsn = $this->context->getSentryDsn();
 
-        return isset($dsn) &&
-            is_string($dsn) && strlen(trim($dsn));
+        return isset($dsn) && strlen(trim($dsn));
     }
 
     public function getSentryDsn(): ?string
@@ -152,8 +148,8 @@ class MonologConfiguration implements MonologConfigurationInterface
             'enable_logs' => true,
             'traces_sampler' => $this->getSentryTracesSampleRate(),
             'environment' => Registry::getConfig()->getActiveShop()->isProductiveMode() ?
-                'production' :
-                'development',
+                'production' :  // @codeCoverageIgnore
+                'development',  // @codeCoverageIgnore
             'release' => $this->getRelease(),
             'before_send' => $this->beforeSendToSentry(),
             'prefixes' => [
@@ -201,7 +197,7 @@ class MonologConfiguration implements MonologConfigurationInterface
                is_string($endpoint) && strlen(trim($endpoint));
     }
 
-    public function getHttpApiEndpoint(): string
+    public function getHttpApiEndpoint(): ?string
     {
         return $this->context->getHttpApiEndpoint();
     }

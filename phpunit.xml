@@ -23,7 +23,11 @@
     </include>
     <exclude>
       <directory suffix=".php">Tests/</directory>
+      <directory suffix=".php">examples/</directory>
       <file>.php-cs-fixer.php</file>
     </exclude>
   </source>
+  <php>
+    <env name="XDEBUG_MODE" value="coverage"/>
+  </php>
 </phpunit>

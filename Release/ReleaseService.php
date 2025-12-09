@@ -27,8 +27,8 @@ class ReleaseService implements ReleaseServiceInterface
     public function getRelease(): string
     {
         try {
-            $path = Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock';
-            $realPath = realpath($path);
+            $path = $this->getFilePath();
+            $realPath = realpath($this->getFilePath());
 
             if (!$realPath) {
                 throw new FileException(sprintf('composer.lock file not found in path %s', $path));
@@ -38,5 +38,10 @@ class ReleaseService implements ReleaseServiceInterface
         } catch (StandardException) {
             return '';
         }
+    }
+
+    protected function getFilePath(): string
+    {
+        return Registry::getConfig()->getConfigParam('sShopDir') . '../composer.lock';
     }
 }
