@@ -17,80 +17,104 @@ declare(strict_types=1);
 
 namespace D3\OxLogIQ\Handlers;
 
-use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\Release\ReleaseServiceInterface;
 use DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Logger;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\ShopVersion;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use RuntimeException;
 
 class HttpApiHandler extends AbstractProcessingHandler
 {
-    protected Client $httpClient;
-
     public function __construct(
         protected $endpoint,
-        $apiKey,
-        $level = Logger::DEBUG,
-        $bubble = true,
-        Client $client = null
+        protected $apiKey,
+        protected $level,
+        protected ClientInterface $client,
+        protected RequestFactoryInterface $requestFactory,
+        protected StreamFactoryInterface $streamFactory,
+        protected $bubble = true,
     ) {
         parent::__construct($level, $bubble);
-
-        $this->httpClient = $client ?? new Client([
-            'headers' => [
-                'Authorization' => $apiKey,
-                'Content-Type'  => 'application/json',
-            ],
-        ]);
     }
 
     protected function write(array $record): void
     {
         try {
-            $this->httpClient->post(
-                $this->endpoint,
-                [
-                    'json' => [
-                        'message'       => $record['message'],
-                        'context'       => $record['context'],
-                        'log.level'     => $record['level_name'],
-                        'log.logger'    => $record['channel'],
-                        '@timestamp'    => $record['datetime'] instanceof DateTime ?
-                            $record['datetime']->format('c') :
-                            date('c'),
-                        'event.dataset' => 'OXID eShop ' . ShopVersion::getVersion(),
-                        'host.name'     => Registry::getConfig()->getShopUrl(),
-                        'release'       => $this->getRelease(),
-                        'call'          => [
-                            'sid'      => $record['extra']['sid'],
-                            'uid'      => $record['extra']['uid'],
-                            'class'    => $record['extra']['class'] ?? '',
-                            'function' => $record['extra']['function'] ?? '',
-                            'line'     => $record['extra']['line'] ?? '',
-                        ],
-                    ],
-                ]
-            );
-        } catch (GuzzleException) {
+            try {
+                $response = $this->client->sendRequest($this->getRequest($record));
+            } catch (ClientExceptionInterface $e) {
+                throw new RuntimeException("HTTP transport error: ".$e->getMessage());
+            }
+
+            if ($response->getStatusCode() >= 400) {
+                throw new RuntimeException("API error: ".$response->getStatusCode());
+            }
+        } catch (RuntimeException $exception) {
+            error_log('OxLogIQ: '.$exception->getMessage());
         }
+    }
+
+    protected function getRequest(array $record): RequestInterface
+    {
+        $json = json_encode($this->getData($record));
+        $body = $this->streamFactory->createStream($json);
+
+        return $this->requestFactory
+            ->createRequest('POST', $this->endpoint)
+            ->withHeader('Authorization', $this->apiKey)
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Accept', 'application/json')
+            ->withBody($body);
+    }
+
+    protected function getData(array $record): array
+    {
+        return [
+            'message'       => $record['message'] ?? null,
+            'context'       => $record['context'] ?? null,
+            'log.level'     => $record['level_name'] ?? null,
+            'log.logger'    => $record['channel'] ?? null,
+            '@timestamp'    => (isset($record['datetime']) && $record['datetime'] instanceof DateTime) ?
+                $record['datetime']->format('c') :
+                date('c'),
+            'event.dataset' => 'OXID eShop ' . ShopVersion::getVersion(),
+            'host.name'     => Registry::getConfig()->getShopUrl(),
+            'release'       => $this->getRelease(),
+            'call'          => [
+                'sid'      => $record['extra']['sid'] ?? null,
+                'uid'      => $record['extra']['uid'] ?? null,
+                'class'    => $record['extra']['class'] ?? '',
+                'function' => $record['extra']['function'] ?? '',
+                'line'     => $record['extra']['line'] ?? '',
+            ],
+        ];
     }
 
     protected function getRelease(): string
     {
-        /** @var ReleaseServiceInterface $service */
         try {
-            $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
+            $service = $this->getReleaseService();
             return $service->getRelease();
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface) {
             return '';
         }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    protected function getReleaseService(): ReleaseServiceInterface
+    {
+        return ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
     }
 }

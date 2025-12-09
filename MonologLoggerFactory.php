@@ -22,6 +22,8 @@ use D3\OxLogIQ\Handlers\HttpApiHandler;
 use D3\OxLogIQ\Processors\SentryExceptionProcessor;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
@@ -158,7 +160,10 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                     (new HttpApiHandler(
                         $this->configuration->getHttpApiEndpoint(),
                         $this->configuration->getHttpApiKey(),
-                        Logger::toMonologLevel($this->configuration->getLogLevel())
+                        Logger::toMonologLevel($this->configuration->getLogLevel()),
+                        new Client(),
+                        new HttpFactory(),
+                        new HttpFactory(),
                     ))
                 )->setBuffering();
             } catch (InvalidArgumentException $exception) {
@@ -174,13 +179,13 @@ class MonologLoggerFactory implements LoggerFactoryInterface
      */
     protected function addProcessors(LoggerFactory $factory): void
     {
-        $factory->addUidProcessor();
-        $factory->addOtherProcessor(
-            new IntrospectionProcessor(Logger::ERROR, [
-                'Internal\\Framework\\Logger\\',
-            ])
-        );
         try {
+            $factory->addUidProcessor();
+            $factory->addOtherProcessor(
+                new IntrospectionProcessor(Logger::ERROR, [
+                    'Internal\\Framework\\Logger\\',
+                ])
+            );
             $factory->addOtherProcessor(
                 new SessionIdProcessor(Registry::getSession())
             );
