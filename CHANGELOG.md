@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://git.d3data.de/D3Public/OxLogIQ/compare/1.0.0.0...rel_1.x)
 
-## [1.0.0.0](https://git.d3data.de/D3Public/OxLogIQ/releases/tag/1.0.0.0) - 2025-01-10
+## [1.0.0.0](https://git.d3data.de/D3Public/OxLogIQ/releases/tag/1.0.0.0) - 2025-10-30
 ### Added
 - Date-separated logging (adjustable)
 - File rotation (adjustable)
