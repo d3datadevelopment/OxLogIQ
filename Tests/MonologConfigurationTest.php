@@ -31,6 +31,8 @@ use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
+use Sentry\Event;
+use Sentry\Tracing\SamplingContext;
 
 #[Small]
 #[CoversMethod(MonologConfiguration::class, '__construct')]
@@ -43,6 +45,15 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailSubject')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailFrom')]
+#[CoversMethod(MonologConfiguration::class, 'hasSentryDsn')]
+#[CoversMethod(MonologConfiguration::class, 'getSentryDsn')]
+#[CoversMethod(MonologConfiguration::class, 'getSentryOptions')]
+#[CoversMethod(MonologConfiguration::class, 'getRelease')]
+#[CoversMethod(MonologConfiguration::class, 'getSentryTracesSampleRate')]
+#[CoversMethod(MonologConfiguration::class, 'beforeSendToSentry')]
+#[CoversMethod(MonologConfiguration::class, 'hasHttpApiEndpoint')]
+#[CoversMethod(MonologConfiguration::class, 'getHttpApiEndpoint')]
+#[CoversMethod(MonologConfiguration::class, 'getHttpApiKey')]
 class MonologConfigurationTest extends TestCase
 {
     use CanAccessRestricted;
@@ -146,8 +157,8 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    #[DataProvider('getNotificationMailRecipientsDataProvider')]
-    public function testGetNotificationMailRecipients($recipients, bool $isset, $expected)
+    #[DataProvider('getAlertMailRecipientsDataProvider')]
+    public function testGetAlertMailRecipients($recipients, bool $isset, $expected): void
     {
         $configurationMock = new OxidMonologConfiguration(
             'myLogger',
@@ -168,15 +179,15 @@ class MonologConfigurationTest extends TestCase
 
         self::assertSame(
             $isset,
-            $this->callMethod($sut, 'hasNotificationMailRecipient')
+            $this->callMethod($sut, 'hasAlertMailRecipient')
         );
         self::assertSame(
             $expected,
-            $this->callMethod($sut, 'getNotificationMailRecipients')
+            $this->callMethod($sut, 'getAlertMailRecipients')
         );
     }
 
-    public static function getNotificationMailRecipientsDataProvider(): Generator
+    public static function getAlertMailRecipientsDataProvider(): Generator
     {
         yield 'not set' => [null, false, null];
         yield 'set' => [['test@example.dev'], true, ['test@example.dev']];
@@ -187,7 +198,7 @@ class MonologConfigurationTest extends TestCase
      */
     #[Test]
     #[DataProvider('getLogLevelDataProvider')]
-    public function testGetNotificationMailLevel($givenLevel, $exceptionExpected, $expected): void
+    public function testgetAlertMailLevel($givenLevel, $exceptionExpected, $expected): void
     {
         $configurationMock = new OxidMonologConfiguration(
             'myLogger',
@@ -216,7 +227,7 @@ class MonologConfigurationTest extends TestCase
 
         self::assertSame(
             $expected,
-            $this->callMethod($sut, 'getNotificationMailLevel')
+            $this->callMethod($sut, 'getAlertMailLevel')
         );
     }
 
@@ -224,11 +235,11 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailSubject()
+    public function testgetAlertMailSubject(): void
     {
         self::assertSame(
             'mySubject',
-            $this->callMethod($this->sut, 'getNotificationMailSubject')
+            $this->callMethod($this->sut, 'getAlertMailSubject')
         );
     }
 
@@ -236,11 +247,276 @@ class MonologConfigurationTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailFrom()
+    public function testgetAlertMailFrom(): void
     {
         self::assertSame(
             'fromAddress',
-            $this->callMethod($this->sut, 'getNotificationMailFrom')
+            $this->callMethod($this->sut, 'getAlertMailFrom')
         );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('getSentryDsnDataProvider')]
+    public function testHasSentryDsn($givenValue, $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getSentryDsn')->willReturn($givenValue);
+
+        $sut = new MonologConfiguration(
+            $configurationMock,
+            $configMock,
+            $contextMock
+        );
+
+        self::assertSame(
+            $expected,
+            $this->callMethod($sut, 'hasSentryDsn')
+        );
+
+        self::assertSame(
+            $givenValue,
+            $this->callMethod($sut, 'getSentryDsn')
+        );
+    }
+
+    public static function getSentryDsnDataProvider(): Generator
+    {
+        yield 'passed string'   => ['dsn', true];
+        yield 'empty string'   => ['', false];
+        yield 'unknown'   => [null, false];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetSentryOptions(): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $sut = new MonologConfiguration(
+            $configurationMock,
+            $configMock,
+            $contextMock
+        );
+
+        $return = $this->callMethod($sut, 'getSentryOptions');
+
+        $this->assertIsIterable($return);
+        $this->assertArrayHasKey('dsn', $return);
+        $this->assertArrayHasKey('environment', $return);
+        $this->assertArrayHasKey('release', $return);
+        $this->assertArrayHasKey('prefixes', $return);
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    public function testGetRelease(): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $sut = new MonologConfiguration(
+            $configurationMock,
+            $configMock,
+            $contextMock
+        );
+
+        $re = '/^(((\d{4})(-)(0[13578]|10|12)(-)(0[1-9]|[12][0-9]|3[01]))|((\d{4})(-)(0[469]|1‌​1)(-)([0][1-9]|[12][0-9]|30))|((\d{4})(-)(02)(-)(0[1-9]|1[0-9]|2[0-8]))|(([02468]‌​[048]00)(-)(02)(-)(29))|(([13579][26]00)(-)(02)(-)(29))|(([0-9][0-9][0][48])(-)(0‌​2)(-)(29))|(([0-9][0-9][2468][048])(-)(02)(-)(29))|(([0-9][0-9][13579][26])(-)(02‌​)(-)(29)))(_([0-1][0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9]))$/m';
+
+        $this->assertMatchesRegularExpression(
+            $re,
+            $this->callMethod($sut, 'getRelease')
+        );
+    }
+
+    #[Test]
+    #[DataProvider('getSentryTracesSampleRateDataProvider')]
+    public function testGetSentryTracesSampleRate(bool $parentSampled, $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $obj = new class(
+            $configurationMock,
+            $configMock,
+            $contextMock
+        ) extends MonologConfiguration {
+            public function call(): callable { return $this->getSentryTracesSampleRate(); }
+        };
+
+        $callable = $obj->call();
+
+        $context = new SamplingContext();
+        $context->setParentSampled($parentSampled);
+        $this->assertSame($expected, $callable($context));
+    }
+
+    public static function getSentryTracesSampleRateDataProvider(): Generator
+    {
+        yield 'parentSampled' => [true, 1.0];
+        yield 'no parentSampled' => [false, 0.25];
+    }
+
+    #[Test]
+    public function testBeforeSendToSentry(): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'error'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $obj = new class(
+            $configurationMock,
+            $configMock,
+            $contextMock
+        ) extends MonologConfiguration {
+            public function call(): callable { return $this->beforeSendToSentry(); }
+        };
+
+        $callable = $obj->call();
+        $event = Event::createEvent();
+
+        $this->assertSame($event, $callable($event));
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('hasHttpApiEndpointDataProvider')]
+    public function testHasHttpApiEndpoint($endpoint, $isset, $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'WARNING'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getHttpApiEndpoint')->willReturn($endpoint);
+
+        $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
+
+        self::assertSame(
+            $isset,
+            $this->callMethod($sut, 'hasHttpApiEndpoint')
+        );
+        self::assertSame(
+            $expected,
+            $this->callMethod($sut, 'getHttpApiEndpoint')
+        );
+    }
+
+    public static function hasHttpApiEndpointDataProvider(): Generator
+    {
+        yield 'not set' => [null, false, null];
+        yield 'set' => ['endpointFixture', true, 'endpointFixture'];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('getHttpApiKeyDataProvider')]
+    public function testGetHttpApiKey($key, bool $expectException, $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'WARNING'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('getHttpApiKey')->willReturn($key);
+
+        $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
+
+        if ($expectException) {
+            $this->expectException(InvalidArgumentException::class);
+        }
+
+        $this->assertSame(
+            $expected,
+            $this->callMethod($sut, 'getHttpApiKey')
+        );
+    }
+
+    public static function getHttpApiKeyDataProvider(): Generator
+    {
+        yield 'not set' => [null, true, null];
+        yield 'set' => ['keyFixture', false, 'keyFixture'];
     }
 }

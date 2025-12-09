@@ -23,6 +23,7 @@ use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\MonologLoggerFactory;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
+use InvalidArgumentException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -33,19 +34,39 @@ use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 #[Small]
 #[CoversMethod(MonologLoggerFactory::class, '__construct')]
+#[CoversMethod(MonologLoggerFactory::class, 'getFactory')]
 #[CoversMethod(MonologLoggerFactory::class, 'create')]
 #[CoversMethod(MonologLoggerFactory::class, 'addFileHandler')]
 #[CoversMethod(MonologLoggerFactory::class, 'getFormatter')]
 #[CoversMethod(MonologLoggerFactory::class, 'addMailHandler')]
+#[CoversMethod(MonologLoggerFactory::class, 'addSentryHandler')]
+#[CoversMethod(MonologLoggerFactory::class, 'addHttpApiHandler')]
 #[CoversMethod(MonologLoggerFactory::class, 'addProcessors')]
 class MonologLoggerFactoryTest extends TestCase
 {
     use CanAccessRestricted;
 
     protected MonologLoggerFactory $sut;
+    protected $logFile = __DIR__ . '/test-error.log';
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        ini_set('error_log', $this->logFile);
+        ini_set('log_errors', '1');
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        @unlink($this->logFile);
+    }
 
     /**
      * @throws ReflectionException
@@ -81,34 +102,34 @@ class MonologLoggerFactoryTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testCreate(): void
+    public function testGetFactory(): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
             ->getMock();
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['validate'])
             ->getMock();
-        $validatorMock->expects(self::atLeastOnce())->method('validate');
 
         $factoryMock = $this->getMockBuilder(LoggerFactory::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['build'])
             ->getMock();
-        $factoryMock->method('build');
 
         $sut = $this->getMockBuilder(MonologLoggerFactory::class)
-            ->onlyMethods(['addFileHandler', 'addMailHandler', 'addProcessors'])
+            ->onlyMethods(
+                ['addFileHandler', 'addMailHandler', 'addSentryHandler', 'addHttpApiHandler', 'addProcessors']
+            )
             ->setConstructorArgs([$configurationMock, $validatorMock, $factoryMock])
             ->getMock();
         $sut->expects(self::once())->method('addFileHandler');
         $sut->expects(self::once())->method('addMailHandler');
+        $sut->expects(self::once())->method('addSentryHandler');
+        $sut->expects(self::once())->method('addHttpApiHandler');
         $sut->expects(self::once())->method('addProcessors');
 
         self::assertInstanceOf(
-            Logger::class,
-            $this->callMethod($sut, 'create')
+            LoggerFactory::class,
+            $this->callMethod($sut, 'getFactory')
         );
     }
 
@@ -116,7 +137,36 @@ class MonologLoggerFactoryTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testAddFileHandler(): void
+    public function testCreate(): void
+    {
+        $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factoryMock = $this->getMockBuilder(LoggerFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['build'])
+            ->getMock();
+        $factoryMock->expects(self::once())->method('build');
+
+        $sut = $this->getMockBuilder(MonologLoggerFactory::class)
+            ->setConstructorArgs([$configurationMock, $validatorMock, $factoryMock])
+            ->onlyMethods(['getFactory'])
+            ->getMock();
+        $sut->method('getFactory')->willReturn($factoryMock);
+
+        $this->callMethod($sut, 'create');
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('addFileHandlerDataProvider')]
+    public function testAddFileHandler(bool $throwException, int $invocationCount): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
@@ -135,22 +185,41 @@ class MonologLoggerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['setFormatter'])
             ->getMock();
-        $fileHandlerMock->expects(self::once())->method('setFormatter');
+        $fileHandlerMock->expects(self::exactly($invocationCount))->method('setFormatter');
 
         $fileLoggerHandlerOptionMock = $this->getMockBuilder(FileLoggerHandlerOption::class)
             ->setConstructorArgs(['/var/log/error.log'])
             ->onlyMethods(['getHandler', 'setBuffering'])
             ->getMock();
         $fileLoggerHandlerOptionMock->method('getHandler')->willReturn($fileHandlerMock);
-        $fileLoggerHandlerOptionMock->expects(self::once())->method('setBuffering');
+        $fileLoggerHandlerOptionMock->expects(self::exactly($invocationCount))->method('setBuffering');
 
         $factoryMock = $this->getMockBuilder(LoggerFactory::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['addFileHandler'])
             ->getMock();
-        $factoryMock->expects(self::once())->method('addFileHandler')->willReturn($fileLoggerHandlerOptionMock);
+        if ($throwException) {
+            $factoryMock->expects(self::once())->method('addFileHandler')
+                ->willThrowException(new \Exception('excMsg'));
+        } else {
+            $factoryMock->expects(self::once())->method('addFileHandler')
+                ->willReturn($fileLoggerHandlerOptionMock);
+        }
 
         $this->callMethod($sut, 'addFileHandler', [$factoryMock]);
+
+        if ($throwException) {
+            $this->assertStringContainsString(
+                'excMsg',
+                file_get_contents($this->logFile)
+            );
+        }
+    }
+
+    public static function addFileHandlerDataProvider(): Generator
+    {
+        yield 'do not throw exception' => [false, 1];
+        yield 'throw exception' => [true, 0];
     }
 
     /**
@@ -183,7 +252,7 @@ class MonologLoggerFactoryTest extends TestCase
      */
     #[Test]
     #[DataProvider('addMailHandlerDataProvider')]
-    public function testAddMailHandler(bool $addressGiven, $address, int $invocation): void
+    public function testAddMailHandler(bool $addressGiven, $address, bool $throwException, int $invocation): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
@@ -198,12 +267,17 @@ class MonologLoggerFactoryTest extends TestCase
         $configurationMock->method('hasAlertMailRecipient')->willReturn($addressGiven);
         $configurationMock->expects($this->exactly($invocation))
                           ->method('getAlertMailRecipients')->willReturn($address);
+        $throwException ?
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getAlertMailLevel')->willThrowException(
+                    new InvalidArgumentException('excMsg')
+                ) :
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getAlertMailLevel')->willReturn('error');
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getAlertMailLevel')->willReturn('error');
+            ->method('getAlertMailSubject')->willReturn('mySubject');
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getAlertMailSubject')->willReturn('mySubject');
-        $configurationMock->expects($this->exactly($invocation))
-                          ->method('getAlertMailFrom')->willReturn('fromAddress');
+            ->method('getAlertMailFrom')->willReturn('fromAddress');
 
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()
@@ -213,7 +287,7 @@ class MonologLoggerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['addMailHandler'])
             ->getMock();
-        $factoryMock->expects($this->exactly($invocation))->method('addMailHandler');
+        $factoryMock->expects($this->exactly($throwException ? 0 : $invocation))->method('addMailHandler');
 
         $sut = new MonologLoggerFactory(
             $configurationMock,
@@ -222,19 +296,145 @@ class MonologLoggerFactoryTest extends TestCase
         );
 
         $this->callMethod($sut, 'addMailHandler', [$factoryMock]);
+
+        if ($throwException) {
+            $this->assertStringContainsString(
+                'excMsg',
+                file_get_contents($this->logFile)
+            );
+        }
     }
 
     public static function addMailHandlerDataProvider(): Generator
     {
-        yield 'no mail address' => [false, null, 0];
-        yield 'given mail addresses' => [true, ['mailFixture1', 'mailFixture2'], 1];
+        yield 'no mail address' => [false, null, false, 0];
+        yield 'given mail addresses' => [true, ['mailFixture1', 'mailFixture2'], false, 1];
+        yield 'given mail addresses but exception' => [true, ['mailFixture1', 'mailFixture2'], true, 1];
     }
 
     /**
      * @throws ReflectionException
      */
     #[Test]
-    public function testAddProcessors(): void
+    #[DataProvider('addSentryHandlerDataProvider')]
+    public function testAddSentryHandler(bool $dsnGiven, bool $throwException, int $invocation): void
+    {
+        $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'hasSentryDsn',
+                'getSentryOptions',
+                'getLogLevel',
+            ])
+            ->getMock();
+        $configurationMock->method('hasSentryDsn')->willReturn($dsnGiven);
+        $throwException ?
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getSentryOptions')->willThrowException(new ServiceNotFoundException('excMsg')):
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getSentryOptions')->willReturn([]);
+        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation * 2))
+            ->method('getLogLevel')->willReturn('error');
+
+        $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factoryMock = $this->getMockBuilder(LoggerFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['addOtherHandler'])
+            ->getMock();
+        $factoryMock->expects($this->exactly($throwException ? 0 : $invocation * 2))->method('addOtherHandler');
+
+        $sut = new MonologLoggerFactory(
+            $configurationMock,
+            $validatorMock,
+            LoggerFactory::create()
+        );
+
+        $this->callMethod($sut, 'addSentryHandler', [$factoryMock]);
+
+        if ($throwException) {
+            $this->assertStringContainsString(
+                'excMsg',
+                file_get_contents($this->logFile)
+            );
+        }
+    }
+
+    public static function addSentryHandlerDataProvider(): Generator
+    {
+        yield 'no dsn' => [false, false, 0];
+        yield 'given dsn' => [true, false, 1];
+        yield 'given dsn but exception' => [true, true, 1];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('addHttpApiHandlerDataProvider')]
+    public function testAddHttpApiHandler(bool $addressGiven, $address, bool $throwException, int $invocation): void
+    {
+        $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'hasHttpApiEndpoint',
+                'getHttpApiEndpoint',
+                'getHttpApiKey',
+                'getLogLevel',
+            ])
+            ->getMock();
+        $configurationMock->method('hasHttpApiEndpoint')->willReturn($addressGiven);
+        $configurationMock->expects($this->exactly($invocation))
+            ->method('getHttpApiEndpoint')->willReturn($address);
+        $throwException ?
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getHttpApiKey')->willThrowException(new InvalidArgumentException('excMsg')):
+            $configurationMock->expects($this->exactly($invocation))
+                ->method('getHttpApiKey')->willReturn('apiKey');
+        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
+            ->method('getLogLevel')->willReturn('error');
+
+        $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factoryMock = $this->getMockBuilder(LoggerFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['addOtherHandler'])
+            ->getMock();
+        $factoryMock->expects($this->exactly($throwException ? 0 : $invocation))->method('addOtherHandler');
+
+        $sut = new MonologLoggerFactory(
+            $configurationMock,
+            $validatorMock,
+            LoggerFactory::create()
+        );
+
+        $this->callMethod($sut, 'addHttpApiHandler', [$factoryMock]);
+
+        if ($throwException) {
+            $this->assertStringContainsString(
+                'excMsg',
+                file_get_contents($this->logFile)
+            );
+        }
+    }
+
+    public static function addHttpApiHandlerDataProvider(): Generator
+    {
+        yield 'no mail address' => [false, null, false, 0];
+        yield 'given mail addresses' => [true, 'endpoint fixture', false, 1];
+        yield 'given mail addresses but exception' => [true, 'endpoint fixture', true, 1];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('addProcessorsDataProvider')]
+    public function testAddProcessors(bool $throwException): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
@@ -248,14 +448,30 @@ class MonologLoggerFactoryTest extends TestCase
             ->onlyMethods(['addUidProcessor', 'addOtherProcessor'])
             ->getMock();
         $factoryMock->expects(self::atLeastOnce())->method('addUidProcessor');
-        $factoryMock->expects(self::atLeast(2))->method('addOtherProcessor');
+        $throwException ?
+            $factoryMock->expects(self::atLeast(1))->method('addOtherProcessor')
+                ->willThrowException(new InvalidArgumentException('excMsg')):
+            $factoryMock->expects(self::atLeast(2))->method('addOtherProcessor');
 
         $sut = new MonologLoggerFactory(
             $configurationMock,
             $validatorMock,
-            LoggerFactory::create()
+            $factoryMock
         );
 
         $this->callMethod($sut, 'addProcessors', [$factoryMock]);
+
+        if ($throwException) {
+            $this->assertStringContainsString(
+                'excMsg',
+                file_get_contents($this->logFile)
+            );
+        }
+    }
+
+    public static function addProcessorsDataProvider(): Generator
+    {
+        yield 'do not throw exception' => [false];
+        yield 'throw exception' => [true];
     }
 }

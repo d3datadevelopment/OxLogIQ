@@ -35,6 +35,9 @@ use ReflectionException;
 #[CoversMethod(Context::class, 'getAlertMailLevel')]
 #[CoversMethod(Context::class, 'getAlertMailSubject')]
 #[CoversMethod(Context::class, 'getAlertMailFrom')]
+#[CoversMethod(Context::class, 'getSentryDsn')]
+#[CoversMethod(Context::class, 'getHttpApiEndpoint')]
+#[CoversMethod(Context::class, 'getHttpApiKey')]
 class ContextTest extends TestCase
 {
     use CanAccessRestricted;
@@ -64,141 +67,295 @@ class ContextTest extends TestCase
      */
     #[Test]
     #[DataProvider('getRetentionDaysDataProvider')]
-    public function testGetRetentionDays($configuration, $expected): void
+    public function testGetRetentionDays($env, $facts, $expected, $invocationCount): void
     {
-        $factsMock = $this->getMockBuilder(ConfigFile::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $factsMock->expects($this->atLeastOnce())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_RETENTIONDAYS))
-            ->willReturn($configuration);
+        try {
+            $_ENV[Context::CONFIGVAR_RETENTIONDAYS] = $env;
 
-        $sut = $this->getMockBuilder(Context::class)
-            ->onlyMethods(['getFactsConfigFile'])
-            ->getMock();
-        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_RETENTIONDAYS))
+                ->willReturn($facts);
 
-        $this->assertSame(
-            $expected,
-            $this->callMethod($sut, 'getRetentionDays')
-        );
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getRetentionDays')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_RETENTIONDAYS]);
+        }
     }
 
     public static function getRetentionDaysDataProvider(): Generator
     {
-        yield 'null' => [null, null];
-        yield 'integer' => [10, 10];
-        yield 'zero' => [0, 0];
-        yield 'wrong type' => ['a', null];
+        yield 'env string' => ['envValue', 'factsValue', null, 0];
+        yield 'env int' => [7, 5, 7, 0];
+        yield 'facts string' => [null, 'factsValue', null, 1];
+        yield 'facts int' => [null, 5, 5, 1];
+        yield 'facts null' => [null, null, null, 1];
     }
 
     /**
      * @throws ReflectionException
      */
     #[Test]
-    #[DataProvider('getNotificationMailRecipientsDataProvider')]
-    public function testGetNotificationMailRecipients($givenValue, $expected): void
+    #[DataProvider('getAlertMailRecipientsDataProvider')]
+    public function testGetAlertMailRecipients(
+        ?string $givenEnvValue,
+        $givenFactsValue,
+        $expected,
+        int $getVarCount,
+        array $exepectedArguments
+    ): void
     {
-        $factsMock = $this->getMockBuilder(ConfigFile::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $factsMock->expects($this->once())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_MAILRECIPIENTS))
-            ->willReturn($givenValue);
+        try {
+            $calls = [];
 
-        $sut = $this->getMockBuilder(Context::class)
-            ->onlyMethods(['getFactsConfigFile'])
-            ->getMock();
-        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+            $_ENV[Context::CONFIGVAR_MAILRECIPIENTS] = $givenEnvValue;
 
-        $this->assertSame(
-            $expected,
-            $this->callMethod($sut, 'getNotificationMailRecipients')
-        );
+            $factsMock = $this->getMockBuilder(ConfigFile::class )
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($getVarCount))->method('getVar')
+                ->with(self::callback(function ($arg) use (&$calls) {
+                    $calls[] = $arg;
+                    return true;
+                }))
+                ->willReturn($givenFactsValue);
+
+            $sut = $this->getMockBuilder( Context::class )
+                ->onlyMethods( [ 'getFactsConfigFile' ] )
+                ->getMock();
+            $sut->method( 'getFactsConfigFile' )->willReturn( $factsMock );
+
+            $this->assertSame( $expected, $this->callMethod( $sut, 'getAlertMailRecipients' ) );
+            $this->assertSame($calls, $exepectedArguments);
+
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_MAILRECIPIENTS]);
+        }
     }
 
-    public static function getNotificationMailRecipientsDataProvider(): Generator
+    public static function getAlertMailRecipientsDataProvider(): Generator
     {
-        yield 'null' => [null, null];
-        yield 'string' => ['recipientFixture', ['recipientFixture']];
-        yield 'array' => [['recipientFixture1', 'recipientFixture2'], ['recipientFixture1', 'recipientFixture2']];
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    #[Test]
-    public function testGetNotificationMailLevel(): void
-    {
-        $fixture = 'levelFixture';
-
-        $factsMock = $this->getMockBuilder(ConfigFile::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $factsMock->expects($this->once())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_MAILLEVEL))
-            ->willReturn($fixture);
-
-        $sut = $this->getMockBuilder(Context::class)
-            ->onlyMethods(['getFactsConfigFile'])
-            ->getMock();
-        $sut->method('getFactsConfigFile')->willReturn($factsMock);
-
-        $this->assertSame(
-            $fixture,
-            $this->callMethod($sut, 'getNotificationMailLevel')
-        );
+        yield 'env string' => ['recipientEnvFixture', 'recipientFactsFixture', ['recipientEnvFixture'], 0, []];
+        yield 'facts string' => [null, 'recipientFixture', ['recipientFixture'], 1, ['oxlogiq_mailRecipients']];
+        yield 'facts array' => [null, ['recipientFixture1', 'recipientFixture2'], ['recipientFixture1', 'recipientFixture2'], 1, ['oxlogiq_mailRecipients']];
+        yield 'fallback to sAdminEmail' => [null, null, null, 2, ['oxlogiq_mailRecipients', 'sAdminEmail']];
     }
 
     /**
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailSubject(): void
+    #[DataProvider('getAlertMailLevelDataProvider')]
+    public function testGetAlertMailLevel($env, $facts, $expected, $invocationCount): void
     {
-        $fixture = 'subjectFixture';
+        try {
+            $_ENV[Context::CONFIGVAR_MAILLEVEL] = $env;
 
-        $factsMock = $this->getMockBuilder(ConfigFile::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $factsMock->expects($this->once())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_MAILSUBJECT))
-            ->willReturn($fixture);
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_MAILLEVEL))
+                ->willReturn($facts);
 
-        $sut = $this->getMockBuilder(Context::class)
-            ->onlyMethods(['getFactsConfigFile'])
-            ->getMock();
-        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
 
-        $this->assertSame(
-            $fixture,
-            $this->callMethod($sut, 'getNotificationMailSubject')
-        );
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getAlertMailLevel')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_MAILLEVEL]);
+        }
+    }
+
+    public static function getAlertMailLevelDataProvider(): Generator
+    {
+        foreach (self::envDecisionDataProvider() as $key => $value) {
+            yield $key => $value;
+        }
+        yield 'default value' => [null, null, 'ERROR', 1];
     }
 
     /**
      * @throws ReflectionException
      */
     #[Test]
-    public function testGetNotificationMailFromAddress(): void
+    #[DataProvider('getAlertMailSubjectDataProvider')]
+    public function testGetAlertMailSubject($env, $facts, $expected, $invocationCount): void
     {
-        $fixture = 'fromFixture';
+        try {
+            $_ENV[Context::CONFIGVAR_MAILSUBJECT] = $env;
 
-        $factsMock = $this->getMockBuilder(ConfigFile::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $factsMock->expects($this->once())->method('getVar')
-            ->with($this->identicalTo(Context::CONFIGVAR_MAILFROM))
-            ->willReturn($fixture);
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_MAILSUBJECT))
+                ->willReturn($facts);
 
-        $sut = $this->getMockBuilder(Context::class)
-            ->onlyMethods(['getFactsConfigFile'])
-            ->getMock();
-        $sut->method('getFactsConfigFile')->willReturn($factsMock);
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
 
-        $this->assertSame(
-            $fixture,
-            $this->callMethod($sut, 'getNotificationMailFrom')
-        );
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getAlertMailSubject')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_MAILSUBJECT]);
+        }
+    }
+
+    public static function getAlertMailSubjectDataProvider(): Generator
+    {
+        foreach (self::envDecisionDataProvider() as $key => $value) {
+            yield $key => $value;
+        }
+        yield 'default value' => [null, null, 'Shop Log Alert', 1];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('envDecisionDataProvider')]
+    public function testGetAlertMailFromAddress($env, $facts, $expected, $invocationCount): void
+    {
+        try {
+            $_ENV[Context::CONFIGVAR_MAILFROM] = $env;
+
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_MAILFROM))
+                ->willReturn($facts);
+
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getAlertMailFrom')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_MAILFROM]);
+        }
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('envDecisionDataProvider')]
+    public function testGetSentryDsn($env, $facts, $expected, $invocationCount): void
+    {
+        try {
+            $_ENV[Context::CONFIGVAR_SENTRY_DSN] = $env;
+
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_SENTRY_DSN))
+                ->willReturn($facts);
+
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getSentryDsn')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_SENTRY_DSN]);
+        }
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('envDecisionDataProvider')]
+    public function testGetHttpApiEndpoint($env, $facts, $expected, $invocationCount): void
+    {
+        try {
+            $_ENV[Context::CONFIGVAR_HTTPAPI_ENDPOINT] = $env;
+
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_HTTPAPI_ENDPOINT))
+                ->willReturn($facts);
+
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getHttpApiEndpoint')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_HTTPAPI_ENDPOINT]);
+        }
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('envDecisionDataProvider')]
+    public function testGetHttpApiKey($env, $facts, $expected, $invocationCount): void
+    {
+        try {
+            $_ENV[Context::CONFIGVAR_HTTPAPI_KEY] = $env;
+
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
+                ->with($this->identicalTo(Context::CONFIGVAR_HTTPAPI_KEY))
+                ->willReturn($facts);
+
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods(['getFactsConfigFile'])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame(
+                $expected,
+                $this->callMethod($sut, 'getHttpApiKey')
+            );
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_HTTPAPI_KEY]);
+        }
+    }
+
+    public static function envDecisionDataProvider(): Generator
+    {
+        yield 'env string' => ['envValue', 'factsValue', 'envValue', 0];
+        yield 'facts string' => [null, 'factsValue', 'factsValue', 1];
     }
 }
