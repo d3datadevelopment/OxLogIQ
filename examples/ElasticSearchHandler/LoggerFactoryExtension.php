@@ -16,6 +16,7 @@
 namespace D3\LoggerExtension;
 
 use D3\LoggerFactory\LoggerFactory;
+use D3\OxLogIQ\Interfaces\MonologLoggerFactoryInterface as OxLogIQLoggerFactoryInterface;
 use D3\OxLogIQ\MonologLoggerFactory;
 use Elastica\Client;
 use Monolog\Handler\ElasticSearchHandler;
@@ -23,7 +24,7 @@ use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologCon
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use Psr\Log\LoggerInterface;
 
-class LoggerFactoryExtension implements LoggerFactoryInterface
+class LoggerFactoryExtension implements LoggerFactoryInterface, OxLogIQLoggerFactoryInterface
 {
     /**
      * @param MonologLoggerFactory $innerConfig

@@ -19,6 +19,7 @@ namespace D3\OxLogIQ;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Handlers\HttpApiHandler;
+use D3\OxLogIQ\Interfaces\MonologLoggerFactoryInterface as OxLogIQLoggerFactoryInterface;
 use D3\OxLogIQ\Processors\SentryExceptionProcessor;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
 use Exception;
@@ -43,7 +44,7 @@ use Sentry\SentrySdk;
 
 use function Sentry\init;
 
-class MonologLoggerFactory implements LoggerFactoryInterface
+class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFactoryInterface
 {
     /**
      * @param MonologConfiguration         $configuration

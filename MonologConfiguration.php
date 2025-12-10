@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace D3\OxLogIQ;
 
+use D3\OxLogIQ\Interfaces\MonologConfigurationInterface as OxLogIQConfigurationInterface;
 use D3\OxLogIQ\Release\ReleaseServiceInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -36,7 +37,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Sentry\Event as SentryEvent;
 use Sentry\Tracing\SamplingContext;
 
-class MonologConfiguration implements MonologConfigurationInterface
+class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConfigurationInterface
 {
     /**
      * @param \OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfiguration $innerConfig
