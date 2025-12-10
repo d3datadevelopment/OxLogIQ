@@ -252,21 +252,21 @@ class MonologLoggerFactoryTest extends TestCase
      */
     #[Test]
     #[DataProvider('addMailHandlerDataProvider')]
-    public function testAddMailHandler(bool $addressGiven, $address, bool $throwException, int $invocation): void
+    public function testAddMailHandler(bool $useMailAlert, $address, bool $throwException, int $invocation): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
             ->onlyMethods([
-                'hasAlertMailRecipient',
+                'useAlertMail',
                 'getAlertMailRecipients',
                 'getAlertMailLevel',
                 'getAlertMailSubject',
                 'getAlertMailFrom',
             ])
             ->getMock();
-        $configurationMock->method('hasAlertMailRecipient')->willReturn($addressGiven);
+        $configurationMock->method('useAlertMail')->willReturn($useMailAlert);
         $configurationMock->expects($this->exactly($invocation))
-                          ->method('getAlertMailRecipients')->willReturn($address);
+            ->method('getAlertMailRecipients')->willReturn($address);
         $throwException ?
             $configurationMock->expects($this->exactly($invocation))
                 ->method('getAlertMailLevel')->willThrowException(

@@ -39,7 +39,8 @@ The following parameters can be adjusted using these variables:
 |--------------------------|----------------------------------------------------------------------------------------------------------------|
 | sLogLevel (OXID default) | Lowest level written to the log files                                                                          |
 | oxlogiq_retentionDays    | Number of days that log files are retained, <br/>- `0` for unlimited, <br/>-`null` for a single file (default) |
-| oxlogiq_mailRecipients   | Recipient address(es) for alerts, <br/>array or string, <br/>`null` for no mail delivery (default)             |
+| oxlogiq_mailAlert        | *optional:* Toggle for sending emails in case of error (true/false)                                            |
+| oxlogiq_mailRecipients   | *optional:* Recipient address(es) for alerts, <br/>array or string, <br/>`null` for Config `sAdminEmail`       |
 | oxlogiq_mailLogLevel     | *optional:* lowest level that will be alerted by email (default: `ERROR`)                                      |
 | oxlogiq_mailSubject      | *optional:* subject of the alert email (default: `Shop Log Alert`)                                             |
 | oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
@@ -55,8 +56,9 @@ Define these settings either as an environment variable or as a variable in the 
 ```PHP
 $this->sLogLevel = "ERROR";
 $this->oxlogiq_retentionDays = 7;
-$this->oxlogiq_mailRecipients = "alerts@mydomain.com";
 // optional
+$this->oxlogiq_mailAlert = true;
+$this->oxlogiq_mailRecipients = "alerts@mydomain.com";
 $this->oxlogiq_mailLogLevel = "ERROR";
 $this->oxlogiq_mailSubject = "Exception Alert";
 $this->oxlogiq_mailFrom = "sender@mydomain.com";

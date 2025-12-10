@@ -31,6 +31,7 @@ use ReflectionException;
 #[Small]
 #[CoversMethod(Context::class, 'getFactsConfigFile')]
 #[CoversMethod(Context::class, 'getRetentionDays')]
+#[CoversMethod(Context::class, 'useAlertMail')]
 #[CoversMethod(Context::class, 'getAlertMailRecipients')]
 #[CoversMethod(Context::class, 'getAlertMailLevel')]
 #[CoversMethod(Context::class, 'getAlertMailSubject')]
@@ -106,13 +107,60 @@ class ContextTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
+    #[DataProvider('useAlertMailDataProvider')]
+    public function testUseAlertMail(
+        ?bool $givenEnvValue,
+        $givenFactsValue,
+        $expected,
+        int $getVarCount,
+        array $expectedArguments
+    ): void {
+        try {
+            $calls = [];
+
+            $_ENV[Context::CONFIGVAR_MAILTOGGLE] = $givenEnvValue;
+
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $factsMock->expects($this->exactly($getVarCount))->method('getVar')
+                ->with(self::callback(function ($arg) use (&$calls) {
+                    $calls[] = $arg;
+                    return true;
+                }))
+                ->willReturn($givenFactsValue);
+
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods([ 'getFactsConfigFile' ])
+                ->getMock();
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
+
+            $this->assertSame($expected, $this->callMethod($sut, 'useAlertMail'));
+            $this->assertSame($calls, $expectedArguments);
+
+        } finally {
+            unset($_ENV[Context::CONFIGVAR_MAILTOGGLE]);
+        }
+    }
+
+    public static function useAlertMailDataProvider(): Generator
+    {
+        yield 'env true value' => [true, false, true, 0, []];
+        yield 'env false value' => [false, true, false, 0, []];
+        yield 'facts value' => [null, true, true, 1, [Context::CONFIGVAR_MAILTOGGLE]];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
     #[DataProvider('getAlertMailRecipientsDataProvider')]
     public function testGetAlertMailRecipients(
         ?string $givenEnvValue,
         $givenFactsValue,
         $expected,
         int $getVarCount,
-        array $exepectedArguments
+        array $expectedArguments
     ): void {
         try {
             $calls = [];
@@ -135,7 +183,7 @@ class ContextTest extends TestCase
             $sut->method('getFactsConfigFile')->willReturn($factsMock);
 
             $this->assertSame($expected, $this->callMethod($sut, 'getAlertMailRecipients'));
-            $this->assertSame($calls, $exepectedArguments);
+            $this->assertSame($calls, $expectedArguments);
 
         } finally {
             unset($_ENV[Context::CONFIGVAR_MAILRECIPIENTS]);
@@ -145,7 +193,9 @@ class ContextTest extends TestCase
     public static function getAlertMailRecipientsDataProvider(): Generator
     {
         yield 'env string' => ['recipientEnvFixture', 'recipientFactsFixture', ['recipientEnvFixture'], 0, []];
+        yield 'empty env string' => ['', 'recipientFactsFixture', null, 0, []];
         yield 'facts string' => [null, 'recipientFixture', ['recipientFixture'], 1, ['oxlogiq_mailRecipients']];
+        yield 'empty facts string' => [null, '', null, 1, ['oxlogiq_mailRecipients']];
         yield 'facts array' => [null, ['recipientFixture1', 'recipientFixture2'], ['recipientFixture1', 'recipientFixture2'], 1, ['oxlogiq_mailRecipients']];
         yield 'fallback to sAdminEmail' => [null, null, null, 2, ['oxlogiq_mailRecipients', 'sAdminEmail']];
     }

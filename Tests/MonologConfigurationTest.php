@@ -40,6 +40,7 @@ use Sentry\Tracing\SamplingContext;
 #[CoversMethod(MonologConfiguration::class, 'getLogFilePath')]
 #[CoversMethod(MonologConfiguration::class, 'getLogLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getRetentionDays')]
+#[CoversMethod(MonologConfiguration::class, 'useAlertMail')]
 #[CoversMethod(MonologConfiguration::class, 'hasAlertMailRecipient')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailRecipients')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailLevel')]
@@ -151,6 +152,48 @@ class MonologConfigurationTest extends TestCase
             5,
             $this->sut->getRetentionDays()
         );
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    #[Test]
+    #[DataProvider('useAlertMailDataProvider')]
+    public function testUseAlertMail(bool $useMail, bool $hasRecipient, bool $expected): void
+    {
+        $configurationMock = new OxidMonologConfiguration(
+            'myLogger',
+            '/var/log/oxidlog.log',
+            'WARNING'
+        );
+
+        $configMock = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $contextMock = $this->getMockBuilder(Context::class)
+            ->onlyMethods(get_class_methods(Context::class))
+            ->getMock();
+        $contextMock->method('useAlertMail')->willReturn($useMail);
+
+        $sut = $this->getMockBuilder(MonologConfiguration::class)
+            ->setConstructorArgs([$configurationMock, $configMock, $contextMock])
+            ->onlyMethods(['hasAlertMailRecipient'])
+            ->getMock();
+        $sut->method('hasAlertMailRecipient')->willReturn($hasRecipient);
+
+        $this->assertSame(
+            $expected,
+            $this->callMethod($sut, 'useAlertMail')
+        );
+    }
+
+    public static function useAlertMailDataProvider(): Generator
+    {
+        yield 'toggle off, no recipient'   => [false, false, false];
+        yield 'toggle on, no recipient'   => [true, false, false];
+        yield 'toggle on, has recipient'   => [true, true, true];
+        yield 'toggle off, has recipient'   => [false, true, false];
     }
 
     /**

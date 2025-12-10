@@ -84,6 +84,11 @@ class MonologConfiguration implements MonologConfigurationInterface
         return $this->context->getRetentionDays();
     }
 
+    public function useAlertMail(): bool
+    {
+        return $this->context->useAlertMail() && $this->hasAlertMailRecipient();
+    }
+
     public function hasAlertMailRecipient(): bool
     {
         $recipients = $this->getAlertMailRecipients();

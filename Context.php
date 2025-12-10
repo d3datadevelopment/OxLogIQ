@@ -23,6 +23,7 @@ use OxidEsales\Facts\Config\ConfigFile as FactsConfigFile;
 class Context extends OxidContext
 {
     public const CONFIGVAR_RETENTIONDAYS    = 'oxlogiq_retentionDays';
+    public const CONFIGVAR_MAILTOGGLE       = 'oxlogiq_mailAlert';
     public const CONFIGVAR_MAILRECIPIENTS   = 'oxlogiq_mailRecipients';
     public const CONFIGVAR_MAILLEVEL        = 'oxlogiq_mailLogLevel';
     public const CONFIGVAR_MAILSUBJECT      = 'oxlogiq_mailSubject';
@@ -56,6 +57,14 @@ class Context extends OxidContext
         return !is_int($retention) ? null : $retention;
     }
 
+    public function useAlertMail(): bool
+    {
+        return isset($_ENV[self::CONFIGVAR_MAILTOGGLE]) ?
+            (bool) $_ENV[self::CONFIGVAR_MAILTOGGLE] ??
+            (bool) $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILTOGGLE) :
+            (bool) $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILTOGGLE);
+    }
+
     /**
      * @return string[]|null
      */
@@ -65,7 +74,12 @@ class Context extends OxidContext
             $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILRECIPIENTS) ??
             $this->getFactsConfigFile()->getVar('sAdminEmail');
 
-        return is_string($recipients) ? [$recipients] : $recipients;
+
+        $recipients = is_string($recipients) ? [$recipients] : $recipients;
+        $recipients = is_array($recipients) ? array_filter($recipients) : $recipients;
+        return is_array($recipients) ?
+            !count($recipients) ? null : $recipients :
+            $recipients;
     }
 
     public function getAlertMailLevel(): string

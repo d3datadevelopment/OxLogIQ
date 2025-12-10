@@ -103,7 +103,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface
 
     protected function addMailHandler(LoggerFactory $factory): void
     {
-        if ($this->configuration->hasAlertMailRecipient()) {
+        if ($this->configuration->useAlertMail()) {
             try {
                 /** @var Shop $shop */
                 $shop = Registry::getConfig()->getActiveShop();
