@@ -18,6 +18,8 @@ declare(strict_types=1);
 namespace D3\OxLogIQ;
 
 use D3\OxLogIQ\Release\ReleaseServiceInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
@@ -28,6 +30,9 @@ use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologCon
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Sentry\Event as SentryEvent;
 use Sentry\Tracing\SamplingContext;
 
@@ -220,5 +225,29 @@ class MonologConfiguration implements MonologConfigurationInterface
         }
 
         return trim($apiKey);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getHttpClient(): ClientInterface
+    {
+        return new Client();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getHttpRequestFactory(): RequestFactoryInterface
+    {
+        return new HttpFactory();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getHttpStreamFactory(): StreamFactoryInterface
+    {
+        return new HttpFactory();
     }
 }

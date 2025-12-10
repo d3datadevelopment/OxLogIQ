@@ -161,9 +161,9 @@ class MonologLoggerFactory implements LoggerFactoryInterface
                         $this->configuration->getHttpApiEndpoint(),
                         $this->configuration->getHttpApiKey(),
                         Logger::toMonologLevel($this->configuration->getLogLevel()),
-                        new Client(),
-                        new HttpFactory(),
-                        new HttpFactory(),
+                        $this->configuration->getHttpClient(),
+                        $this->configuration->getHttpRequestFactory(),
+                        $this->configuration->getHttpStreamFactory(),
                     ))
                 )->setBuffering();
             } catch (InvalidArgumentException $exception) {

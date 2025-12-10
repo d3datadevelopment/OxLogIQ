@@ -23,6 +23,8 @@ use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\MonologLoggerFactory;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -383,6 +385,9 @@ class MonologLoggerFactoryTest extends TestCase
                 'getHttpApiEndpoint',
                 'getHttpApiKey',
                 'getLogLevel',
+                'getHttpClient',
+                'getHttpRequestFactory',
+                'getHttpStreamFactory',
             ])
             ->getMock();
         $configurationMock->method('hasHttpApiEndpoint')->willReturn($addressGiven);
@@ -395,6 +400,12 @@ class MonologLoggerFactoryTest extends TestCase
                 ->method('getHttpApiKey')->willReturn('apiKey');
         $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
             ->method('getLogLevel')->willReturn('error');
+        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
+            ->method('getHttpClient')->willReturn(new Client());
+        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
+            ->method('getHttpRequestFactory')->willReturn(new HttpFactory());
+        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
+            ->method('getHttpStreamFactory')->willReturn(new HttpFactory());
 
         $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
             ->disableOriginalConstructor()
