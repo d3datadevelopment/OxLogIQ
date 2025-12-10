@@ -58,15 +58,15 @@ class SentryExceptionProcessorTest extends TestCase
     {
         yield 'check failed' => [false,
             ['level' => Logger::ERROR, 'context' => ['other' => new Exception()]],
-            ['level' => Logger::ERROR, 'context' => ['other' => new Exception()]]
+            ['level' => Logger::ERROR, 'context' => ['other' => new Exception()]],
         ];
         yield 'check passed, exception moved' => [true,
             ['level' => Logger::ERROR, 'context' => ['other' => new Exception()]],
-            ['level' => Logger::ERROR, 'context' => ['exception' => new Exception()]]
+            ['level' => Logger::ERROR, 'context' => ['exception' => new Exception()]],
         ];
         yield 'check passed, exception kept' => [true,
             ['level' => Logger::ERROR, 'context' => ['exception' => new Exception()]],
-            ['level' => Logger::ERROR, 'context' => ['exception' => new Exception()]]
+            ['level' => Logger::ERROR, 'context' => ['exception' => new Exception()]],
         ];
     }
 

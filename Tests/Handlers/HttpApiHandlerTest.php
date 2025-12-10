@@ -82,7 +82,9 @@ class HttpApiHandlerTest extends TestCase
         $stream = new RequestFactoryStub();
 
         $this->callMethod(
-            $sut, '__construct', ['endpoint', 'apikey', Logger::DEBUG, $client, $request, $stream]
+            $sut,
+            '__construct',
+            ['endpoint', 'apikey', Logger::DEBUG, $client, $request, $stream]
         );
 
         $this->assertSame($client, $this->getValue($sut, 'client'));
@@ -229,7 +231,7 @@ class HttpApiHandlerTest extends TestCase
             ->onlyMethods(['getReleaseService'])
             ->getMock();
         $throwException ?
-            $sut->method('getReleaseService')->willThrowException(new ServiceNotFoundException('excMsg')):
+            $sut->method('getReleaseService')->willThrowException(new ServiceNotFoundException('excMsg')) :
             $sut->method('getReleaseService')->willReturn($releaseServiceMock);
 
         $this->assertSame(

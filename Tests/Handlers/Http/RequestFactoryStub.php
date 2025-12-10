@@ -26,25 +26,25 @@ use Psr\Http\Message\StreamInterface;
 class RequestFactoryStub implements RequestFactoryInterface, StreamFactoryInterface
 {
     #[NoReturn]
-    public function createRequest( string $method, $uri ): RequestInterface
+    public function createRequest(string $method, $uri): RequestInterface
     {
         exit();
     }
 
     #[NoReturn]
-    public function createStream( string $content = '' ): StreamInterface
+    public function createStream(string $content = ''): StreamInterface
     {
         exit();
     }
 
     #[NoReturn]
-    public function createStreamFromFile( string $filename, string $mode = 'r' ): StreamInterface
+    public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
         exit();
     }
 
     #[NoReturn]
-    public function createStreamFromResource( $resource ): StreamInterface
+    public function createStreamFromResource($resource): StreamInterface
     {
         exit();
     }

@@ -113,14 +113,13 @@ class ContextTest extends TestCase
         $expected,
         int $getVarCount,
         array $exepectedArguments
-    ): void
-    {
+    ): void {
         try {
             $calls = [];
 
             $_ENV[Context::CONFIGVAR_MAILRECIPIENTS] = $givenEnvValue;
 
-            $factsMock = $this->getMockBuilder(ConfigFile::class )
+            $factsMock = $this->getMockBuilder(ConfigFile::class)
                 ->disableOriginalConstructor()
                 ->getMock();
             $factsMock->expects($this->exactly($getVarCount))->method('getVar')
@@ -130,12 +129,12 @@ class ContextTest extends TestCase
                 }))
                 ->willReturn($givenFactsValue);
 
-            $sut = $this->getMockBuilder( Context::class )
-                ->onlyMethods( [ 'getFactsConfigFile' ] )
+            $sut = $this->getMockBuilder(Context::class)
+                ->onlyMethods([ 'getFactsConfigFile' ])
                 ->getMock();
-            $sut->method( 'getFactsConfigFile' )->willReturn( $factsMock );
+            $sut->method('getFactsConfigFile')->willReturn($factsMock);
 
-            $this->assertSame( $expected, $this->callMethod( $sut, 'getAlertMailRecipients' ) );
+            $this->assertSame($expected, $this->callMethod($sut, 'getAlertMailRecipients'));
             $this->assertSame($calls, $exepectedArguments);
 
         } finally {

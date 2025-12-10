@@ -25,7 +25,7 @@ use Psr\Http\Message\ResponseInterface;
 class ClientStub implements ClientInterface
 {
     #[NoReturn]
-    public function sendRequest( RequestInterface $request ): ResponseInterface
+    public function sendRequest(RequestInterface $request): ResponseInterface
     {
         exit();
     }

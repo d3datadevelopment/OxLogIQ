@@ -388,12 +388,15 @@ class MonologConfigurationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $obj = new class(
+        $obj = new class (
             $configurationMock,
             $configMock,
             $contextMock
         ) extends MonologConfiguration {
-            public function call(): callable { return $this->getSentryTracesSampleRate(); }
+            public function call(): callable
+            {
+                return $this->getSentryTracesSampleRate();
+            }
         };
 
         $callable = $obj->call();
@@ -426,12 +429,15 @@ class MonologConfigurationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $obj = new class(
+        $obj = new class (
             $configurationMock,
             $configMock,
             $contextMock
         ) extends MonologConfiguration {
-            public function call(): callable { return $this->beforeSendToSentry(); }
+            public function call(): callable
+            {
+                return $this->beforeSendToSentry();
+            }
         };
 
         $callable = $obj->call();

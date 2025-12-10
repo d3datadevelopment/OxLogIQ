@@ -330,7 +330,7 @@ class MonologLoggerFactoryTest extends TestCase
         $configurationMock->method('hasSentryDsn')->willReturn($dsnGiven);
         $throwException ?
             $configurationMock->expects($this->exactly($invocation))
-                ->method('getSentryOptions')->willThrowException(new ServiceNotFoundException('excMsg')):
+                ->method('getSentryOptions')->willThrowException(new ServiceNotFoundException('excMsg')) :
             $configurationMock->expects($this->exactly($invocation))
                 ->method('getSentryOptions')->willReturn([]);
         $configurationMock->expects($this->exactly($throwException ? 0 : $invocation * 2))
@@ -390,7 +390,7 @@ class MonologLoggerFactoryTest extends TestCase
             ->method('getHttpApiEndpoint')->willReturn($address);
         $throwException ?
             $configurationMock->expects($this->exactly($invocation))
-                ->method('getHttpApiKey')->willThrowException(new InvalidArgumentException('excMsg')):
+                ->method('getHttpApiKey')->willThrowException(new InvalidArgumentException('excMsg')) :
             $configurationMock->expects($this->exactly($invocation))
                 ->method('getHttpApiKey')->willReturn('apiKey');
         $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
@@ -450,7 +450,7 @@ class MonologLoggerFactoryTest extends TestCase
         $factoryMock->expects(self::atLeastOnce())->method('addUidProcessor');
         $throwException ?
             $factoryMock->expects(self::atLeast(1))->method('addOtherProcessor')
-                ->willThrowException(new InvalidArgumentException('excMsg')):
+                ->willThrowException(new InvalidArgumentException('excMsg')) :
             $factoryMock->expects(self::atLeast(2))->method('addOtherProcessor');
 
         $sut = new MonologLoggerFactory(

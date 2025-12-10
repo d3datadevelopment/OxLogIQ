@@ -31,7 +31,7 @@ class ResponseStub implements ResponseInterface
     }
 
     #[NoReturn]
-    public function withProtocolVersion( string $version ): MessageInterface
+    public function withProtocolVersion(string $version): MessageInterface
     {
         exit();
     }
@@ -43,37 +43,37 @@ class ResponseStub implements ResponseInterface
     }
 
     #[NoReturn]
-    public function hasHeader( string $name ): bool
+    public function hasHeader(string $name): bool
     {
         exit();
     }
 
     #[NoReturn]
-    public function getHeader( string $name ): array
+    public function getHeader(string $name): array
     {
         exit();
     }
 
     #[NoReturn]
-    public function getHeaderLine( string $name ): string
+    public function getHeaderLine(string $name): string
     {
         exit();
     }
 
     #[NoReturn]
-    public function withHeader( string $name, $value ): MessageInterface
+    public function withHeader(string $name, $value): MessageInterface
     {
         exit();
     }
 
     #[NoReturn]
-    public function withAddedHeader( string $name, $value ): MessageInterface
+    public function withAddedHeader(string $name, $value): MessageInterface
     {
         exit();
     }
 
     #[NoReturn]
-    public function withoutHeader( string $name ): MessageInterface
+    public function withoutHeader(string $name): MessageInterface
     {
         exit();
     }
@@ -85,7 +85,7 @@ class ResponseStub implements ResponseInterface
     }
 
     #[NoReturn]
-    public function withBody( StreamInterface $body ): MessageInterface
+    public function withBody(StreamInterface $body): MessageInterface
     {
         exit();
     }
@@ -97,7 +97,7 @@ class ResponseStub implements ResponseInterface
     }
 
     #[NoReturn]
-    public function withStatus( int $code, string $reasonPhrase = '' ): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         exit();
     }

@@ -67,7 +67,7 @@ class ReleaseServiceTest extends TestCase
             $this->callMethod($sut, 'getRelease'),
             [
                 date('Y-m-d_H:i:s', time()),
-                $date->format('Y-m-d')
+                $date->format('Y-m-d'),
             ],
         );
     }
@@ -93,9 +93,9 @@ class ReleaseServiceTest extends TestCase
     public function testGetFilePath(): void
     {
         $sut = new ReleaseService();
-        
+
         $fileName = $this->callMethod($sut, 'getFilePath');
-        
+
         $this->assertStringContainsString('composer.lock', $fileName);
         $this->assertFileExists($fileName);
     }

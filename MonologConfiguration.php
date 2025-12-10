@@ -148,7 +148,7 @@ class MonologConfiguration implements MonologConfigurationInterface
             'enable_logs' => true,
             'traces_sampler' => $this->getSentryTracesSampleRate(),
             'environment' => Registry::getConfig()->getActiveShop()->isProductiveMode() ?
-                'production' :  // @codeCoverageIgnore
+                'production' : // @codeCoverageIgnore
                 'development',  // @codeCoverageIgnore
             'release' => $this->getRelease(),
             'before_send' => $this->beforeSendToSentry(),
