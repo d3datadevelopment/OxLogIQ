@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://git.d3data.de/D3Public/OxLogIQ/compare/1.0.0.0...rel_1.x)
 
+## [1.1.0.0](https://git.d3data.de/D3Public/OxLogIQ/compare/1.0.0.0...1.1.0.0) - 2025-12-10
+### Added
+- optional [Sentry](https://sentry.io) handler
+- optional HTTP API handler e.g. for ElasticSearch using a PSR compatible client
+- shutdown function to log PHP errors as well
+- errors during logger creation dealt with
+
+### Changed
+- extensibility improved
+- "mail notifification" renamed to "mail alert"
+- release service extracted
+
 ## [1.0.0.0](https://git.d3data.de/D3Public/OxLogIQ/releases/tag/1.0.0.0) - 2025-10-30
 ### Added
 - Date-separated logging (adjustable)
