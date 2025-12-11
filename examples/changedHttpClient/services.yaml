@@ -4,7 +4,7 @@ services:
 
   D3\LoggerExtension\ConfigurationExtension:
     class: D3\LoggerExtension\ConfigurationExtension
-    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
+    decorates: D3\OxLogIQ\MonologConfiguration
     decoration_inner_name: 'oxid.d3_loggerconfuguration.inner'
     arguments:
       - '@oxid.d3_loggerconfiguration.inner'

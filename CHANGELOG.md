@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - optional HTTP API handler e.g. for ElasticSearch using a PSR compatible client
 - shutdown function to log PHP errors as well
 - errors during logger creation dealt with
+- extension examples
 
 ### Changed
 - extensibility improved
