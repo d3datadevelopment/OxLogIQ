@@ -1,6 +1,6 @@
 # alternative HTTP client
 
-Change the HTTP client for API requests.
+Replaces the HTTP client for API requests. This allows you to use your preferred PSR 7 / PSR 18 client or reconfigure the existing one to meet your requirements.
 
 ## Dependencies
 
