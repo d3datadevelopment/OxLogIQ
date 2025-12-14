@@ -12,6 +12,8 @@ services:
 
   OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface:
     class: D3\OxLogIQ\MonologLoggerFactory
+    arguments:
+      $providers: !tagged_iterator oxlogiq.provider
 
   D3\OxLogIQ\Release\ReleaseServiceInterface:
     class: D3\OxLogIQ\Release\ReleaseService
@@ -35,3 +37,31 @@ services:
     decoration_inner_name: 'oxid.active_modules_data_provider_bridge.inner'
     arguments:
       - '@oxid.active_modules_data_provider_bridge.inner'
+
+  D3\OxLogIQ\Providers\FileHandlerProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 300 }
+
+  D3\OxLogIQ\Providers\HttpApiHandlerProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 100 }
+
+  D3\OxLogIQ\Providers\IntrospectionProcessorProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 100 }
+
+  D3\OxLogIQ\Providers\MailHandlerProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 200 }
+
+  D3\OxLogIQ\Providers\SentryHandlerProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 100 }
+
+  D3\OxLogIQ\Providers\SessionIdProcessorProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 300 }
+
+  D3\OxLogIQ\Providers\UidProcessorProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 300 }

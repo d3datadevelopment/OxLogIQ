@@ -22,7 +22,6 @@ use Exception;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderBridge;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderBridgeInterface;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderInterface;
 use Psr\Log\LoggerInterface;
 
 class ShutdownActiveModulesDataProviderBridge implements ActiveModulesDataProviderBridgeInterface

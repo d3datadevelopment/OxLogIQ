@@ -2,9 +2,6 @@ services:
   _defaults:
     autowire: true
 
-  D3\LoggerExtension\LoggerFactoryExtension:
-    class: D3\LoggerExtension\LoggerFactoryExtension
-    decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface
-    decoration_inner_name: 'oxid.d3_loggerfactory.inner'
-    arguments:
-      - '@oxid.d3_loggerfactory.inner'
+  D3\LoggerExtension\ElasticSearchHandlerProvider:
+    tags:
+      - { name: oxlogiq.provider, priority: 100 }
