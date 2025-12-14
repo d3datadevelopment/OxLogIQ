@@ -37,12 +37,6 @@ interface MonologConfigurationInterface
 
     public function getAlertMailFrom(): ?string;
 
-    public function hasSentryDsn(): bool;
-
-    public function getSentryDsn(): ?string;
-
-    public function getSentryOptions(): iterable;
-
     public function getRelease(): string;
 
     public function hasHttpApiEndpoint(): bool;

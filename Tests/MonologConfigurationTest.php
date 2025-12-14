@@ -31,8 +31,6 @@ use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
-use Sentry\Event;
-use Sentry\Tracing\SamplingContext;
 
 #[Small]
 #[CoversMethod(MonologConfiguration::class, '__construct')]
@@ -46,12 +44,7 @@ use Sentry\Tracing\SamplingContext;
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailLevel')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailSubject')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailFrom')]
-#[CoversMethod(MonologConfiguration::class, 'hasSentryDsn')]
-#[CoversMethod(MonologConfiguration::class, 'getSentryDsn')]
-#[CoversMethod(MonologConfiguration::class, 'getSentryOptions')]
 #[CoversMethod(MonologConfiguration::class, 'getRelease')]
-#[CoversMethod(MonologConfiguration::class, 'getSentryTracesSampleRate')]
-#[CoversMethod(MonologConfiguration::class, 'beforeSendToSentry')]
 #[CoversMethod(MonologConfiguration::class, 'hasHttpApiEndpoint')]
 #[CoversMethod(MonologConfiguration::class, 'getHttpApiEndpoint')]
 #[CoversMethod(MonologConfiguration::class, 'getHttpApiKey')]
@@ -306,87 +299,6 @@ class MonologConfigurationTest extends TestCase
      * @dataProvider getSentryDsnDataProvider
      */
     #[Test]
-    #[DataProvider('getSentryDsnDataProvider')]
-    public function testHasSentryDsn($givenValue, $expected): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'error'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->onlyMethods(get_class_methods(Context::class))
-            ->getMock();
-        $contextMock->method('getSentryDsn')->willReturn($givenValue);
-
-        $sut = new MonologConfiguration(
-            $configurationMock,
-            $configMock,
-            $contextMock
-        );
-
-        self::assertSame(
-            $expected,
-            $this->callMethod($sut, 'hasSentryDsn')
-        );
-
-        self::assertSame(
-            $givenValue,
-            $this->callMethod($sut, 'getSentryDsn')
-        );
-    }
-
-    public static function getSentryDsnDataProvider(): Generator
-    {
-        yield 'passed string'   => ['dsn', true];
-        yield 'empty string'   => ['', false];
-        yield 'unknown'   => [null, false];
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    #[Test]
-    public function testGetSentryOptions(): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'error'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $sut = new MonologConfiguration(
-            $configurationMock,
-            $configMock,
-            $contextMock
-        );
-
-        $return = $this->callMethod($sut, 'getSentryOptions');
-
-        $this->assertIsIterable($return);
-        $this->assertArrayHasKey('dsn', $return);
-        $this->assertArrayHasKey('environment', $return);
-        $this->assertArrayHasKey('release', $return);
-        $this->assertArrayHasKey('prefixes', $return);
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    #[Test]
     public function testGetRelease(): void
     {
         $configurationMock = new OxidMonologConfiguration(
@@ -415,85 +327,6 @@ class MonologConfigurationTest extends TestCase
             $re,
             $this->callMethod($sut, 'getRelease')
         );
-    }
-
-    /**
-     * @dataProvider getSentryTracesSampleRateDataProvider
-     */
-    #[Test]
-    #[DataProvider('getSentryTracesSampleRateDataProvider')]
-    public function testGetSentryTracesSampleRate(bool $parentSampled, $expected): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'error'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $obj = new class (
-            $configurationMock,
-            $configMock,
-            $contextMock
-        ) extends MonologConfiguration {
-            public function call(): callable
-            {
-                return $this->getSentryTracesSampleRate();
-            }
-        };
-
-        $callable = $obj->call();
-
-        $context = new SamplingContext();
-        $context->setParentSampled($parentSampled);
-        $this->assertSame($expected, $callable($context));
-    }
-
-    public static function getSentryTracesSampleRateDataProvider(): Generator
-    {
-        yield 'parentSampled' => [true, 1.0];
-        yield 'no parentSampled' => [false, 0.25];
-    }
-
-    #[Test]
-    public function testBeforeSendToSentry(): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'error'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $obj = new class (
-            $configurationMock,
-            $configMock,
-            $contextMock
-        ) extends MonologConfiguration {
-            public function call(): callable
-            {
-                return $this->beforeSendToSentry();
-            }
-        };
-
-        $callable = $obj->call();
-        $event = Event::createEvent();
-
-        $this->assertSame($event, $callable($event));
     }
 
     /**

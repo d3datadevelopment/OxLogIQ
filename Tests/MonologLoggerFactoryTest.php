@@ -45,7 +45,6 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 #[CoversMethod(MonologLoggerFactory::class, 'addFileHandler')]
 #[CoversMethod(MonologLoggerFactory::class, 'getFormatter')]
 #[CoversMethod(MonologLoggerFactory::class, 'addMailHandler')]
-#[CoversMethod(MonologLoggerFactory::class, 'addSentryHandler')]
 #[CoversMethod(MonologLoggerFactory::class, 'addHttpApiHandler')]
 #[CoversMethod(MonologLoggerFactory::class, 'addProcessors')]
 class MonologLoggerFactoryTest extends TestCase
@@ -119,13 +118,12 @@ class MonologLoggerFactoryTest extends TestCase
 
         $sut = $this->getMockBuilder(MonologLoggerFactory::class)
             ->onlyMethods(
-                ['addFileHandler', 'addMailHandler', 'addSentryHandler', 'addHttpApiHandler', 'addProcessors']
+                ['addFileHandler', 'addMailHandler', 'addHttpApiHandler', 'addProcessors']
             )
             ->setConstructorArgs([$configurationMock, $validatorMock, $factoryMock])
             ->getMock();
         $sut->expects(self::once())->method('addFileHandler');
         $sut->expects(self::once())->method('addMailHandler');
-        $sut->expects(self::once())->method('addSentryHandler');
         $sut->expects(self::once())->method('addHttpApiHandler');
         $sut->expects(self::once())->method('addProcessors');
 
@@ -319,64 +317,6 @@ class MonologLoggerFactoryTest extends TestCase
     /**
      * @throws ReflectionException
      * @dataProvider addSentryHandlerDataProvider
-     */
-    #[Test]
-    #[DataProvider('addSentryHandlerDataProvider')]
-    public function testAddSentryHandler(bool $dsnGiven, bool $throwException, int $invocation): void
-    {
-        $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([
-                'hasSentryDsn',
-                'getSentryOptions',
-                'getLogLevel',
-            ])
-            ->getMock();
-        $configurationMock->method('hasSentryDsn')->willReturn($dsnGiven);
-        $throwException ?
-            $configurationMock->expects($this->exactly($invocation))
-                ->method('getSentryOptions')->willThrowException(new ServiceNotFoundException('excMsg')) :
-            $configurationMock->expects($this->exactly($invocation))
-                ->method('getSentryOptions')->willReturn([]);
-        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation * 2))
-            ->method('getLogLevel')->willReturn('error');
-
-        $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $factoryMock = $this->getMockBuilder(LoggerFactory::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['addOtherHandler'])
-            ->getMock();
-        $factoryMock->expects($this->exactly($throwException ? 0 : $invocation * 2))->method('addOtherHandler');
-
-        $sut = new MonologLoggerFactory(
-            $configurationMock,
-            $validatorMock,
-            LoggerFactory::create()
-        );
-
-        $this->callMethod($sut, 'addSentryHandler', [$factoryMock]);
-
-        if ($throwException) {
-            $this->assertStringContainsString(
-                'excMsg',
-                file_get_contents($this->logFile)
-            );
-        }
-    }
-
-    public static function addSentryHandlerDataProvider(): Generator
-    {
-        yield 'no dsn' => [false, false, 0];
-        yield 'given dsn' => [true, false, 1];
-        yield 'given dsn but exception' => [true, true, 1];
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider addHttpApiHandlerDataProvider
      */
     #[Test]
     #[DataProvider('addHttpApiHandlerDataProvider')]

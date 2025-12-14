@@ -2,7 +2,7 @@ services:
   _defaults:
     autowire: true
 
-  oxid.config:
+  oxlogiq.oxid.config:
     class: OxidEsales\Eshop\Core\Config
     factory: ['OxidEsales\Eshop\Core\Registry', 'getConfig']
 
@@ -22,10 +22,10 @@ services:
   D3\OxLogIQ\MonologConfiguration:
     class: D3\OxLogIQ\MonologConfiguration
     decorates: OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface
-    decoration_inner_name: 'oxid.monolog_config.inner'
+    decoration_inner_name: 'oxlogiq.monolog_config.inner'
     arguments:
-      - '@oxid.monolog_config.inner'
-      - '@oxid.config'
+      - '@oxlogiq.monolog_config.inner'
+      - '@oxlogiq.oxid.config'
 
   OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface:
     class: D3\OxLogIQ\Context
@@ -34,9 +34,9 @@ services:
   D3\OxLogIQ\ShutdownActiveModulesDataProviderBridge:
     class: D3\OxLogIQ\ShutdownActiveModulesDataProviderBridge
     decorates: OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderBridgeInterface
-    decoration_inner_name: 'oxid.active_modules_data_provider_bridge.inner'
+    decoration_inner_name: 'oxlogiq.active_modules_data_provider_bridge.inner'
     arguments:
-      - '@oxid.active_modules_data_provider_bridge.inner'
+      - '@oxlogiq.active_modules_data_provider_bridge.inner'
 
   D3\OxLogIQ\Providers\FileHandlerProvider:
     tags:
@@ -53,10 +53,6 @@ services:
   D3\OxLogIQ\Providers\MailHandlerProvider:
     tags:
       - { name: oxlogiq.provider, priority: 200 }
-
-  D3\OxLogIQ\Providers\SentryHandlerProvider:
-    tags:
-      - { name: oxlogiq.provider, priority: 100 }
 
   D3\OxLogIQ\Providers\SessionIdProcessorProvider:
     tags:

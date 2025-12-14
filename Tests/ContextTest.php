@@ -36,7 +36,6 @@ use ReflectionException;
 #[CoversMethod(Context::class, 'getAlertMailLevel')]
 #[CoversMethod(Context::class, 'getAlertMailSubject')]
 #[CoversMethod(Context::class, 'getAlertMailFrom')]
-#[CoversMethod(Context::class, 'getSentryDsn')]
 #[CoversMethod(Context::class, 'getHttpApiEndpoint')]
 #[CoversMethod(Context::class, 'getHttpApiKey')]
 class ContextTest extends TestCase
@@ -312,38 +311,6 @@ class ContextTest extends TestCase
             );
         } finally {
             unset($_ENV[Context::CONFIGVAR_MAILFROM]);
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider envDecisionDataProvider
-     */
-    #[Test]
-    #[DataProvider('envDecisionDataProvider')]
-    public function testGetSentryDsn($env, $facts, $expected, $invocationCount): void
-    {
-        try {
-            $_ENV[Context::CONFIGVAR_SENTRY_DSN] = $env;
-
-            $factsMock = $this->getMockBuilder(ConfigFile::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
-                ->with($this->identicalTo(Context::CONFIGVAR_SENTRY_DSN))
-                ->willReturn($facts);
-
-            $sut = $this->getMockBuilder(Context::class)
-                ->onlyMethods(['getFactsConfigFile'])
-                ->getMock();
-            $sut->method('getFactsConfigFile')->willReturn($factsMock);
-
-            $this->assertSame(
-                $expected,
-                $this->callMethod($sut, 'getSentryDsn')
-            );
-        } finally {
-            unset($_ENV[Context::CONFIGVAR_SENTRY_DSN]);
         }
     }
 

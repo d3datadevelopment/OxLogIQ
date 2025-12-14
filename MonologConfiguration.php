@@ -25,7 +25,6 @@ use InvalidArgumentException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Config;
-use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
@@ -34,8 +33,6 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Sentry\Event as SentryEvent;
-use Sentry\Tracing\SamplingContext;
 
 class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConfigurationInterface
 {
@@ -136,42 +133,6 @@ class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConf
         return $this->context->getAlertMailFrom();
     }
 
-    public function hasSentryDsn(): bool
-    {
-        $dsn = $this->context->getSentryDsn();
-
-        return isset($dsn) && strlen(trim($dsn));
-    }
-
-    public function getSentryDsn(): ?string
-    {
-        return $this->context->getSentryDsn();
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function getSentryOptions(): iterable
-    {
-        return [
-            'dsn' => $this->getSentryDsn(),
-            'enable_logs' => true,
-            'traces_sampler' => $this->getSentryTracesSampleRate(),
-            'environment' => Registry::getConfig()->getActiveShop()->isProductiveMode() ?
-                'production' : // @codeCoverageIgnore
-                'development',  // @codeCoverageIgnore
-            'release' => $this->getRelease(),
-            'before_send' => $this->beforeSendToSentry(),
-            'prefixes' => [
-                realpath(
-                    rtrim(Registry::getConfig()->getConfigParam('sShopDir'), DIRECTORY_SEPARATOR).
-                    DIRECTORY_SEPARATOR.'..'
-                ).DIRECTORY_SEPARATOR,
-            ],
-        ];
-    }
-
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -181,23 +142,6 @@ class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConf
         /** @var ReleaseServiceInterface $service */
         $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
         return $service->getRelease();
-    }
-
-    protected function getSentryTracesSampleRate(): callable
-    {
-        return function (SamplingContext $context): float {
-            if ($context->getParentSampled()) {
-                return 1.0;
-            }
-            return 0.25;
-        };
-    }
-
-    protected function beforeSendToSentry(): callable
-    {
-        return function (SentryEvent $event): ?SentryEvent {
-            return $event;
-        };
     }
 
     public function hasHttpApiEndpoint(): bool

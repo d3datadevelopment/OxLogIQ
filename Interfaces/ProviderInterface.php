@@ -18,11 +18,8 @@ declare(strict_types=1);
 namespace D3\OxLogIQ\Interfaces;
 
 use D3\LoggerFactory\LoggerFactory;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
 interface ProviderInterface
 {
-    public function __construct(MonologConfigurationInterface $configuration);
-
     public function register(LoggerFactory $factory): void;
 }
