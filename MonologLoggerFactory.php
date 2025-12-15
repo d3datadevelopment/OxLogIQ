@@ -45,8 +45,12 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
     {
         $factory = $this->loggerFactory;
 
-        foreach ($this->providers as $provider) {
-            $provider->register($factory);
+        try {
+            foreach ($this->providers as $provider) {
+                $provider->register($factory);
+            }
+        } catch (Exception $exception) {
+            error_log('OxLogIQ: '.$exception->getMessage());
         }
 
         return $factory;
