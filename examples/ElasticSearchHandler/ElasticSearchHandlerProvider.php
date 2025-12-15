@@ -17,21 +17,12 @@ namespace D3\LoggerExtension;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
-use D3\OxLogIQ\MonologConfiguration;
 use Elastica\Client;
 use Exception;
 use Monolog\Handler\ElasticSearchHandler;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
 class ElasticSearchHandlerProvider implements ProviderInterface
 {
-    /**
-     * @param MonologConfiguration         $configuration
-     */
-    public function __construct(protected MonologConfigurationInterface $configuration)
-    {
-    }
-
     public function register(LoggerFactory $factory): void
     {
         try {

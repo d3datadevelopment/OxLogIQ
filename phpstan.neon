@@ -3,6 +3,7 @@ parameters:
     - .
   excludePaths:
     - Tests
+    - examples
   level: 8
   phpVersion: 80000
   ignoreErrors:

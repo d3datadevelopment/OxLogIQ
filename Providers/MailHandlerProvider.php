@@ -29,6 +29,7 @@ class MailHandlerProvider implements ProviderInterface
 {
     /**
      * @param MonologConfiguration         $configuration
+     * @codeCoverageIgnore
      */
     public function __construct(protected MonologConfigurationInterface $configuration)
     {
