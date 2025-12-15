@@ -34,7 +34,8 @@
     "phpstan/phpstan": "^1.10"
   },
   "suggest": {
-    "d3/oxlogiq_sentry": "Provides logging to Sentry web service"
+    "d3/oxlogiq_sentry": "Provides logging to Sentry web service",
+    "d3/oxlogiq_httpapi": "Provides logging to a HTTP API (like ElasticSearch in a ELK stack)"
   },
   "autoload": {
     "psr-4": {

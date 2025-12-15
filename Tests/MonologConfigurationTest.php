@@ -45,9 +45,6 @@ use ReflectionException;
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailSubject')]
 #[CoversMethod(MonologConfiguration::class, 'getAlertMailFrom')]
 #[CoversMethod(MonologConfiguration::class, 'getRelease')]
-#[CoversMethod(MonologConfiguration::class, 'hasHttpApiEndpoint')]
-#[CoversMethod(MonologConfiguration::class, 'getHttpApiEndpoint')]
-#[CoversMethod(MonologConfiguration::class, 'getHttpApiKey')]
 class MonologConfigurationTest extends TestCase
 {
     use CanAccessRestricted;
@@ -327,87 +324,5 @@ class MonologConfigurationTest extends TestCase
             $re,
             $this->callMethod($sut, 'getRelease')
         );
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider hasHttpApiEndpointDataProvider
-     */
-    #[Test]
-    #[DataProvider('hasHttpApiEndpointDataProvider')]
-    public function testHasHttpApiEndpoint($endpoint, $isset, $expected): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'WARNING'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->onlyMethods(get_class_methods(Context::class))
-            ->getMock();
-        $contextMock->method('getHttpApiEndpoint')->willReturn($endpoint);
-
-        $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
-
-        self::assertSame(
-            $isset,
-            $this->callMethod($sut, 'hasHttpApiEndpoint')
-        );
-        self::assertSame(
-            $expected,
-            $this->callMethod($sut, 'getHttpApiEndpoint')
-        );
-    }
-
-    public static function hasHttpApiEndpointDataProvider(): Generator
-    {
-        yield 'not set' => [null, false, null];
-        yield 'set' => ['endpointFixture', true, 'endpointFixture'];
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider getHttpApiKeyDataProvider
-     */
-    #[Test]
-    #[DataProvider('getHttpApiKeyDataProvider')]
-    public function testGetHttpApiKey($key, bool $expectException, $expected): void
-    {
-        $configurationMock = new OxidMonologConfiguration(
-            'myLogger',
-            '/var/log/oxidlog.log',
-            'WARNING'
-        );
-
-        $configMock = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $contextMock = $this->getMockBuilder(Context::class)
-            ->onlyMethods(get_class_methods(Context::class))
-            ->getMock();
-        $contextMock->method('getHttpApiKey')->willReturn($key);
-
-        $sut = new MonologConfiguration($configurationMock, $configMock, $contextMock);
-
-        if ($expectException) {
-            $this->expectException(InvalidArgumentException::class);
-        }
-
-        $this->assertSame(
-            $expected,
-            $this->callMethod($sut, 'getHttpApiKey')
-        );
-    }
-
-    public static function getHttpApiKeyDataProvider(): Generator
-    {
-        yield 'not set' => [null, true, null];
-        yield 'set' => ['keyFixture', false, 'keyFixture'];
     }
 }

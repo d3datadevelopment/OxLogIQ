@@ -42,10 +42,6 @@ services:
     tags:
       - { name: oxlogiq.provider, priority: 300 }
 
-  D3\OxLogIQ\Providers\HttpApiHandlerProvider:
-    tags:
-      - { name: oxlogiq.provider, priority: 100 }
-
   D3\OxLogIQ\Providers\IntrospectionProcessorProvider:
     tags:
       - { name: oxlogiq.provider, priority: 100 }

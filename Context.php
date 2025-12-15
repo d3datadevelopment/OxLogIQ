@@ -100,16 +100,4 @@ class Context extends OxidContext
         return $_ENV[self::CONFIGVAR_MAILFROM] ??
                $this->getFactsConfigFile()->getVar(self::CONFIGVAR_MAILFROM);
     }
-
-    public function getHttpApiEndpoint(): ?string
-    {
-        return $_ENV[self::CONFIGVAR_HTTPAPI_ENDPOINT] ??
-               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_HTTPAPI_ENDPOINT);
-    }
-
-    public function getHttpApiKey(): ?string
-    {
-        return $_ENV[self::CONFIGVAR_HTTPAPI_KEY] ??
-               $this->getFactsConfigFile()->getVar(self::CONFIGVAR_HTTPAPI_KEY);
-    }
 }

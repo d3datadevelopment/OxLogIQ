@@ -19,8 +19,6 @@ namespace D3\OxLogIQ;
 
 use D3\OxLogIQ\Interfaces\MonologConfigurationInterface as OxLogIQConfigurationInterface;
 use D3\OxLogIQ\Release\ReleaseServiceInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
@@ -30,9 +28,6 @@ use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologCon
 use OxidEsales\EshopCommunity\Internal\Transition\Utility\ContextInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 
 class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConfigurationInterface
 {
@@ -142,57 +137,5 @@ class MonologConfiguration implements MonologConfigurationInterface, OxLogIQConf
         /** @var ReleaseServiceInterface $service */
         $service = ContainerFactory::getInstance()->getContainer()->get(ReleaseServiceInterface::class);
         return $service->getRelease();
-    }
-
-    public function hasHttpApiEndpoint(): bool
-    {
-        $endpoint = $this->context->getHttpApiEndpoint();
-
-        return isset($endpoint) &&
-               is_string($endpoint) && strlen(trim($endpoint));
-    }
-
-    public function getHttpApiEndpoint(): ?string
-    {
-        return $this->context->getHttpApiEndpoint();
-    }
-
-    /**
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    public function getHttpApiKey(): string
-    {
-        $apiKey = $this->context->getHttpApiKey();
-
-        if (!is_string($apiKey) || !strlen(trim($apiKey))) {
-            throw new InvalidArgumentException('Http API Key required.');
-        }
-
-        return trim($apiKey);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getHttpClient(): ClientInterface
-    {
-        return new Client();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getHttpRequestFactory(): RequestFactoryInterface
-    {
-        return new HttpFactory();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getHttpStreamFactory(): StreamFactoryInterface
-    {
-        return new HttpFactory();
     }
 }

@@ -17,10 +17,6 @@ declare(strict_types=1);
 
 namespace D3\OxLogIQ\Interfaces;
 
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-
 interface MonologConfigurationInterface
 {
     public function getRetentionDays(): ?int;
@@ -38,16 +34,4 @@ interface MonologConfigurationInterface
     public function getAlertMailFrom(): ?string;
 
     public function getRelease(): string;
-
-    public function hasHttpApiEndpoint(): bool;
-
-    public function getHttpApiEndpoint(): ?string;
-
-    public function getHttpApiKey(): string;
-
-    public function getHttpClient(): ClientInterface;
-
-    public function getHttpRequestFactory(): RequestFactoryInterface;
-
-    public function getHttpStreamFactory(): StreamFactoryInterface;
 }

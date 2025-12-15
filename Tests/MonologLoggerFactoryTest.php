@@ -23,12 +23,9 @@ use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\MonologLoggerFactory;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
 use InvalidArgumentException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -317,76 +314,6 @@ class MonologLoggerFactoryTest extends TestCase
     /**
      * @throws ReflectionException
      * @dataProvider addSentryHandlerDataProvider
-     */
-    #[Test]
-    #[DataProvider('addHttpApiHandlerDataProvider')]
-    public function testAddHttpApiHandler(bool $addressGiven, $address, bool $throwException, int $invocation): void
-    {
-        $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([
-                'hasHttpApiEndpoint',
-                'getHttpApiEndpoint',
-                'getHttpApiKey',
-                'getLogLevel',
-                'getHttpClient',
-                'getHttpRequestFactory',
-                'getHttpStreamFactory',
-            ])
-            ->getMock();
-        $configurationMock->method('hasHttpApiEndpoint')->willReturn($addressGiven);
-        $configurationMock->expects($this->exactly($invocation))
-            ->method('getHttpApiEndpoint')->willReturn($address);
-        $throwException ?
-            $configurationMock->expects($this->exactly($invocation))
-                ->method('getHttpApiKey')->willThrowException(new InvalidArgumentException('excMsg')) :
-            $configurationMock->expects($this->exactly($invocation))
-                ->method('getHttpApiKey')->willReturn('apiKey');
-        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
-            ->method('getLogLevel')->willReturn('error');
-        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
-            ->method('getHttpClient')->willReturn(new Client());
-        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
-            ->method('getHttpRequestFactory')->willReturn(new HttpFactory());
-        $configurationMock->expects($this->exactly($throwException ? 0 : $invocation))
-            ->method('getHttpStreamFactory')->willReturn(new HttpFactory());
-
-        $validatorMock = $this->getMockBuilder(LoggerConfigurationValidatorInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $factoryMock = $this->getMockBuilder(LoggerFactory::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['addOtherHandler'])
-            ->getMock();
-        $factoryMock->expects($this->exactly($throwException ? 0 : $invocation))->method('addOtherHandler');
-
-        $sut = new MonologLoggerFactory(
-            $configurationMock,
-            $validatorMock,
-            LoggerFactory::create()
-        );
-
-        $this->callMethod($sut, 'addHttpApiHandler', [$factoryMock]);
-
-        if ($throwException) {
-            $this->assertStringContainsString(
-                'excMsg',
-                file_get_contents($this->logFile)
-            );
-        }
-    }
-
-    public static function addHttpApiHandlerDataProvider(): Generator
-    {
-        yield 'no mail address' => [false, null, false, 0];
-        yield 'given mail addresses' => [true, 'endpoint fixture', false, 1];
-        yield 'given mail addresses but exception' => [true, 'endpoint fixture', true, 1];
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider addProcessorsDataProvider
      */
     #[Test]
     #[DataProvider('addProcessorsDataProvider')]

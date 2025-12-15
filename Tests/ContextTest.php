@@ -36,8 +36,6 @@ use ReflectionException;
 #[CoversMethod(Context::class, 'getAlertMailLevel')]
 #[CoversMethod(Context::class, 'getAlertMailSubject')]
 #[CoversMethod(Context::class, 'getAlertMailFrom')]
-#[CoversMethod(Context::class, 'getHttpApiEndpoint')]
-#[CoversMethod(Context::class, 'getHttpApiKey')]
 class ContextTest extends TestCase
 {
     use CanAccessRestricted;
@@ -311,70 +309,6 @@ class ContextTest extends TestCase
             );
         } finally {
             unset($_ENV[Context::CONFIGVAR_MAILFROM]);
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider envDecisionDataProvider
-     */
-    #[Test]
-    #[DataProvider('envDecisionDataProvider')]
-    public function testGetHttpApiEndpoint($env, $facts, $expected, $invocationCount): void
-    {
-        try {
-            $_ENV[Context::CONFIGVAR_HTTPAPI_ENDPOINT] = $env;
-
-            $factsMock = $this->getMockBuilder(ConfigFile::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
-                ->with($this->identicalTo(Context::CONFIGVAR_HTTPAPI_ENDPOINT))
-                ->willReturn($facts);
-
-            $sut = $this->getMockBuilder(Context::class)
-                ->onlyMethods(['getFactsConfigFile'])
-                ->getMock();
-            $sut->method('getFactsConfigFile')->willReturn($factsMock);
-
-            $this->assertSame(
-                $expected,
-                $this->callMethod($sut, 'getHttpApiEndpoint')
-            );
-        } finally {
-            unset($_ENV[Context::CONFIGVAR_HTTPAPI_ENDPOINT]);
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     * @dataProvider envDecisionDataProvider
-     */
-    #[Test]
-    #[DataProvider('envDecisionDataProvider')]
-    public function testGetHttpApiKey($env, $facts, $expected, $invocationCount): void
-    {
-        try {
-            $_ENV[Context::CONFIGVAR_HTTPAPI_KEY] = $env;
-
-            $factsMock = $this->getMockBuilder(ConfigFile::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $factsMock->expects($this->exactly($invocationCount))->method('getVar')
-                ->with($this->identicalTo(Context::CONFIGVAR_HTTPAPI_KEY))
-                ->willReturn($facts);
-
-            $sut = $this->getMockBuilder(Context::class)
-                ->onlyMethods(['getFactsConfigFile'])
-                ->getMock();
-            $sut->method('getFactsConfigFile')->willReturn($factsMock);
-
-            $this->assertSame(
-                $expected,
-                $this->callMethod($sut, 'getHttpApiKey')
-            );
-        } finally {
-            unset($_ENV[Context::CONFIGVAR_HTTPAPI_KEY]);
         }
     }
 
