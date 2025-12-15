@@ -20,7 +20,6 @@ namespace D3\OxLogIQ\Providers;
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use D3\OxLogIQ\MonologConfiguration;
-use Exception;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Shop;
 use OxidEsales\Eshop\Core\Registry;
@@ -38,23 +37,19 @@ class MailHandlerProvider implements ProviderInterface
     public function register(LoggerFactory $factory): void
     {
         if ($this->configuration->useAlertMail()) {
-            try {
-                /** @var Shop $shop */
-                $shop = Registry::getConfig()->getActiveShop();
-                $to       = (array) $this->configuration->getAlertMailRecipients();
-                $subject  = sprintf(
-                    '%1$s - %2$s',
-                    $shop->getFieldData('oxname'),
-                    $this->configuration->getAlertMailSubject()
-                );
-                $from     = (string) (
-                    $this->configuration->getAlertMailFrom() ?? $shop->getFieldData('oxinfoemail')
-                );
-                $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
-                $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
-            } catch (Exception $exception) {
-                error_log('OxLogIQ: '.$exception->getMessage());
-            }
+            /** @var Shop $shop */
+            $shop = Registry::getConfig()->getActiveShop();
+            $to       = (array) $this->configuration->getAlertMailRecipients();
+            $subject  = sprintf(
+                '%1$s - %2$s',
+                $shop->getFieldData('oxname'),
+                $this->configuration->getAlertMailSubject()
+            );
+            $from     = (string) (
+                $this->configuration->getAlertMailFrom() ?? $shop->getFieldData('oxinfoemail')
+            );
+            $logLevel = (int) Logger::toMonologLevel($this->configuration->getAlertMailLevel());
+            $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
         }
     }
 }

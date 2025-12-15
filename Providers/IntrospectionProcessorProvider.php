@@ -19,31 +19,17 @@ namespace D3\OxLogIQ\Providers;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
-use D3\OxLogIQ\MonologConfiguration;
-use InvalidArgumentException;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
 class IntrospectionProcessorProvider implements ProviderInterface
 {
-    /**
-     * @param MonologConfiguration         $configuration
-     */
-    public function __construct(protected MonologConfigurationInterface $configuration)
-    {
-    }
-
     public function register(LoggerFactory $factory): void
     {
-        try {
-            $factory->addOtherProcessor(
-                new IntrospectionProcessor(Logger::ERROR, [
-                    'Internal\\Framework\\Logger\\',
-                ])
-            );
-        } catch (InvalidArgumentException $exception) {
-            error_log('OxLogIQ: '.$exception->getMessage());
-        }
+        $factory->addOtherProcessor(
+            new IntrospectionProcessor(Logger::ERROR, [
+                'Internal\\Framework\\Logger\\',
+            ])
+        );
     }
 }

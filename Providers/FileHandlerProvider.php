@@ -20,7 +20,6 @@ namespace D3\OxLogIQ\Providers;
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use D3\OxLogIQ\MonologConfiguration;
-use Exception;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
@@ -37,18 +36,14 @@ class FileHandlerProvider implements ProviderInterface
 
     public function register(LoggerFactory $factory): void
     {
-        try {
-            $fileHandlerOption = $factory->addFileHandler(
-                $this->configuration->getLogFilePath(),
-                Logger::toMonologLevel($this->configuration->getLogLevel()),
-                $this->configuration->getRetentionDays()
-            );
+        $fileHandlerOption = $factory->addFileHandler(
+            $this->configuration->getLogFilePath(),
+            Logger::toMonologLevel($this->configuration->getLogLevel()),
+            $this->configuration->getRetentionDays()
+        );
 
-            $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
-            $fileHandlerOption->setBuffering();
-        } catch (Exception $exception) {
-            error_log('OxLogIQ: '.$exception->getMessage());
-        }
+        $fileHandlerOption->getHandler()->setFormatter($this->getFormatter());
+        $fileHandlerOption->setBuffering();
     }
 
     protected function getFormatter(): FormatterInterface

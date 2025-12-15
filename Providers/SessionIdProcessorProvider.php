@@ -19,29 +19,15 @@ namespace D3\OxLogIQ\Providers;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
-use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
-use InvalidArgumentException;
 use OxidEsales\Eshop\Core\Registry;
-use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 
 class SessionIdProcessorProvider implements ProviderInterface
 {
-    /**
-     * @param MonologConfiguration         $configuration
-     */
-    public function __construct(protected MonologConfigurationInterface $configuration)
-    {
-    }
-
     public function register(LoggerFactory $factory): void
     {
-        try {
-            $factory->addOtherProcessor(
-                new SessionIdProcessor(Registry::getSession())
-            );
-        } catch (InvalidArgumentException $exception) {
-            error_log('OxLogIQ: '.$exception->getMessage());
-        }
+        $factory->addOtherProcessor(
+            new SessionIdProcessor(Registry::getSession())
+        );
     }
 }
