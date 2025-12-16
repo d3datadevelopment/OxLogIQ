@@ -4,4 +4,4 @@ services:
 
   D3\LoggerExtension\ElasticSearchHandlerProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 100 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }

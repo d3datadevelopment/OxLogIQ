@@ -30,4 +30,12 @@ class SessionIdProcessorProvider implements ProviderInterface
             new SessionIdProcessor(Registry::getSession())
         );
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getPriority(): int
+    {
+        return 300;
+    }
 }

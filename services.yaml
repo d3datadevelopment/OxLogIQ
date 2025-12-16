@@ -40,20 +40,20 @@ services:
 
   D3\OxLogIQ\Providers\FileHandlerProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 300 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }
 
   D3\OxLogIQ\Providers\IntrospectionProcessorProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 100 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }
 
   D3\OxLogIQ\Providers\MailHandlerProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 200 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }
 
   D3\OxLogIQ\Providers\SessionIdProcessorProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 300 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }
 
   D3\OxLogIQ\Providers\UidProcessorProvider:
     tags:
-      - { name: oxlogiq.provider, priority: 300 }
+      - { name: oxlogiq.provider, default_priority_method: getPriority }

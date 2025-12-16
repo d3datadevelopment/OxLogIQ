@@ -53,4 +53,12 @@ class MailHandlerProvider implements ProviderInterface
             $factory->addMailHandler($to, $subject, $from, $logLevel)->setBuffering();
         }
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getPriority(): int
+    {
+        return 200;
+    }
 }

@@ -20,6 +20,7 @@ namespace D3\OxLogIQ\Providers;
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use D3\OxLogIQ\MonologConfiguration;
+use Exception;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
@@ -35,6 +36,9 @@ class FileHandlerProvider implements ProviderInterface
     {
     }
 
+    /**
+     * @throws Exception
+     */
     public function register(LoggerFactory $factory): void
     {
         $fileHandlerOption = $factory->addFileHandler(
@@ -53,5 +57,13 @@ class FileHandlerProvider implements ProviderInterface
         $formatter->includeStacktraces();
 
         return $formatter;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getPriority(): int
+    {
+        return 300;
     }
 }

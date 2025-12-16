@@ -50,4 +50,9 @@ class ElasticSearchHandlerProvider implements ProviderInterface
             ],
         ]);
     }
+
+    public static function getPriority(): int
+    {
+        return 100;
+    }
 }

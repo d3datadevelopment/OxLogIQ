@@ -32,4 +32,12 @@ class IntrospectionProcessorProvider implements ProviderInterface
             ])
         );
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getPriority(): int
+    {
+        return 100;
+    }
 }

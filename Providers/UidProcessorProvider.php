@@ -26,4 +26,12 @@ class UidProcessorProvider implements ProviderInterface
     {
         $factory->addUidProcessor();
     }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function getPriority(): int
+    {
+        return 300;
+    }
 }
