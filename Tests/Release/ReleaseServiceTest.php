@@ -34,7 +34,7 @@ class ReleaseServiceTest extends TestCase
 {
     use CanAccessRestricted;
 
-    protected $logFile = __DIR__ . '/test-error.log';
+    protected string $logFile = __DIR__ . '/test-error.log';
 
     public function setUp(): void
     {

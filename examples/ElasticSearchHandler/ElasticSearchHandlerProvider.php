@@ -18,23 +18,18 @@ namespace D3\LoggerExtension;
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use Elastica\Client;
-use Exception;
 use Monolog\Handler\ElasticSearchHandler;
 
 class ElasticSearchHandlerProvider implements ProviderInterface
 {
     public function register(LoggerFactory $factory): void
     {
-        try {
-            $factory->addOtherHandler(
-                new ElasticSearchHandler(
-                    $this->getElasticSearchClient(),
-                    ['index' => 'logs'] // adjust to your needs
-                )
-            )->setBuffering();
-        } catch (Exception $exception) {
-            error_log('OxLogIQ: '.$exception->getMessage());
-        }
+        $factory->addOtherHandler(
+            new ElasticSearchHandler(
+                $this->getElasticSearchClient(),
+                ['index' => 'logs'] // adjust to your needs
+            )
+        )->setBuffering();
     }
 
     protected function getElasticSearchClient(): Client

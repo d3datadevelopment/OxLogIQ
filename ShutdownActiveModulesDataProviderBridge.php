@@ -90,6 +90,9 @@ class ShutdownActiveModulesDataProviderBridge implements ActiveModulesDataProvid
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getLogger(): LoggerInterface
     {
         return Registry::getLogger();
