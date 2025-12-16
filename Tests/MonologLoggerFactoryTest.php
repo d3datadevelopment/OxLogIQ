@@ -18,18 +18,16 @@ declare(strict_types=1);
 namespace D3\OxLogIQ\Tests;
 
 use D3\LoggerFactory\LoggerFactory;
-use D3\LoggerFactory\Options\FileLoggerHandlerOption;
+use D3\OxLogIQ\Core\FallbackLogger;
+use D3\OxLogIQ\Handlers\FallbackHandler;
 use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\MonologLoggerFactory;
-use D3\OxLogIQ\Processors\SessionIdProcessor;
 use D3\OxLogIQ\Providers\SessionIdProcessorProvider;
 use D3\OxLogIQ\Providers\UidProcessorProvider;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Exception;
 use Generator;
-use InvalidArgumentException;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -47,22 +45,6 @@ class MonologLoggerFactoryTest extends TestCase
     use CanAccessRestricted;
 
     protected MonologLoggerFactory $sut;
-    protected $logFile = __DIR__ . '/test-error.log';
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        ini_set('error_log', $this->logFile);
-        ini_set('log_errors', '1');
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-
-        @unlink($this->logFile);
-    }
 
     /**
      * @throws ReflectionException
@@ -79,6 +61,8 @@ class MonologLoggerFactoryTest extends TestCase
             ->getMock();
         $validatorMock->expects(self::atLeastOnce())->method('validate');
 
+        $fallbackLogger  = new FallbackLogger(new FallbackHandler());
+
         $sut = $this->getMockBuilder(MonologLoggerFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -90,7 +74,8 @@ class MonologLoggerFactoryTest extends TestCase
                 $configurationMock,
                 $validatorMock,
                 LoggerFactory::create(),
-                []
+                [],
+                $fallbackLogger,
             ]
         );
     }
@@ -127,25 +112,25 @@ class MonologLoggerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $fallbackLoggerMock  = $this->getMockBuilder(FallbackLogger::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get'])
+            ->getMock();
+        $fallbackLoggerMock->expects(self::exactly((int) $throwException))->method('get');
+
         $sut = oxNew(
             MonologLoggerFactory::class,
             $configurationMock,
             $validatorMock,
             $factoryMock,
-            [$providerMock1, $providerMock2]
+            [$providerMock1, $providerMock2],
+            $fallbackLoggerMock
         );
 
         self::assertInstanceOf(
             LoggerFactory::class,
             $this->callMethod($sut, 'getFactory')
         );
-
-        if ($throwException) {
-            $this->assertStringContainsString(
-                'excMsg',
-                file_get_contents($this->logFile)
-            );
-        }
     }
 
     public static function getFactoryDataProvider(): Generator
@@ -158,8 +143,16 @@ class MonologLoggerFactoryTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testCreate(): void
+    #[DataProvider('createDataProvider')]
+    public function testCreate(?array $handlers, string $expectedName): void
     {
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getName', 'getHandlers'])
+            ->getMock();
+        $loggerMock->method('getName')->willReturn('defaultLogger');
+        $loggerMock->method('getHandlers')->willReturn($handlers);
+
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -171,15 +164,29 @@ class MonologLoggerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['build'])
             ->getMock();
-        $factoryMock->expects(self::once())->method('build');
+        $factoryMock->expects(self::once())->method('build')->willReturn($loggerMock);
+
+        $fallbackLogger  = new FallbackLogger(new FallbackHandler());
 
         $sut = $this->getMockBuilder(MonologLoggerFactory::class)
-            ->setConstructorArgs([$configurationMock, $validatorMock, $factoryMock, []])
+            ->setConstructorArgs([$configurationMock, $validatorMock, $factoryMock, [], $fallbackLogger])
             ->onlyMethods(['getFactory'])
             ->getMock();
         $sut->method('getFactory')->willReturn($factoryMock);
 
-        $this->callMethod($sut, 'create');
+        $logger = $this->callMethod($sut, 'create');
+
+        $this->assertStringContainsString(
+            $expectedName,
+            $logger->getName()
+        );
+    }
+
+    public static function createDataProvider(): Generator
+    {
+        yield 'null handlers'   => [null, 'Fallback'];
+        yield 'empty handlers'   => [[], 'Fallback'];
+        yield 'avaiblable handlers'   => [['fixture'], 'defaultLogger'];
     }
 
 }

@@ -20,6 +20,7 @@ Es ersetzt den OXID Standardlogger und wird bei jedem Aufruf von `Registry::getL
 - Channel ergänzt um Frontend bzw. Backend
 - Channel ergänzt um den Subshop
 - Einfache Konfiguration über `config.inc.php`- oder Environment-Variablen
+- Fallback Logger (./source/log/oxideshop.log) im Fehlerfall
 
 ## Installation
 1. über Composer installieren

@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace D3\OxLogIQ;
 
 use D3\LoggerFactory\LoggerFactory;
+use D3\OxLogIQ\Interfaces\FallbackLoggerInterface;
 use D3\OxLogIQ\Interfaces\MonologLoggerFactoryInterface as OxLogIQLoggerFactoryInterface;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use Exception;
@@ -36,7 +37,8 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
         protected MonologConfigurationInterface $configuration,
         LoggerConfigurationValidatorInterface $configurationValidator,
         protected LoggerFactory $loggerFactory,
-        protected iterable $providers
+        protected iterable $providers,
+        protected FallbackLoggerInterface $fallbackLogger
     ) {
         $configurationValidator->validate($configuration);
     }
@@ -49,7 +51,8 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
             try {
                 $provider->register($factory);
             } catch (Exception $exception) {
-                error_log('OxLogIQ: '.$exception->getMessage());
+                $message = 'OxLogIQ: '.$exception->getMessage();
+                $this->fallbackLogger->get()->error($message);
             }
         }
 
@@ -61,6 +64,13 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
      */
     public function create(): LoggerInterface
     {
-        return $this->getFactory()->build($this->configuration->getLoggerName());
+        $logger = $this->getFactory()->build($this->configuration->getLoggerName());
+        $handlers = $logger->getHandlers();
+
+        if (is_null($handlers) || is_iterable($handlers) && !count($handlers)) {
+            $logger = $this->fallbackLogger->get();
+        }
+
+        return $logger;
     }
 }

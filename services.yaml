@@ -6,6 +6,12 @@ services:
     class: OxidEsales\Eshop\Core\Config
     factory: ['OxidEsales\Eshop\Core\Registry', 'getConfig']
 
+  D3\OxLogIQ\Interfaces\FallbackHandlerInterface:
+    class: D3\OxLogIQ\Handlers\FallbackHandler
+
+  D3\OxLogIQ\Interfaces\FallbackLoggerInterface:
+    class: D3\OxLogIQ\Core\FallbackLogger
+
   D3\LoggerFactory\LoggerFactory:
     class: D3\LoggerFactory\LoggerFactory
     factory: ['D3\LoggerFactory\LoggerFactory', 'create']

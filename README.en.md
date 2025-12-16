@@ -20,6 +20,7 @@ It replaces the OXID default logger and is used every time `Registry::getLogger(
 - Channel complemented by front end or back end
 - Channel complemented by subshop
 - Simple configuration via `config.inc.php` or environment variables
+- Fallback logger (./source/log/oxideshop.log) in case of errors
 
 ## Installation
 1. Install via Composer
@@ -42,7 +43,6 @@ The following parameters can be adjusted using these variables:
 | oxlogiq_mailLogLevel     | *optional:* lowest level that will be alerted by email (default: `ERROR`)                                      |
 | oxlogiq_mailSubject      | *optional:* subject of the alert email (default: `Shop Log Alert`)                                             |
 | oxlogiq_mailFrom         | *optional:* sender address (default: shop's info mail address)                                                 |
-
 
 Define these settings either as an environment variable or as a variable in the shop's `config.inc.php` file.
 

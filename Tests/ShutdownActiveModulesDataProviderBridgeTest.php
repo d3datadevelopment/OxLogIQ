@@ -21,10 +21,8 @@ use D3\OxLogIQ\ShutdownActiveModulesDataProviderBridge;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Generator;
 use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderBridgeInterface;
-use OxidEsales\EshopCommunity\Internal\Framework\Module\Facade\ActiveModulesDataProviderInterface;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Exception as MockObjectException;
@@ -33,9 +31,7 @@ use Psr\Log\LoggerInterface;
 use ReflectionException;
 
 #[Small]
-#[RunTestsInSeparateProcesses]
 #[CoversMethod(ShutdownActiveModulesDataProviderBridge::class, 'handleShutdown')]
-#[CoversMethod(ShutdownActiveModulesDataProviderBridge::class, 'getLogger')]
 #[CoversMethod(ShutdownActiveModulesDataProviderBridge::class, 'getHandledErrors')]
 #[CoversMethod(ShutdownActiveModulesDataProviderBridge::class, 'getModuleIds')]
 #[CoversMethod(ShutdownActiveModulesDataProviderBridge::class, 'getModulePaths')]
@@ -98,9 +94,6 @@ class ShutdownActiveModulesDataProviderBridgeTest extends TestCase
         $sut->method('getHandledErrors')->willReturn([E_USER_NOTICE]);
         $sut->method('getLogger')->willReturn($loggerMock);
 
-        error_clear_last();
-        @trigger_error("Test error", E_USER_WARNING);
-
         $this->callMethod(
             $sut,
             'handleShutdown'
@@ -108,21 +101,10 @@ class ShutdownActiveModulesDataProviderBridgeTest extends TestCase
     }
 
     #[Test]
-    public function testGetLogger(): void
-    {
-        $innerBridge = $this->createMock(ActiveModulesDataProviderBridgeInterface::class);
-        $provider = $this->createMock(ActiveModulesDataProviderInterface::class);
-        $sut = new ShutdownActiveModulesDataProviderBridge($innerBridge, $provider);
-
-        $this->assertInstanceOf(LoggerInterface::class, $sut->getLogger());
-    }
-
-    #[Test]
     public function testGetHandledErrors(): void
     {
         $innerBridge = $this->createMock(ActiveModulesDataProviderBridgeInterface::class);
-        $provider = $this->createMock(ActiveModulesDataProviderInterface::class);
-        $sut = new ShutdownActiveModulesDataProviderBridge($innerBridge, $provider);
+        $sut = new ShutdownActiveModulesDataProviderBridge($innerBridge);
 
         $errorList = $sut->getHandledErrors();
         $this->assertIsArray($errorList);
@@ -141,9 +123,8 @@ class ShutdownActiveModulesDataProviderBridgeTest extends TestCase
         $innerBridge = $this->createMock(ActiveModulesDataProviderBridgeInterface::class);
         $innerBridge->expects(self::once())
             ->method($methodName);
-        $provider = $this->createMock(ActiveModulesDataProviderInterface::class);
 
-        $sut = new ShutdownActiveModulesDataProviderBridge($innerBridge, $provider);
+        $sut = new ShutdownActiveModulesDataProviderBridge($innerBridge);
 
         $this->callMethod(
             $sut,
