@@ -29,7 +29,7 @@
   },
   "require-dev": {
     "d3/testingtools": "^1.2",
-    "phpunit/phpunit": "^11.0",
+    "phpunit/phpunit": "^11.5",
     "friendsofphp/php-cs-fixer": "^3.75",
     "phpstan/phpstan": "^1.10"
   },

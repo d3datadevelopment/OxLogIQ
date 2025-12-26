@@ -55,7 +55,7 @@ jobs:
         with:
           php_version: ${{ matrix.php }}
           oxid_ref: ${{ matrix.oxid_ref }}
-          phpunit_version: "^9 || ^10 || ^11"
+          phpunit_version: "^9 || ^10"     # v11 kills Github Action
           sourceguardian: "FALSE"
           composer_package_name: "d3/oxlogiq"
           test_suites: "unit,integration"
