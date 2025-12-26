@@ -15,12 +15,12 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogIQ\Tests\Providers;
+namespace D3\OxLogIQ\Tests\Providers\Handlers;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\LoggerFactory\Options\FileLoggerHandlerOption;
 use D3\OxLogIQ\MonologConfiguration;
-use D3\OxLogIQ\Providers\FileHandlerProvider;
+use D3\OxLogIQ\Providers\Handlers\FileHandlerProvider;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -31,8 +31,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
 #[Small]
-#[CoversMethod(FileHandlerProvider::class, 'register')]
-#[CoversMethod(FileHandlerProvider::class, 'getFormatter')]
+#[CoversMethod(FileHandlerProvider::class, 'provide')]
 class FileHandlerProviderTest extends TestCase
 {
     use CanAccessRestricted;
@@ -41,7 +40,7 @@ class FileHandlerProviderTest extends TestCase
      * @throws ReflectionException
      */
     #[Test]
-    public function testRegister(): void
+    public function testProvide(): void
     {
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
@@ -51,7 +50,7 @@ class FileHandlerProviderTest extends TestCase
         $configurationMock->method('getLogFilePath')->willReturn('/var/log/error.log');
         $configurationMock->method('getRetentionDays')->willReturn(5);
 
-        $sut = oxNew(FileHandlerProvider::class, $configurationMock);
+        $sut = oxNew(FileHandlerProvider::class, $configurationMock, new LineFormatter());
 
         $fileHandlerMock = $this->getMockBuilder(StreamHandler::class)
             ->disableOriginalConstructor()
@@ -73,22 +72,6 @@ class FileHandlerProviderTest extends TestCase
         $factoryMock->expects(self::once())->method('addFileHandler')
             ->willReturn($fileLoggerHandlerOptionMock);
 
-        $this->callMethod($sut, 'register', [$factoryMock]);
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    #[Test]
-    public function testGetFormatter(): void
-    {
-        $sut = $this->getMockBuilder(FileHandlerProvider::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        self::assertInstanceOf(
-            LineFormatter::class,
-            $this->callMethod($sut, 'getFormatter')
-        );
+        $this->callMethod($sut, 'provide', [$factoryMock]);
     }
 }

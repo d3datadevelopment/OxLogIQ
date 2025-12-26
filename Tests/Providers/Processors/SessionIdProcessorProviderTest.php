@@ -15,12 +15,13 @@
 
 declare(strict_types=1);
 
-namespace Providers;
+namespace D3\OxLogIQ\Tests\Providers\Processors;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Processors\SessionIdProcessor;
-use D3\OxLogIQ\Providers\SessionIdProcessorProvider;
+use D3\OxLogIQ\Providers\Processors\SessionIdProcessorProvider;
 use D3\TestingTools\Development\CanAccessRestricted;
+use OxidEsales\Eshop\Core\Session;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,7 +29,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
 #[Small]
-#[CoversMethod(SessionIdProcessorProvider::class, 'register')]
+#[CoversMethod(SessionIdProcessorProvider::class, 'provide')]
 class SessionIdProcessorProviderTest extends TestCase
 {
     use CanAccessRestricted;
@@ -39,7 +40,11 @@ class SessionIdProcessorProviderTest extends TestCase
     #[Test]
     public function testRegister(): void
     {
-        $sut = oxNew(SessionIdProcessorProvider::class);
+        $sessionMock = $this->getMockBuilder(Session::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $sut = oxNew(SessionIdProcessorProvider::class, $sessionMock);
 
         $factoryMock = $this->getMockBuilder(LoggerFactory::class)
             ->disableOriginalConstructor()
@@ -49,6 +54,6 @@ class SessionIdProcessorProviderTest extends TestCase
             $this->isInstanceOf(SessionIdProcessor::class)
         );
 
-        $this->callMethod($sut, 'register', [$factoryMock]);
+        $this->callMethod($sut, 'provide', [$factoryMock]);
     }
 }

@@ -15,16 +15,30 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogIQ\Providers;
+namespace D3\OxLogIQ\Providers\Processors;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
+use Monolog\Logger;
+use Monolog\Processor\IntrospectionProcessor;
 
-class UidProcessorProvider implements ProviderInterface
+class IntrospectionProcessorProvider implements ProviderInterface
 {
-    public function register(LoggerFactory $factory): void
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isActive(): bool
     {
-        $factory->addUidProcessor();
+        return true;
+    }
+
+    public function provide(LoggerFactory $factory): void
+    {
+        $factory->addOtherProcessor(
+            new IntrospectionProcessor(Logger::ERROR, [
+                'Internal\\Framework\\Logger\\',
+            ])
+        );
     }
 
     /**
@@ -32,6 +46,6 @@ class UidProcessorProvider implements ProviderInterface
      */
     public static function getPriority(): int
     {
-        return 300;
+        return 100;
     }
 }

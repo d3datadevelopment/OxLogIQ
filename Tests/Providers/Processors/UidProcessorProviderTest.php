@@ -15,12 +15,11 @@
 
 declare(strict_types=1);
 
-namespace Providers;
+namespace D3\OxLogIQ\Tests\Providers\Processors;
 
 use D3\LoggerFactory\LoggerFactory;
-use D3\OxLogIQ\Providers\IntrospectionProcessorProvider;
+use D3\OxLogIQ\Providers\Processors\UidProcessorProvider;
 use D3\TestingTools\Development\CanAccessRestricted;
-use Monolog\Processor\IntrospectionProcessor;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,8 +27,8 @@ use PHPUnit\Framework\TestCase;
 use ReflectionException;
 
 #[Small]
-#[CoversMethod(IntrospectionProcessorProvider::class, 'register')]
-class IntrospectionProcessorProviderTest extends TestCase
+#[CoversMethod(UidProcessorProvider::class, 'provide')]
+class UidProcessorProviderTest extends TestCase
 {
     use CanAccessRestricted;
 
@@ -39,16 +38,14 @@ class IntrospectionProcessorProviderTest extends TestCase
     #[Test]
     public function testRegister(): void
     {
-        $sut = oxNew(IntrospectionProcessorProvider::class);
+        $sut = oxNew(UidProcessorProvider::class);
 
         $factoryMock = $this->getMockBuilder(LoggerFactory::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['addOtherProcessor'])
+            ->onlyMethods(['addUidProcessor'])
             ->getMock();
-        $factoryMock->expects(self::once())->method('addOtherProcessor')->with(
-            $this->isInstanceOf(IntrospectionProcessor::class)
-        );
+        $factoryMock->expects(self::once())->method('addUidProcessor');
 
-        $this->callMethod($sut, 'register', [$factoryMock]);
+        $this->callMethod($sut, 'provide', [$factoryMock]);
     }
 }

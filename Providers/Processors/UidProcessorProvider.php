@@ -15,20 +15,24 @@
 
 declare(strict_types=1);
 
-namespace D3\OxLogIQ\Providers;
+namespace D3\OxLogIQ\Providers\Processors;
 
 use D3\LoggerFactory\LoggerFactory;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
-use D3\OxLogIQ\Processors\SessionIdProcessor;
-use OxidEsales\Eshop\Core\Registry;
 
-class SessionIdProcessorProvider implements ProviderInterface
+class UidProcessorProvider implements ProviderInterface
 {
-    public function register(LoggerFactory $factory): void
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isActive(): bool
     {
-        $factory->addOtherProcessor(
-            new SessionIdProcessor(Registry::getSession())
-        );
+        return true;
+    }
+
+    public function provide(LoggerFactory $factory): void
+    {
+        $factory->addUidProcessor();
     }
 
     /**

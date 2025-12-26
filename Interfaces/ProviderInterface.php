@@ -21,7 +21,9 @@ use D3\LoggerFactory\LoggerFactory;
 
 interface ProviderInterface
 {
-    public function register(LoggerFactory $factory): void;
+    public function isActive(): bool;
+
+    public function provide(LoggerFactory $factory): void;
 
     public static function getPriority(): int;
 }
