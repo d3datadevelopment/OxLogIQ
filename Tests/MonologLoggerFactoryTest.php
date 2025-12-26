@@ -22,11 +22,12 @@ use D3\OxLogIQ\Core\FallbackLogger;
 use D3\OxLogIQ\Handlers\FallbackHandler;
 use D3\OxLogIQ\MonologConfiguration;
 use D3\OxLogIQ\MonologLoggerFactory;
-use D3\OxLogIQ\Providers\SessionIdProcessorProvider;
-use D3\OxLogIQ\Providers\UidProcessorProvider;
+use D3\OxLogIQ\Providers\Processors\SessionIdProcessorProvider;
+use D3\OxLogIQ\Providers\Processors\UidProcessorProvider;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Exception;
 use Generator;
+use LogicException;
 use Monolog\Logger;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
 use PHPUnit\Framework\Attributes\CoversMethod;
@@ -40,6 +41,7 @@ use ReflectionException;
 #[CoversMethod(MonologLoggerFactory::class, '__construct')]
 #[CoversMethod(MonologLoggerFactory::class, 'getFactory')]
 #[CoversMethod(MonologLoggerFactory::class, 'create')]
+#[CoversMethod(MonologLoggerFactory::class, 'checkProviderClass')]
 class MonologLoggerFactoryTest extends TestCase
 {
     use CanAccessRestricted;
@@ -85,21 +87,22 @@ class MonologLoggerFactoryTest extends TestCase
      */
     #[Test]
     #[DataProvider('getFactoryDataProvider')]
-    public function testGetFactory($throwException): void
+    public function testGetFactory($throwProviderClassException, $throwProvideException, $invocationCount): void
     {
         $providerMock1 = $this->getMockBuilder(SessionIdProcessorProvider::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['register'])
+            ->onlyMethods(['provide'])
             ->getMock();
-        $providerMock1->expects(self::once())->method('register');
+        $providerMock1->expects(self::exactly($invocationCount))->method('provide');
 
         $providerMock2 = $this->getMockBuilder(UidProcessorProvider::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['register'])
+            ->onlyMethods(['provide'])
             ->getMock();
-        $throwException ?
-            $providerMock2->expects(self::once())->method('register')->willThrowException(new Exception('excMsg')) :
-            $providerMock2->expects(self::once())->method('register');
+        $throwProvideException ?
+            $providerMock2->expects(self::exactly($invocationCount))->method('provide')
+                ->willThrowException(new Exception('excMsg')) :
+            $providerMock2->expects(self::exactly($invocationCount))->method('provide');
 
         $configurationMock = $this->getMockBuilder(MonologConfiguration::class)
             ->disableOriginalConstructor()
@@ -116,16 +119,22 @@ class MonologLoggerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['get'])
             ->getMock();
-        $fallbackLoggerMock->expects(self::exactly((int) $throwException))->method('get');
+        $fallbackLoggerMock->expects(self::atLeast((int) ($throwProvideException || $throwProviderClassException)))
+            ->method('get');
 
-        $sut = oxNew(
-            MonologLoggerFactory::class,
-            $configurationMock,
-            $validatorMock,
-            $factoryMock,
-            [$providerMock1, $providerMock2],
-            $fallbackLoggerMock
-        );
+        $sut = $this->getMockBuilder(MonologLoggerFactory::class)
+            ->setConstructorArgs([
+                $configurationMock,
+                $validatorMock,
+                $factoryMock,
+                [$providerMock1, $providerMock2],
+                $fallbackLoggerMock
+            ])
+            ->onlyMethods(['checkProviderClass'])
+            ->getMock();
+        $throwProviderClassException ?
+            $sut->method('checkProviderClass')->willThrowException(new Exception('excMsg')) :
+            $sut->method('checkProviderClass');
 
         self::assertInstanceOf(
             LoggerFactory::class,
@@ -135,8 +144,9 @@ class MonologLoggerFactoryTest extends TestCase
 
     public static function getFactoryDataProvider(): Generator
     {
-        yield 'do not throw exception' => [false, 1];
-        yield 'throw exception' => [true, 0];
+        yield 'wrong provider class' => [true, false, 0];
+        yield 'do not throw exception' => [false, false, 1];
+        yield 'throw provider exception' => [false, true, 1];
     }
 
     /**
@@ -189,4 +199,30 @@ class MonologLoggerFactoryTest extends TestCase
         yield 'avaiblable handlers'   => [['fixture'], 'defaultLogger'];
     }
 
+    /**
+     * @throws ReflectionException
+     * @dataProvider checkProviderClassExceptionProvider
+     */
+    #[Test]
+    #[DataProvider('checkProviderClassExceptionProvider')]
+    public function testCheckProviderClassPassed($instance, $expectException): void
+    {
+        $sut = $this->getMockBuilder(MonologLoggerFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getFactory'])
+            ->getMock();
+
+        try {
+            $this->callMethod($sut, 'checkProviderClass', [$instance]);
+            $this->assertFalse($expectException);
+        } catch (LogicException) {
+            $this->assertTrue($expectException);
+        }
+    }
+
+    public static function checkProviderClassExceptionProvider(): Generator
+    {
+        yield 'provider implements interface' => [new UidProcessorProvider(), false];
+        yield 'interface missing'             => [new Exception(), true];
+    }
 }

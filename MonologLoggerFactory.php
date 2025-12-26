@@ -22,6 +22,7 @@ use D3\OxLogIQ\Interfaces\FallbackLoggerInterface;
 use D3\OxLogIQ\Interfaces\MonologLoggerFactoryInterface as OxLogIQLoggerFactoryInterface;
 use D3\OxLogIQ\Interfaces\ProviderInterface;
 use Exception;
+use LogicException;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Configuration\MonologConfigurationInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Factory\LoggerFactoryInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Logger\Validator\LoggerConfigurationValidatorInterface;
@@ -31,7 +32,7 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
 {
     /**
      * @param MonologConfiguration  $configuration
-     * @param ProviderInterface[]   $providers
+     * @param iterable<ProviderInterface> $providers
      */
     public function __construct(
         protected MonologConfigurationInterface $configuration,
@@ -49,7 +50,11 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
 
         foreach ($this->providers as $provider) {
             try {
-                $provider->register($factory);
+                $this->checkProviderClass($provider);
+
+                if ($provider->isActive()) {
+                    $provider->provide($factory);
+                }
             } catch (Exception $exception) {
                 $message = 'OxLogIQ: '.$exception->getMessage();
                 $this->fallbackLogger->get()->error($message);
@@ -64,6 +69,8 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
      */
     public function create(): LoggerInterface
     {
+        startProfile(__METHOD__);
+
         $logger = $this->getFactory()->build($this->configuration->getLoggerName());
         $handlers = $logger->getHandlers();
 
@@ -71,6 +78,24 @@ class MonologLoggerFactory implements LoggerFactoryInterface, OxLogIQLoggerFacto
             $logger = $this->fallbackLogger->get();
         }
 
+        stopProfile(__METHOD__);
+
         return $logger;
+    }
+
+    /**
+     * @param $provider
+     * @return void
+     */
+    public function checkProviderClass($provider): void
+    {
+        if (!$provider instanceof ProviderInterface) {
+            throw new LogicException(
+                sprintf(
+                    'service %s is no valid OxLogIQ provider',
+                    is_object($provider) ? $provider::class : gettype($provider)
+                )
+            );
+        }
     }
 }
