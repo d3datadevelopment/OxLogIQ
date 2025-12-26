@@ -1,0 +1,76 @@
+name: OXID Test Runner
+
+on:
+  push:
+    branches:
+      - 'rel_*'
+      - 'main'
+      - 'master'
+
+jobs:
+  plugin-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: oxid
+          MYSQL_USER: oxid
+          MYSQL_PASSWORD: oxid
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # min
+          - oxid_ref: "dev-b-7.0-ce"
+            php: "8.0"
+          # max
+          - oxid_ref: "dev-b-7.4-ce"
+            php: "8.4"
+
+    name: OXID ${{ matrix.oxid_ref }} in PHP ${{ matrix.php }} tests
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_NAME: oxid
+      DB_USER: oxid
+      DB_PASS: oxid
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run OXID tests
+        uses: d3datadevelopment/ci-actions/oxid-plugin-test@v1
+        with:
+          php_version: ${{ matrix.php }}
+          oxid_ref: ${{ matrix.oxid_ref }}
+          phpunit_version: "^9 || ^10 || ^11"
+          sourceguardian: "FALSE"
+          composer_package_name: "d3/oxlogiq"
+          test_suites: "unit,integration"
+          syntax_check_paths: "."
+
+  report-status:
+    runs-on: ubuntu-latest
+    needs: plugin-tests
+    if: always()
+    steps:
+      - name: Report CI status
+        uses: d3datadevelopment/ci-actions/status-reporter@v1
+        with:
+          api_status_endpoint: "${{ vars.GITEA_API }}${{ github.sha }}"
+          auth_token: ${{ secrets.GITEA_TOKEN }}
+          state: ${{ needs.plugin-tests.result }}
+          description: "CI result: ${{ needs.plugin-tests.result }}"
+          target_url: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
