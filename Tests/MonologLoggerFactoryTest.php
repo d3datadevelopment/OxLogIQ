@@ -84,6 +84,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getFactoryDataProvider
      */
     #[Test]
     #[DataProvider('getFactoryDataProvider')]
@@ -151,6 +152,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider createDataProvider
      */
     #[Test]
     #[DataProvider('createDataProvider')]

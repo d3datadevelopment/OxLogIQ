@@ -73,6 +73,7 @@ class MailHandlerProviderTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider registerDataProvider
      */
     #[Test]
     #[DataProvider('registerDataProvider')]
