@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace D3\OxLogIQ\Release;
 
 use DateTimeImmutable;
+use Exception;
 use OxidEsales\Eshop\Core\Exception\FileException;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
@@ -31,11 +32,11 @@ class ReleaseService implements ReleaseServiceInterface
             $realPath = realpath($this->getFilePath());
 
             if (!$realPath) {
-                throw new FileException(sprintf('composer.lock file not found in path %s', $path));
+                throw new Exception(sprintf('composer.lock file not found in path %s', $path));
             }
 
             return (new DateTimeImmutable())->setTimestamp(filemtime($realPath))->format('Y-m-d_H:i:s');
-        } catch (StandardException) {
+        } catch (Exception) {
             return '';
         }
     }
