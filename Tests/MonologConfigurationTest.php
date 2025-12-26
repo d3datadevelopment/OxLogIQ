@@ -156,6 +156,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider useAlertMailDataProvider
      */
     #[Test]
     #[DataProvider('useAlertMailDataProvider')]
@@ -198,6 +199,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getAlertMailRecipientsDataProvider
      */
     #[Test]
     #[DataProvider('getAlertMailRecipientsDataProvider')]
@@ -238,6 +240,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getLogLevelDataProvider
      */
     #[Test]
     #[DataProvider('getLogLevelDataProvider')]
@@ -300,6 +303,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getSentryDsnDataProvider
      */
     #[Test]
     #[DataProvider('getSentryDsnDataProvider')]
@@ -413,6 +417,9 @@ class MonologConfigurationTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider getSentryTracesSampleRateDataProvider
+     */
     #[Test]
     #[DataProvider('getSentryTracesSampleRateDataProvider')]
     public function testGetSentryTracesSampleRate(bool $parentSampled, $expected): void
@@ -491,6 +498,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider hasHttpApiEndpointDataProvider
      */
     #[Test]
     #[DataProvider('hasHttpApiEndpointDataProvider')]
@@ -531,6 +539,7 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getHttpApiKeyDataProvider
      */
     #[Test]
     #[DataProvider('getHttpApiKeyDataProvider')]

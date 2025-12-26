@@ -165,6 +165,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider addFileHandlerDataProvider
      */
     #[Test]
     #[DataProvider('addFileHandlerDataProvider')]
@@ -251,6 +252,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider addMailHandlerDataProvider
      */
     #[Test]
     #[DataProvider('addMailHandlerDataProvider')]
@@ -316,6 +318,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider addSentryHandlerDataProvider
      */
     #[Test]
     #[DataProvider('addSentryHandlerDataProvider')]
@@ -373,6 +376,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider addHttpApiHandlerDataProvider
      */
     #[Test]
     #[DataProvider('addHttpApiHandlerDataProvider')]
@@ -442,6 +446,7 @@ class MonologLoggerFactoryTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider addProcessorsDataProvider
      */
     #[Test]
     #[DataProvider('addProcessorsDataProvider')]

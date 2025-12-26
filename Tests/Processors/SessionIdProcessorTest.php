@@ -86,6 +86,7 @@ class SessionIdProcessorTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getShopSidDataProvider
      */
     #[Test]
     #[DataProvider('getShopSidDataProvider')]

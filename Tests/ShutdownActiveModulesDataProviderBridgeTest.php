@@ -132,6 +132,7 @@ class ShutdownActiveModulesDataProviderBridgeTest extends TestCase
     /**
      * @throws MockObjectException
      * @throws ReflectionException
+     * @dataProvider parentMethodsDataProvider
      */
     #[Test]
     #[DataProvider('parentMethodsDataProvider')]

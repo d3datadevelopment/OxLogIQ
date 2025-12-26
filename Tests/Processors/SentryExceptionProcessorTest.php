@@ -38,6 +38,7 @@ class SentryExceptionProcessorTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider invokeDataProvider
      */
     #[Test]
     #[DataProvider('invokeDataProvider')]
@@ -72,6 +73,7 @@ class SentryExceptionProcessorTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider checkForExceptionDataProvider
      */
     #[Test]
     #[DataProvider('checkForExceptionDataProvider')]

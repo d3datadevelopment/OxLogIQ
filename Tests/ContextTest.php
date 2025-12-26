@@ -65,6 +65,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getRetentionDaysDataProvider
      */
     #[Test]
     #[DataProvider('getRetentionDaysDataProvider')]
@@ -105,6 +106,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider useAlertMailDataProvider
      */
     #[Test]
     #[DataProvider('useAlertMailDataProvider')]
@@ -152,6 +154,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getAlertMailRecipientsDataProvider
      */
     #[Test]
     #[DataProvider('getAlertMailRecipientsDataProvider')]
@@ -202,6 +205,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getAlertMailLevelDataProvider
      */
     #[Test]
     #[DataProvider('getAlertMailLevelDataProvider')]
@@ -241,6 +245,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider getAlertMailSubjectDataProvider
      */
     #[Test]
     #[DataProvider('getAlertMailSubjectDataProvider')]
@@ -280,6 +285,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider envDecisionDataProvider
      */
     #[Test]
     #[DataProvider('envDecisionDataProvider')]
@@ -311,6 +317,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider envDecisionDataProvider
      */
     #[Test]
     #[DataProvider('envDecisionDataProvider')]
@@ -342,6 +349,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider envDecisionDataProvider
      */
     #[Test]
     #[DataProvider('envDecisionDataProvider')]
@@ -373,6 +381,7 @@ class ContextTest extends TestCase
 
     /**
      * @throws ReflectionException
+     * @dataProvider envDecisionDataProvider
      */
     #[Test]
     #[DataProvider('envDecisionDataProvider')]
