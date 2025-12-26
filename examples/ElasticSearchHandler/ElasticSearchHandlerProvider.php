@@ -22,7 +22,12 @@ use Monolog\Handler\ElasticSearchHandler;
 
 class ElasticSearchHandlerProvider implements ProviderInterface
 {
-    public function register(LoggerFactory $factory): void
+    public function isActive(): bool
+    {
+        return true;
+    }
+
+    public function provide(LoggerFactory $factory): void
     {
         $factory->addOtherHandler(
             new ElasticSearchHandler(

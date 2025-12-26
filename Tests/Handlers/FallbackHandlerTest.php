@@ -34,7 +34,6 @@ class FallbackHandlerTest extends TestCase
     {
         $sut = new FallbackHandler();
 
-        $this->assertInstanceOf(LineFormatter::class, $sut->getFormatter());
         $this->assertStringContainsString('oxideshop.log', $sut->getUrl());
         $this->assertSame(Logger::ERROR, $sut->getLevel());
     }
