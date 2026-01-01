@@ -53,10 +53,10 @@ $this->sLogLevel = "ERROR";
 $this->oxlogiq_retentionDays = 7;
 // optional
 $this->oxlogiq_mailAlert = true;
-$this->oxlogiq_mailRecipients = "alerts@mydomain.com";
+$this->oxlogiq_mailRecipients = "alerts@mydomain.example";
 $this->oxlogiq_mailLogLevel = "ERROR";
 $this->oxlogiq_mailSubject = "Exception Alert";
-$this->oxlogiq_mailFrom = "sender@mydomain.com";
+$this->oxlogiq_mailFrom = "sender@mydomain.example";
 ```
 
 ## Use of the session/request ID
