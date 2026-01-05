@@ -4,7 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://git.d3data.de/D3Public/OxLogIQ/compare/1.0.0.0...rel_1.x)
+## [Unreleased](https://git.d3data.de/D3Public/OxLogIQ/compare/1.2.0.0...rel_1.x)
+
+## [1.2.0.0](https://git.d3data.de/D3Public/OxLogIQ/compare/1.1.0.0...1.2.0.0) - 2026-01-05
+### Added
+- providers to extend handlers and processors list
+- fallback logger to improve logging reliability
+
+### Changed
+- Update development dependencies.
+- Use a more generic exception class to address deprecation in OXID code.
+- Make data provider annotations compatible with PHPUnit v9.
+- Update service definitions and move factory configurations to DIC tagged providers.
+
+### Removed
+- Move HttpApi handler and HTTP API provider to separate package `d3/oxlogiq_http_api`.
+- Move Sentry provider to separate package `d3/oxlogiq_sentry`.
+- Refactor tests to align with provider restructuring and package moves.
 
 ## [1.1.0.0](https://git.d3data.de/D3Public/OxLogIQ/compare/1.0.0.0...1.1.0.0) - 2025-12-10
 ### Added
