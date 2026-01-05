@@ -293,7 +293,6 @@ class MonologConfigurationTest extends TestCase
 
     /**
      * @throws ReflectionException
-     * @dataProvider getSentryDsnDataProvider
      */
     #[Test]
     public function testGetRelease(): void
