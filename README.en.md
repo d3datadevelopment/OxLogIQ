@@ -82,6 +82,11 @@ OxLogIQ is designed to be as easy to extend as possible. If, for example, a hand
 application, you can simply add it. It is also possible to create a completely new stack.
 You can find implementation examples in the `examples` folder.
 
+Ready-to-use extensions can be found here. You can also use these as templates for your own implementations:
+
+- [Log to Sentry](https://packagist.org/packages/d3/oxlogiq_sentry)
+- [Log to any HTTP API](https://packagist.org/packages/d3/oxlogiq_http_api)
+
 ## Changelog
 
 See [CHANGELOG](CHANGELOG.md) for further information.

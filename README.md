@@ -79,7 +79,12 @@ gelöscht werden, wenn Sie existiert.
 
 OxLogIQ ist so angelegt, dass es möglichst einfach erweitert werden kann. Fehlt für Ihren Einsatzfall z.B. ein Handler
 oder ein Prozessor, können Sie diesen einfach hinzufügen. Auch ein komplett neu zusammengesetzter Stack ist möglich. 
-Implementierungsbeispiele finden Sie im Ordner `examples`.   
+Implementierungsbeispiele finden Sie im Ordner `examples`.
+
+Sofort einsatzfähige Erweiterungen finden Sie hier. Auch diese können Sie als Vorlage für eigene Umsetzungen nutzen:
+
+- [Log zu Sentry](https://packagist.org/packages/d3/oxlogiq_sentry)
+- [Log an eine beliebige HTTP API](https://packagist.org/packages/d3/oxlogiq_http_api)
 
 ## Changelog
 
