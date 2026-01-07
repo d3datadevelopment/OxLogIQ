@@ -1,9 +1,18 @@
 parameters:
-  paths:
-    - .
-  excludePaths:
-    - Tests
-    - examples
+  paths: 
+    - Core
+    - Handlers
+    - Interfaces
+    - Processors
+    - Providers
+    - Release
+
+  scanFiles:
+    - Context.php
+    - MonologConfiguration.php
+    - MonologLoggerFactory.php
+    - ShutdownActiveModulesDataProviderBridge.php
+
   level: 8
   phpVersion: 80000
   ignoreErrors:
