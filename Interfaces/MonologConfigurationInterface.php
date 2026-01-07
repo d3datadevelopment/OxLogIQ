@@ -25,6 +25,9 @@ interface MonologConfigurationInterface
 
     public function hasAlertMailRecipient(): bool;
 
+    /**
+     * @return string[]|null
+     */
     public function getAlertMailRecipients(): ?array;
 
     public function getAlertMailLevel(): string;

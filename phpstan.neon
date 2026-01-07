@@ -1,5 +1,5 @@
 parameters:
-  paths: 
+  paths:
     - Core
     - Handlers
     - Interfaces
@@ -16,6 +16,6 @@ parameters:
   level: 8
   phpVersion: 80000
   ignoreErrors:
-    - '#\$config with type OxidEsales\\EshopCommunity\\Core\\Config is not subtype of native type OxidEsales\\Eshop\\Core\\Config\.#'
     - '#\$session with type OxidEsales\\EshopCommunity\\Core\\Session is not subtype of native type OxidEsales\\Eshop\\Core\\Session\.#'
-    - '#D3\\OxLogiQ\\Processors\\SessionIdProcessor::__invoke\(\) .*? no value type specified in iterable type array\.#'
+    - '#SessionIdProcessor::__invoke\(\) has parameter \$records with no value type specified in iterable type array\.#'
+    - '#SessionIdProcessor::__invoke\(\) return type has no value type specified in iterable type array\.#'
