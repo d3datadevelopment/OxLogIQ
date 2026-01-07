@@ -35,7 +35,9 @@ class ReleaseService implements ReleaseServiceInterface
                 throw new Exception(sprintf('composer.lock file not found in path %s', $path));
             }
 
-            return (new DateTimeImmutable())->setTimestamp(filemtime($realPath))->format('Y-m-d_H:i:s');
+            return (new DateTimeImmutable())->setTimestamp(
+                (int) filemtime($realPath)
+            )->format('Y-m-d_H:i:s');
         } catch (Exception) {
             return '';
         }
