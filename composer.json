@@ -29,8 +29,8 @@
   },
   "require-dev": {
     "d3/testingtools": "^1.2",
-    "phpunit/phpunit": "^11.5",
-    "friendsofphp/php-cs-fixer": "^3.75",
+    "phpunit/phpunit": "^9|^10",
+    "friendsofphp/php-cs-fixer": "^3.66",
     "phpstan/phpstan": "^1.10"
   },
   "suggest": {
